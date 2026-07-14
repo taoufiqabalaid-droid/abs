@@ -220,6 +220,38 @@
   .results-count{
     font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); padding:0 2px 10px;
   }
+
+  /* MULTI-SELECT STUDENT PICKER */
+  .student-picker{
+    border:1px solid var(--paper-line); border-radius:var(--radius); background:#fff;
+    padding:8px; display:flex; flex-direction:column; gap:8px;
+  }
+  .chip-row{display:flex; flex-wrap:wrap; gap:6px;}
+  .chip-row:empty{display:none;}
+  .chip{
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--binder); color:var(--paper);
+    font-size:12px; font-family:'Libre Franklin',sans-serif;
+    padding:4px 6px 4px 10px; border-radius:999px;
+  }
+  .chip button{
+    background:none; border:none; color:var(--paper); opacity:.7; cursor:pointer;
+    font-size:13px; line-height:1; padding:0 2px;
+  }
+  .chip button:hover{opacity:1; color:var(--absent-bg);}
+  .student-input-row{position:relative;}
+  .student-suggestions{
+    position:absolute; z-index:5; top:calc(100% + 2px); left:0; right:0;
+    background:#fff; border:1px solid var(--paper-line); border-radius:var(--radius);
+    max-height:160px; overflow-y:auto; box-shadow:0 6px 18px rgba(0,0,0,.12);
+  }
+  .student-suggestions div{
+    padding:7px 10px; font-size:12.5px; cursor:pointer;
+  }
+  .student-suggestions div:hover, .student-suggestions div.active{
+    background:var(--paper-dark);
+  }
+  .picker-hint{font-size:11px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;}
 </style>
 </head>
 <body>
@@ -525,10 +557,24 @@ function openRecordModal(rec, filiereOpts){
           <input type="text" id="mSeance" value="${escapeAttr(rec?rec.seance||'':'')}" placeholder="08H30 - 12H30">
         </div>
       </div>
+      ${isEdit ? `
       <div class="field">
         <label>Nom et prénom de l'élève</label>
-        <input type="text" id="mEtudiant" value="${escapeAttr(rec?rec.etudiant:'')}" placeholder="NOM Prénom">
+        <input type="text" id="mEtudiant" value="${escapeAttr(rec.etudiant)}" placeholder="NOM Prénom">
       </div>
+      ` : `
+      <div class="field">
+        <label>Élève(s) absent(s)</label>
+        <div class="student-picker" id="studentPicker">
+          <div class="chip-row" id="chipRow"></div>
+          <div class="student-input-row">
+            <input type="text" id="mStudentInput" placeholder="Taper un nom puis Entrée…" autocomplete="off">
+            <div class="student-suggestions" id="studentSuggestions" style="display:none;"></div>
+          </div>
+        </div>
+        <span class="picker-hint">Sélectionnez plusieurs élèves pour créer une absence identique à chacun.</span>
+      </div>
+      `}
       <div class="field">
         <label>Module</label>
         <input type="text" id="mModule" value="${escapeAttr(rec?rec.module||'':'')}" placeholder="Nom du module">
@@ -557,25 +603,85 @@ function openRecordModal(rec, filiereOpts){
       showToast('Absence supprimée.');
     }
   });
+
+  // --- Multi-student picker (add mode only) ---
+  let selectedStudents = [];
+  if(!isEdit){
+    const allNames = uniqueSorted(records.map(r=>r.etudiant));
+    const chipRow = backdrop.querySelector('#chipRow');
+    const input = backdrop.querySelector('#mStudentInput');
+    const suggBox = backdrop.querySelector('#studentSuggestions');
+
+    function renderChips(){
+      chipRow.innerHTML = selectedStudents.map((name,i)=>`
+        <span class="chip">${escapeHtml(name)}<button type="button" data-i="${i}" aria-label="Retirer">✕</button></span>
+      `).join('');
+      chipRow.querySelectorAll('button').forEach(b=>{
+        b.addEventListener('click', ()=>{
+          selectedStudents.splice(Number(b.dataset.i),1);
+          renderChips();
+        });
+      });
+    }
+    function addStudent(name){
+      name = name.trim();
+      if(!name) return;
+      const already = selectedStudents.some(s=>s.toLowerCase()===name.toLowerCase());
+      if(!already) selectedStudents.push(name);
+      input.value='';
+      suggBox.style.display='none';
+      renderChips();
+      input.focus();
+    }
+    function showSuggestions(){
+      const q = input.value.trim().toLowerCase();
+      let matches = allNames.filter(n=>!selectedStudents.some(s=>s.toLowerCase()===n.toLowerCase()));
+      if(q) matches = matches.filter(n=>n.toLowerCase().includes(q));
+      matches = matches.slice(0,8);
+      if(!matches.length){ suggBox.style.display='none'; return; }
+      suggBox.innerHTML = matches.map(n=>`<div data-name="${escapeAttr(n)}">${escapeHtml(n)}</div>`).join('');
+      suggBox.style.display='block';
+      suggBox.querySelectorAll('div').forEach(d=>{
+        d.addEventListener('click', ()=>addStudent(d.dataset.name));
+      });
+    }
+    input.addEventListener('focus', showSuggestions);
+    input.addEventListener('input', showSuggestions);
+    input.addEventListener('keydown', e=>{
+      if(e.key==='Enter'){ e.preventDefault(); addStudent(input.value); }
+      if(e.key===','){ e.preventDefault(); addStudent(input.value); }
+      if(e.key==='Escape'){ suggBox.style.display='none'; }
+    });
+    document.addEventListener('click', function outsideClick(e){
+      if(!backdrop.isConnected){ document.removeEventListener('click', outsideClick); return; }
+      if(!e.target.closest('#studentPicker')) suggBox.style.display='none';
+    });
+  }
+
   backdrop.querySelector('#saveModal').addEventListener('click', ()=>{
     const filiere = backdrop.querySelector('#mFiliere').value.trim().toUpperCase();
-    const etudiant = backdrop.querySelector('#mEtudiant').value.trim();
-    if(!filiere || !etudiant){ showToast('Filière et nom de l’élève sont requis.'); return; }
-    const data = {
+    if(!filiere){ showToast('La filière est requise.'); return; }
+    const baseData = {
       filiere,
       semestre: backdrop.querySelector('#mSemestre').value,
       date: backdrop.querySelector('#mDate').value || null,
       seance: backdrop.querySelector('#mSeance').value.trim() || null,
-      etudiant,
       module: backdrop.querySelector('#mModule').value.trim() || null,
       observation: backdrop.querySelector('#mObs').value.trim() || null,
     };
     if(isEdit){
-      Object.assign(rec, data);
+      const etudiant = backdrop.querySelector('#mEtudiant').value.trim();
+      if(!etudiant){ showToast('Le nom de l’élève est requis.'); return; }
+      Object.assign(rec, baseData, {etudiant});
       showToast('Absence mise à jour.');
     }else{
-      records.push(Object.assign({id: uid()}, data));
-      showToast('Absence ajoutée.');
+      if(!selectedStudents.length){ showToast('Ajoutez au moins un élève.'); return; }
+      selectedStudents.forEach(etudiant=>{
+        records.push(Object.assign({id: uid()}, baseData, {etudiant}));
+      });
+      showToast(selectedStudents.length>1
+        ? `${selectedStudents.length} absences ajoutées.`
+        : 'Absence ajoutée.');
     }
     scheduleSave();
     backdrop.remove();
