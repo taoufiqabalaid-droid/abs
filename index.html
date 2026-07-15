@@ -8,8 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Libre+Franklin:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--paper:#F3EEE1;--paper-line:#D9CFB8;--paper-dark:#E7DFC9;--ink:#1B2A3C;--ink-soft:#4A5568;--binder:#22314A;--binder-light:#324667;--absent:#A6303A;--absent-bg:#F5E3E1;--gold:#B8934A;--good:#3E6B4F;--radius:4px}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0}html,body{margin:0;padding:0}
 body{background:var(--paper);color:var(--ink);font-family:'Libre Franklin',sans-serif;min-height:100vh}
 .app{display:flex;flex-direction:column;min-height:100vh}
 header{background:var(--binder);color:var(--paper);padding:22px 32px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;border-bottom:4px solid var(--gold)}
@@ -33,7 +32,6 @@ button{font-family:'Libre Franklin',sans-serif;cursor:pointer}
 .btn.danger:hover{background:#8a252e}
 .btn.gold{background:var(--gold);color:#fff}
 .btn.gold:hover{background:#9a7a3c}
-.btn.sm{padding:5px 10px;font-size:11px}
 .spacer{flex:1}
 .body-grid{display:grid;grid-template-columns:1fr 260px;gap:0;flex:1}
 @media(max-width:900px){.body-grid{grid-template-columns:1fr}}
@@ -104,8 +102,6 @@ tbody tr:last-child td{border-bottom:none}
 .confirm-box strong{color:var(--absent)}
 .format-info{background:rgba(255,255,255,.6);border:1px solid var(--paper-line);border-radius:var(--radius);padding:12px;margin-bottom:14px;font-size:12px;line-height:1.6;color:var(--ink-soft)}
 .format-info code{background:var(--paper-dark);padding:1px 5px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:11px}
-
-/* Sélecteur multiple par cases à cocher */
 .chk-picker{border:1px solid var(--paper-line);border-radius:var(--radius);background:#fff;display:flex;flex-direction:column}
 .chk-header{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--paper-line);background:var(--paper-dark);flex-wrap:wrap}
 .chk-header input{flex:1;min-width:140px;font-size:12px;padding:5px 8px}
@@ -133,16 +129,19 @@ tbody tr:last-child td{border-bottom:none}
 <script>
 /* ═══════ Chargement dynamique XLSX ═══════ */
 var xlsxLoaded=false,xlsxLoading=false;
-function loadXlsxLib(){return new Promise(function(ok,no){if(xlsxLoaded&&window.XLSX){ok();return}if(xlsxLoading){var c=setInterval(function(){if(xlsxLoaded){clearInterval(c);ok()}},100);setTimeout(function(){clearInterval(c);no(new Error('Timeout'))},15000);return}xlsxLoading=true;var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=function(){xlsxLoaded=true;xlsxLoading=false;ok()};s.onerror=function(){xlsxLoading=false;no(new Error('Connexion requise pour la biblioth\u00e8que Excel.'))};document.head.appendChild(s)})}
+function loadXlsxLib(){return new Promise(function(ok,no){if(xlsxLoaded&&window.XLSX){ok();return}if(xlsxLoading){var c=setInterval(function(){if(xlsxLoaded){clearInterval(c);ok()}},100);setTimeout(function(){clearInterval(c);no(new Error('Timeout'))},15000);return}xlsxLoading=true;var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=function(){xlsxLoaded=true;xlsxLoading=false;ok()};s.onerror=function(){xlsxLoading=false;no(new Error('Connexion requise.'))};document.head.appendChild(s)})}
 
 /* ═══════ État & données ═══════ */
-var SEED,LS_REC='abs_rec_v3',LS_MOD='abs_mod_v3',LS_STU='abs_stu_v3',PP=15;
+var SEED,LS_REC='abs_rec_v4',LS_MOD='abs_mod_v4',LS_STU='abs_stu_v4',PP=15;
 var st={rec:[],f:{fil:'',sem:'',mod:'',df:'',dt:'',q:''},p:1,eid:null};
 var modReg={},stuReg={};
-
 try{SEED=JSON.parse(document.getElementById('seed-data').textContent)}catch(e){SEED=[]}
 
+/* ── IMPORTANT : v4 pour forcer le rechargement des registres ── */
 function ls(k,v){try{if(v!==undefined)localStorage.setItem(k,JSON.stringify(v));else{var r=localStorage.getItem(k);return r?JSON.parse(r):null}}catch(e){return v!==undefined?undefined:null}}
+
+function regKeys(){var s={};Object.keys(stuReg).forEach(function(k){s[k]=1});Object.keys(modReg).forEach(function(k){s[k]=1});return Object.keys(s)}
+function parseKey(k){var p=k.split('_');return{fil:p[0]||'',sem:p[1]||''}}
 
 function loadMods(){modReg=ls(LS_MOD);if(!modReg){modReg={};SEED.forEach(function(r){if(!r.module)return;var k=(r.filiere||'')+'_'+(r.semestre||'');if(!modReg[k])modReg[k]=[];if(modReg[k].indexOf(r.module)<0)modReg[k].push(r.module)});ls(LS_MOD,modReg)}}
 function loadStus(){stuReg=ls(LS_STU);if(!stuReg){stuReg={};SEED.forEach(function(r){if(!r.etudiant)return;var k=(r.filiere||'')+'_'+(r.semestre||'');if(!stuReg[k])stuReg[k]=[];if(stuReg[k].indexOf(r.etudiant)<0)stuReg[k].push(r.etudiant)});ls(LS_STU,stuReg)}}
@@ -150,18 +149,52 @@ function loadRecs(){st.rec=ls(LS_REC);if(!st.rec){st.rec=JSON.parse(JSON.stringi
 function save(){ls(LS_REC,st.rec);ls(LS_MOD,modReg);ls(LS_STU,stuReg)}
 
 /* ═══════ Utilitaires ═══════ */
-function uq(a){var s={};return a.filter(function(x){if(s[x])return false;s[x]=true;return true})}
+function uq(a){var s={};return a.filter(function(x){if(!x)return false;if(s[x])return false;s[x]=true;return true})}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function fDate(d){if(!d)return'\u2014';var p=d.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d}
-function gFil(){return uq(st.rec.map(function(r){return r.filiere}).filter(Boolean)).sort()}
-function gSem(){return uq(st.rec.map(function(r){return r.semestre}).filter(Boolean)).sort()}
-function gModFilt(){var f=st.f.fil,s=st.f.sem;return uq(st.rec.filter(function(r){if(f&&r.filiere!==f)return false;if(s&&r.semestre!==s)return false;return r.module}).map(function(r){return r.module})).sort()}
-function gModForm(fil,sem){var k=(fil||'')+'_'+(sem||'');var a=(modReg[k]||[]).concat(st.rec.filter(function(r){return(!fil||r.filiere===fil)&&(!sem||r.semestre===sem)&&r.module}).map(function(r){return r.module}));return uq(a).sort()}
-function gStuForm(fil,sem){var k=(fil||'')+'_'+(sem||'');var a=(stuReg[k]||[]).concat(st.rec.filter(function(r){return(!fil||r.filiere===fil)&&(!sem||r.semestre===sem)&&r.etudiant}).map(function(r){return r.etudiant}));return uq(a).sort()}
-function gAllStu(){var m={};st.rec.forEach(function(r){if(!r.etudiant)return;if(!m[r.etudiant])m[r.etudiant]={n:r.etudiant,f:{},c:0};if(r.filiere)m[r.etudiant].f[r.filiere]=1;m[r.etudiant].c++});Object.keys(stuReg).forEach(function(k){var p=k.split('_');(stuReg[k]||[]).forEach(function(n){if(!m[n])m[n]={n:n,f:{},c:0};if(p[0])m[n].f[p[0]]=1})});return Object.keys(m).map(function(k){var e=m[k];e.filieres=Object.keys(e.f).sort();return e}).sort(function(a,b){return a.n.localeCompare(b.n)})}
-function gAllMod(){var m={};st.rec.forEach(function(r){if(!r.module)return;var k=r.module+'||'+(r.filiere||'')+'||'+(r.semestre||'');if(!m[k])m[k]={name:r.module,fil:r.filiere||'',sem:r.semestre||'',c:0};m[k].c++});Object.keys(modReg).forEach(function(k){var p=k.split('_');(modReg[k]||[]).forEach(function(n){var fk=n+'||'+(p[0]||'')+'||'+(p[1]||'');if(!m[fk])m[fk]={name:n,fil:p[0]||'',sem:p[1]||'',c:0}})});return Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return a.name.localeCompare(b.name)})}
+
+/* ── CORRIGÉ : agrège depuis st.rec + stuReg + modReg ── */
+function gFil(){
+  var a=[];
+  st.rec.forEach(function(r){if(r.filiere&&a.indexOf(r.filiere)<0)a.push(r.filiere)});
+  Object.keys(stuReg).forEach(function(k){var p=parseKey(k);if(p.fil&&a.indexOf(p.fil)<0)a.push(p.fil)});
+  Object.keys(modReg).forEach(function(k){var p=parseKey(k);if(p.fil&&a.indexOf(p.fil)<0)a.push(p.fil)});
+  return a.sort();
+}
+function gSem(){
+  var a=[];
+  st.rec.forEach(function(r){if(r.semestre&&a.indexOf(r.semestre)<0)a.push(r.semestre)});
+  Object.keys(stuReg).forEach(function(k){var p=parseKey(k);if(p.sem&&a.indexOf(p.sem)<0)a.push(p.sem)});
+  Object.keys(modReg).forEach(function(k){var p=parseKey(k);if(p.sem&&a.indexOf(p.sem)<0)a.push(p.sem)});
+  return a.sort();
+}
+/* ── CORRIGÉ : filtre modules depuis st.rec + modReg ── */
+function gModFilt(){
+  var f=st.f.fil,s=st.f.sem,a=[];
+  st.rec.filter(function(r){if(f&&r.filiere!==f)return false;if(s&&r.semestre!==s)return false;return r.module}).forEach(function(m){if(a.indexOf(m)<0)a.push(m)});
+  Object.keys(modReg).forEach(function(k){var p=parseKey(k);if(f&&p.fil!==f)return;if(s&&p.sem!==s)return false;(modReg[k]||[]).forEach(function(m){if(a.indexOf(m)<0)a.push(m)})});
+  return a.sort();
+}
+/* ── CORRIGÉ : modules pour formulaire, toujours fonctionnel ── */
+function gModForm(fil,sem){
+  var a=[];
+  var k=(fil||'')+'_'+(sem||'');
+  (modReg[k]||[]).forEach(function(m){if(a.indexOf(m)<0)a.push(m)});
+  st.rec.filter(function(r){return(!fil||r.filiere===fil)&&(!sem||r.semestre===sem)&&r.module}).forEach(function(r){if(a.indexOf(r.module)<0)a.push(r.module)});
+  return a.sort();
+}
+/* ── CORRIGÉ : étudiants pour formulaire, toujours fonctionnel ── */
+function gStuForm(fil,sem){
+  var a=[];
+  var k=(fil||'')+'_'+(sem||'');
+  (stuReg[k]||[]).forEach(function(n){if(a.indexOf(n)<0)a.push(n)});
+  st.rec.filter(function(r){return(!fil||r.filiere===fil)&&(!sem||r.semestre===sem)&&r.etudiant}).forEach(function(r){if(a.indexOf(r.etudiant)<0)a.push(r.etudiant)});
+  return a.sort();
+}
+function gAllStu(){var m={};st.rec.forEach(function(r){if(!r.etudiant)return;if(!m[r.etudiant])m[r.etudiant]={n:r.etudiant,f:{},c:0};if(r.filiere)m[r.etudiant].f[r.filiere]=1;m[r.etudiant].c++});Object.keys(stuReg).forEach(function(k){var p=parseKey(k);(stuReg[k]||[]).forEach(function(n){if(!m[n])m[n]={n:n,f:{},c:0};if(p.fil)m[n].f[p.fil]=1})});return Object.keys(m).map(function(k){var e=m[k];e.filieres=Object.keys(e.f).sort();return e}).sort(function(a,b){return a.n.localeCompare(b.n)})}
+function gAllMod(){var m={};st.rec.forEach(function(r){if(!r.module)return;var k=r.module+'||'+(r.filiere||'')+'||'+(r.semestre||'');if(!m[k])m[k]={name:r.module,fil:r.filiere||'',sem:r.semestre||'',c:0};m[k].c++});Object.keys(modReg).forEach(function(k){var p=parseKey(k);(modReg[k]||[]).forEach(function(n){var fk=n+'||'+(p.fil||'')+'||'+(p.sem||'');if(!m[fk])m[fk]={name:n,fil:p.fil||'',sem:p.sem||'',c:0}})});return Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return a.name.localeCompare(b.name)})}
 function filt(){var f=st.f;return st.rec.filter(function(r){if(f.fil&&r.filiere!==f.fil)return false;if(f.sem&&r.semestre!==f.sem)return false;if(f.mod&&r.module!==f.mod)return false;if(f.df&&r.date&&r.date<f.df)return false;if(f.dt&&r.date&&r.date>f.dt)return false;if(f.q){var q=f.q.toLowerCase();if(!(r.etudiant||'').toLowerCase().indexOf(q)>=0&&!(r.module||'').toLowerCase().indexOf(q)>=0&&!(r.observation||'').toLowerCase().indexOf(q)>=0)return false}return true})}
-function topN(n){var m={};st.rec.forEach(function(r){if(!r.etudiant)return;if(st.f.fil&&r.filiere!==st.f.fil)return;if(st.f.sem&&r.semestre!==st.f.sem)return;m[r.etudiant]=(m[r.etudiant]||0)+1});return Object.keys(m).map(function(k){return[k,m[k]]}).sort(function(a,b){return b[1]-a[1]}).slice(0,n)}
+function topN(n){var m={};st.rec.forEach(function(r){if(!r.etudiant)return;if(st.f.fil&&r.filiere!==st.f.fil)return false;if(st.f.sem&&r.semestre!==st.f.sem)return false;m[r.etudiant]=(m[r.etudiant]||0)+1});return Object.keys(m).map(function(k){return[k,m[k]]}).sort(function(a,b){return b[1]-a[1]}).slice(0,n)}
 function nId(){var m=0;st.rec.forEach(function(r){var n=parseInt(r.id.replace('r',''),10);if(n>m)m=n});return'r'+String(m+1).padStart(4,'0')}
 function fCol(h,c){for(var i=0;i<c.length;i++)for(var j=0;j<h.length;j++)if(h[j].trim().toLowerCase()===c[i].toLowerCase())return h[j];for(var i=0;i<c.length;i++)for(var j=0;j<h.length;j++)if(h[j].trim().toLowerCase().indexOf(c[i].toLowerCase())>=0)return h[j];return null}
 
@@ -207,7 +240,7 @@ function delRec(id){var r=st.rec.find(function(x){return x.id===id});if(!r)retur
 /* ═══════ Modale confirmation ═══════ */
 function confirmDlg(t,b,fn){var d=document.createElement('div');d.className='modal-backdrop';d.innerHTML='<div class="modal" style="width:380px"><h3>'+t+'</h3><div class="confirm-box">'+b+'</div><div class="modal-actions"><button class="btn ghost" id="cC">Annuler</button><button class="btn danger" id="cO">Confirmer</button></div></div>';document.body.appendChild(d);d.querySelector('#cC').onclick=function(){d.remove()};d.querySelector('#cO').onclick=function(){d.remove();fn()};d.onclick=function(e){if(e.target===d)d.remove()}}
 
-/* ═══════ Modale absence avec sélection multiple par cases à cocher ═══════ */
+/* ═══════ Modale absence avec cases \u00e0 cocher ═══════ */
 function openAbsModal(eid){
 var rec=eid?st.rec.find(function(r){return r.id===eid}):null,isE=!!rec;
 var fils=gFil(),sems=gSem(),dF=rec?rec.filiere:st.f.fil||'',dS=rec?rec.semestre:st.f.sem||'';
@@ -222,7 +255,6 @@ h+='<option value="__n">+ Nouveau</option></select></div></div>';
 h+='<div id="nfF" class="field" style="display:none"><label>Nom fili\u00e8re</label><input type="text" id="aNF" placeholder="Ex: SM"></div>';
 h+='<div id="nfS" class="field" style="display:none"><label>Nom semestre</label><input type="text" id="aNS" placeholder="Ex: S3"></div>';
 h+='<div class="field"><label>Module</label><select id="aMod"><option value="">\u2014 Choisir \u2014</option></select></div>';
-/* Cases à cocher multiples */
 h+='<div class="field"><label>\u00c9tudiants absents</label><div class="chk-picker" id="chkP">';
 h+='<div class="chk-header"><input type="text" id="chkQ" placeholder="Filtrer les \u00e9tudiants..."><div class="chk-actions"><button id="chkAll" type="button">Tout cocher</button><button id="chkNone" type="button">Tout d\u00e9cocher</button><span class="chk-count" id="chkCnt">0 s\u00e9lectionn\u00e9(s)</span></div></div>';
 h+='<div class="chk-list" id="chkL"><div class="chk-empty">S\u00e9lectionnez une fili\u00e8re et un semestre</div></div></div></div>';
@@ -241,21 +273,29 @@ if(rec)checked[rec.etudiant]=true;
 function gCF(){return bd.querySelector('#aFil').value==='__n'?bd.querySelector('#aNF').value.trim():bd.querySelector('#aFil').value}
 function gCS(){return bd.querySelector('#aSem').value==='__n'?bd.querySelector('#aNS').value.trim():bd.querySelector('#aSem').value}
 
-function refreshMods(){var f=gCF(),s=gCS(),ms=gModForm(f,s),cv=rec?rec.module:'';var sel=bd.querySelector('#aMod');sel.innerHTML='<option value="">\u2014 Choisir \u2014</option>';ms.forEach(function(m){sel.innerHTML+='<option value="'+esc(m)+'"'+(m===cv?' selected':'')+'>'+esc(m)+'</option>'})}
+function refreshMods(){
+  var f=gCF(),s=gCS(),ms=gModForm(f,s),cv=rec?rec.module:'';
+  var sel=bd.querySelector('#aMod');
+  sel.innerHTML='<option value="">\u2014 Choisir \u2014</option>';
+  ms.forEach(function(m){sel.innerHTML+='<option value="'+esc(m)+'"'+(m===cv?' selected':'')+'>'+esc(m)+'</option>'});
+}
 
 function refreshChk(q){
-var f=gCF(),s=gCS(),all=gStuForm(f,s),ql=(q||'').toLowerCase();
-var filtered=ql?all.filter(function(n){return n.toLowerCase().indexOf(ql)>=0}):all;
-var box=bd.querySelector('#chkL');
-if(!filtered.length){box.innerHTML='<div class="chk-empty">Aucun \u00e9tudiant trouv\u00e9</div>';updCnt();return}
-box.innerHTML='';
-filtered.forEach(function(n){
-var lbl=document.createElement('label');lbl.className='chk-item'+(checked[n]?' checked':'');
-var cb=document.createElement('input');cb.type='checkbox';cb.checked=!!checked[n];
-cb.onchange=function(){if(cb.checked)checked[n]=true;else delete checked[n];lbl.className='chk-item'+(cb.checked?' checked':'');updCnt()};
-lbl.appendChild(cb);lbl.appendChild(document.createTextNode(' '));lbl.appendChild(document.createTextNode(n));
-box.appendChild(lbl)});
-updCnt()}
+  var f=gCF(),s=gCS(),all=gStuForm(f,s),ql=(q||'').toLowerCase();
+  var filtered=ql?all.filter(function(n){return n.toLowerCase().indexOf(ql)>=0}):all;
+  var box=bd.querySelector('#chkL');
+  if(!filtered.length){box.innerHTML='<div class="chk-empty">Aucun \u00e9tudiant trouv\u00e9</div>';updCnt();return}
+  box.innerHTML='';
+  filtered.forEach(function(n){
+    var lbl=document.createElement('label');lbl.className='chk-item'+(checked[n]?' checked':'');
+    var cb=document.createElement('input');cb.type='checkbox';cb.checked=!!checked[n];
+    cb.onchange=function(){if(cb.checked)checked[n]=true;else delete checked[n];lbl.className='chk-item'+(cb.checked?' checked':'');updCnt()};
+    lbl.appendChild(cb);lbl.appendChild(document.createTextNode(' '));
+    lbl.appendChild(document.createTextNode(n));
+    box.appendChild(lbl);
+  });
+  updCnt();
+}
 
 function updCnt(){var c=Object.keys(checked).length;bd.querySelector('#chkCnt').textContent=c+' s\u00e9lectionn\u00e9'+(c>1?'s':'')}
 
@@ -266,25 +306,27 @@ bd.querySelector('#aNS').oninput=function(){refreshMods();checked={};refreshChk(
 bd.querySelector('#aSe').onchange=function(e){bd.querySelector('#csF').style.display=e.target.value==='__c'?'':'none'};
 
 var chkT;bd.querySelector('#chkQ').oninput=function(e){clearTimeout(chkT);chkT=setTimeout(function(){refreshChk(e.target.value)},150)};
-bd.querySelector('#chkAll').onclick=function(){var items=bd.querySelector('#chkL').querySelectorAll('input[type="checkbox"]');items.forEach(function(cb){cb.checked=true;checked[cb.parentNode.textContent.trim()]=true;cb.parentNode.className='chk-item checked'});updCnt()};
-bd.querySelector('#chkNone').onclick=function(){var items=bd.querySelector('#chkL').querySelectorAll('input[type="checkbox"]');items.forEach(function(cb){cb.checked=false;delete checked[cb.parentNode.textContent.trim()];cb.parentNode.className='chk-item'});updCnt()};
+bd.querySelector('#chkAll').onclick=function(){var items=bd.querySelector('#chkL').querySelectorAll('input[type="checkbox"]');items.forEach(function(cb){cb.checked=true;var t=cb.parentNode.textContent.trim();checked[t]=true;cb.parentNode.className='chk-item checked'});updCnt()};
+bd.querySelector('#chkNone').onclick=function(){var items=bd.querySelector('#chkL').querySelectorAll('input[type="checkbox"]');items.forEach(function(cb){cb.checked=false;var t=cb.parentNode.textContent.trim();delete checked[t];cb.parentNode.className='chk-item'});updCnt()};
 
 refreshMods();refreshChk('');
 
 bd.querySelector('#aCa').onclick=function(){bd.remove()};
 bd.querySelector('#aSv').onclick=function(){
-var f=gCF(),s=gCS(),mod=bd.querySelector('#aMod').value,dt=bd.querySelector('#aDt').value;
-var sea=bd.querySelector('#aSe').value;if(sea==='__c')sea=bd.querySelector('#aCS').value.trim();
-var ob=bd.querySelector('#aOb').value.trim()||null;
-if(!f){toast('Choisissez une fili\u00e8re.');return}if(!s){toast('Choisissez un semestre.');return}if(!mod){toast('Choisissez un module.');return}
-var sel=Object.keys(checked);if(!sel.length){toast('S\u00e9lectionnez au moins un \u00e9tudiant.');return}
-if(isE)st.rec=st.rec.filter(function(r){return r.id!==eid});
-sel.forEach(function(n){st.rec.push({id:nId(),filiere:f,semestre:s,module:mod,etudiant:n,date:dt||null,seance:sea||null,observation:ob})});
-save();bd.remove();render();toast(isE?'Absence modifi\u00e9e.':sel.length+' absence(s) ajout\u00e9e(s).')};
+  var f=gCF(),s=gCS(),mod=bd.querySelector('#aMod').value,dt=bd.querySelector('#aDt').value;
+  var sea=bd.querySelector('#aSe').value;if(sea==='__c')sea=bd.querySelector('#aCS').value.trim();
+  var ob=bd.querySelector('#aOb').value.trim()||null;
+  if(!f){toast('Choisissez une fili\u00e8re.');return}
+  if(!s){toast('Choisissez un semestre.');return}
+  if(!mod){toast('Choisissez un module.');return}
+  var sel=Object.keys(checked);if(!sel.length){toast('S\u00e9lectionnez au moins un \u00e9tudiant.');return}
+  if(isE)st.rec=st.rec.filter(function(r){return r.id!==eid});
+  sel.forEach(function(n){st.rec.push({id:nId(),filiere:f,semestre:s,module:mod,etudiant:n,date:dt||null,seance:sea||null,observation:ob})});
+  save();bd.remove();render();toast(isE?'Absence modifi\u00e9e.':sel.length+' absence(s) ajout\u00e9e(s).')};
 bd.onclick=function(e){if(e.target===bd)bd.remove()}
 }
 
-/* ═══════ Gestion étudiants ═══════ */
+/* ═══════ Gestion \u00e9tudiants ═══════ */
 function openStuMgmt(q){
 var all=gAllStu(),ql=(q||'').toLowerCase();
 var filtered=ql?all.filter(function(s){return s.n.toLowerCase().indexOf(ql)>=0}):all;
@@ -297,7 +339,6 @@ if(filtered.length){filtered.forEach(function(s){h+='<div class="mgmt-item"><div
 else{h+='<div class="empty" style="padding:30px">Aucun \u00e9tudiant trouv\u00e9.</div>'}
 h+='</div><div class="modal-actions"><button class="btn ghost" id="stuX">Fermer</button></div></div>';
 bd.innerHTML=h;document.body.appendChild(bd);
-
 var st2;bd.querySelector('#stuQ').oninput=function(e){clearTimeout(st2);st2=setTimeout(function(){var v=e.target.value;bd.remove();openStuMgmt(v)},300)};
 bd.querySelector('#stuImp').onclick=function(){var sv=bd.querySelector('#stuQ').value;bd.remove();openStuExcelImport(sv)};
 bd.querySelectorAll('.btn.danger').forEach(function(btn){btn.onclick=function(){
@@ -306,31 +347,28 @@ confirmDlg('Supprimer un \u00e9tudiant','Voulez-vous supprimer <strong>'+esc(nam
 bd.querySelector('#stuX').onclick=function(){bd.remove()};bd.onclick=function(e){if(e.target===bd)bd.remove()}
 }
 
-/* ═══════ Import étudiants depuis Excel ═══════ */
+/* ═══════ Import \u00e9tudiants Excel ═══════ */
 function openStuExcelImport(retQ){
 var pending=null;
 var bd=document.createElement('div');bd.className='modal-backdrop';
 var h='<div class="modal wide"><h3>Importer des \u00e9tudiants depuis Excel</h3>';
-h+='<div class="format-info"><strong>Format attendu :</strong><br><code>Nom</code> ou <code>\u00c9tudiant</code> (obligatoire) \u2014 Nom complet de l\'\u00e9tudiant<br><code>Fili\u00e8re</code> (optionnel) \u2014 Sinon valeur par d\u00e9faut<br><code>Semestre</code> (optionnel) \u2014 Sinon valeur par d\u00e9faut<br><br>Premi\u00e8re ligne = en-t\u00eates. Accepte .xlsx, .xls, .csv</div>';
+h+='<div class="format-info"><strong>Format attendu :</strong><br><code>Nom</code> ou <code>\u00c9tudiant</code> (obligatoire)<br><code>Fili\u00e8re</code> (optionnel)<br><code>Semestre</code> (optionnel)<br>Premi\u00e8re ligne = en-t\u00eates. Accepte .xlsx, .xls, .csv</div>';
 h+='<div class="two-col" style="margin-bottom:14px"><div class="field"><label>Fili\u00e8re par d\u00e9faut</label><select id="xF"><option value="">\u2014 Aucune \u2014</option>';gFil().forEach(function(f){h+='<option value="'+esc(f)+'">'+esc(f)+'</option>'});h+='</select></div>';
 h+='<div class="field"><label>Semestre par d\u00e9faut</label><select id="xS"><option value="">\u2014 Aucun \u2014</option>';gSem().forEach(function(s){h+='<option value="'+esc(s)+'">'+esc(s)+'</option>'});h+='</select></div></div>';
 h+='<div class="drop-zone" id="dz"><div class="drop-zone-icon">&#128196;</div><div class="drop-zone-text">Glissez votre fichier ici ou cliquez pour parcourir</div><div class="drop-zone-hint">.xlsx, .xls, .csv</div><input type="file" id="xFI" accept=".xlsx,.xls,.csv" style="display:none"></div>';
 h+='<div id="xPrev" style="display:none"><div class="import-stats" id="xSt"></div><div style="max-height:220px;overflow:auto;border:1px solid var(--paper-line);border-radius:var(--radius)"><table class="preview-table" id="xPT"></table></div><div class="modal-actions" style="justify-content:space-between"><button class="btn ghost" id="xBk">Retour</button><button class="btn" id="xOk">Confirmer l\'import</button></div></div>';
 h+='<div id="xNoP"><div class="modal-actions"><button class="btn ghost" id="xCa">Annuler</button></div></div></div>';
 bd.innerHTML=h;document.body.appendChild(bd);
-
 var dz=bd.querySelector('#dz'),fi=bd.querySelector('#xFI');
 dz.onclick=function(){fi.click()};dz.ondragover=function(e){e.preventDefault();dz.classList.add('dragover')};dz.ondragleave=function(){dz.classList.remove('dragover')};
 dz.ondrop=function(e){e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer.files.length)proc(e.dataTransfer.files[0])};fi.onchange=function(){if(fi.files.length)proc(fi.files[0])};
-
-function proc(file){loadXlsxLib().then(function(){doProc(file)}).catch(function(e){toast(e.message||'Erreur chargement Excel')})}
-
+function proc(file){loadXlsxLib().then(function(){doProc(file)}).catch(function(e){toast(e.message||'Erreur')})}
 function doProc(file){
 var reader=new FileReader();reader.onload=function(e){
 try{var data=new Uint8Array(e.target.result),wb=XLSX.read(data,{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],json=XLSX.utils.sheet_to_json(ws,{defval:''});
 if(!json.length){toast('Fichier vide.');return}
 var headers=Object.keys(json[0]);
-var nc=fCol(headers,['nom','nom complet','nom et pr\u00e9nom','etudiant','\u00e9tudiant','name','full name','student','nom_complet']);
+var nc=fCol(headers,['nom','nom complet','nom et pr\u00e9nom','etudiant','\u00e9tudiant','name','full name','student']);
 var fc=fCol(headers,['filiere','fili\u00e8re','section']);
 var sc=fCol(headers,['semestre','sem','niveau']);
 if(!nc){toast('Colonne "Nom" ou "\u00c9tudiant" introuvable.');return}
@@ -344,7 +382,6 @@ var pt=bd.querySelector('#xPT');pt.innerHTML='<thead><tr><th>Nom</th><th>Fili\u0
 toI.forEach(function(r){pt.innerHTML+='<tr><td>'+esc(r.name)+'</td><td>'+esc(r.fil)+'</td><td>'+esc(r.sem)+'</td><td class="'+(r.exists?'dup':'new')+'">'+(r.exists?'Existe d\u00e9j\u00e0':'Nouveau')+'</td></tr>'});
 pt.innerHTML+='</tbody>'
 }catch(err){console.error(err);toast('Erreur lecture fichier : '+err.message)}};reader.readAsArrayBuffer(file)}
-
 bd.querySelector('#xOk').onclick=function(){if(!pending)return;var added=0;pending.forEach(function(r){if(r.exists)return;if(!stuReg[r.key])stuReg[r.key]=[];stuReg[r.key].push(r.name);added++});save();bd.remove();openStuMgmt(retQ||'');render();toast(added+' \u00e9tudiant'+(added>1?'s':'')+' import\u00e9'+(added>1?'s':'')+'.');pending=null};
 bd.querySelector('#xBk').onclick=function(){pending=null;bd.remove();openStuMgmt(retQ||'')};
 bd.querySelector('#xCa').onclick=function(){bd.remove()};bd.onclick=function(e){if(e.target===bd)bd.remove()}
@@ -363,7 +400,6 @@ if(filtered.length){filtered.forEach(function(m){h+='<div class="mgmt-item"><div
 else{h+='<div class="empty" style="padding:30px">Aucun module trouv\u00e9.</div>'}
 h+='</div><div class="modal-actions"><button class="btn ghost" id="modX">Fermer</button></div></div>';
 bd.innerHTML=h;document.body.appendChild(bd);
-
 var mt;bd.querySelector('#modQ').oninput=function(e){clearTimeout(mt);mt=setTimeout(function(){bd.remove();openModMgmt(e.target.value)},300)};
 bd.querySelector('#modImp').onclick=function(){var sv=bd.querySelector('#modQ').value;bd.remove();openModExcelImport(sv)};
 bd.querySelectorAll('.btn.danger').forEach(function(btn){btn.onclick=function(){
@@ -373,7 +409,7 @@ confirmDlg('Supprimer un module',msg,function(){st.rec=st.rec.filter(function(r)
 bd.querySelector('#modX').onclick=function(){bd.remove()};bd.onclick=function(e){if(e.target===bd)bd.remove()}
 }
 
-/* ═══════ Import modules depuis Excel ═══════ */
+/* ═══════ Import modules Excel ═══════ */
 function openModExcelImport(retQ){
 var pending=null;
 var bd=document.createElement('div');bd.className='modal-backdrop';
@@ -385,13 +421,10 @@ h+='<div class="drop-zone" id="dz2"><div class="drop-zone-icon">&#128196;</div><
 h+='<div id="mPrev" style="display:none"><div class="import-stats" id="mSt"></div><div style="max-height:200px;overflow:auto;border:1px solid var(--paper-line);border-radius:var(--radius)"><table class="preview-table" id="mPT"></table></div><div class="modal-actions" style="justify-content:space-between"><button class="btn ghost" id="mBk">Retour</button><button class="btn" id="mOk">Confirmer l\'import</button></div></div>';
 h+='<div id="mNoP"><div class="modal-actions"><button class="btn ghost" id="mCa">Annuler</button></div></div></div>';
 bd.innerHTML=h;document.body.appendChild(bd);
-
 var dz=bd.querySelector('#dz2'),fi=bd.querySelector('#mFI');
 dz.onclick=function(){fi.click()};dz.ondragover=function(e){e.preventDefault();dz.classList.add('dragover')};dz.ondragleave=function(){dz.classList.remove('dragover')};
 dz.ondrop=function(e){e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer.files.length)proc(e.dataTransfer.files[0])};fi.onchange=function(){if(fi.files.length)proc(fi.files[0])};
-
 function proc(file){loadXlsxLib().then(function(){doProc(file)}).catch(function(e){toast(e.message||'Erreur')})}
-
 function doProc(file){
 var reader=new FileReader();reader.onload=function(e){
 try{var data=new Uint8Array(e.target.result),wb=XLSX.read(data,{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],json=XLSX.utils.sheet_to_json(ws,{defval:''});
@@ -411,15 +444,21 @@ var pt=bd.querySelector('#mPT');pt.innerHTML='<thead><tr><th>Module</th><th>Fili
 toI.forEach(function(r){pt.innerHTML+='<tr><td>'+esc(r.mod)+'</td><td>'+esc(r.fil)+'</td><td>'+esc(r.sem)+'</td><td class="'+(r.exists?'dup':'new')+'">'+(r.exists?'Existe d\u00e9j\u00e0':'Nouveau')+'</td></tr>'});
 pt.innerHTML+='</tbody>'
 }catch(err){console.error(err);toast('Erreur : '+err.message)}};reader.readAsArrayBuffer(file)}
-
 bd.querySelector('#mOk').onclick=function(){if(!pending)return;var added=0;pending.forEach(function(r){if(r.exists)return;if(!modReg[r.key])modReg[r.key]=[];modReg[r.key].push(r.mod);added++});save();bd.remove();openModMgmt(retQ||'');render();toast(added+' module'+(added>1?'s':'')+' import\u00e9'+(added>1?'s':'')+'.');pending=null};
 bd.querySelector('#mBk').onclick=function(){pending=null;bd.remove();openModMgmt(retQ||'')};
 bd.querySelector('#mCa').onclick=function(){bd.remove()};bd.onclick=function(e){if(e.target===bd)bd.remove()}
 }
 
 /* ═══════ Initialisation ═══════ */
-try{loadRecs();loadMods();loadStus();document.getElementById('loading').style.display='none';document.getElementById('app').style.display='';render()}
-catch(err){document.getElementById('loading').innerHTML='Erreur : '+err.message+'<br><br><button class="btn" onclick="localStorage.clear();location.reload()">R\u00e9initialiser</button>';console.error(err)}
+try{
+  loadRecs();loadMods();loadStus();
+  document.getElementById('loading').style.display='none';
+  document.getElementById('app').style.display='';
+  render();
+}catch(err){
+  document.getElementById('loading').innerHTML='Erreur : '+err.message+'<br><br><button class="btn" onclick="localStorage.clear();location.reload()">R\u00e9initialiser</button>';
+  console.error(err);
+}
 </script>
 </body>
 </html>
