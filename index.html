@@ -32,7 +32,6 @@ button{font-family:'Libre Franklin',sans-serif;cursor:pointer}
 .btn.danger:hover{background:#8a252e}
 .btn.gold{background:var(--gold);color:#fff}
 .btn.gold:hover{background:#9a7a3c}
-.btn.sm{padding:4px 10px;font-size:11px}
 .spacer{flex:1}
 .body-grid{display:grid;grid-template-columns:1fr 260px;gap:0;flex:1}
 @media(max-width:900px){.body-grid{grid-template-columns:1fr}}
@@ -86,10 +85,6 @@ tbody tr:last-child td{border-bottom:none}
 .mgmt-item-meta{font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace}
 .mgmt-item .btn{padding:4px 10px;font-size:11px;flex-shrink:0}
 .mgmt-search{margin-bottom:12px}
-.confirm-box{background:var(--absent-bg);border:1px solid var(--absent);border-radius:var(--radius);padding:14px;margin-bottom:14px;font-size:13px;line-height:1.5}
-.confirm-box strong{color:var(--absent)}
-.format-info{background:rgba(255,255,255,.6);border:1px solid var(--paper-line);border-radius:var(--radius);padding:12px;margin-bottom:14px;font-size:12px;line-height:1.6;color:var(--ink-soft)}
-.format-info code{background:var(--paper-dark);padding:1px 5px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:11px}
 .drop-zone{border:2px dashed var(--paper-line);border-radius:8px;padding:32px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:16px}
 .drop-zone:hover,.drop-zone.dragover{border-color:var(--gold);background:rgba(184,147,74,.06)}
 .drop-zone-icon{font-size:32px;margin-bottom:8px;opacity:.5}
@@ -98,22 +93,34 @@ tbody tr:last-child td{border-bottom:none}
 .preview-table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:12px}
 .preview-table th{background:var(--paper-dark);font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;padding:6px 8px;text-align:left;border-bottom:1px solid var(--paper-line)}
 .preview-table td{padding:5px 8px;border-bottom:1px solid var(--paper-line)}
+.preview-table .dup{color:var(--gold);font-style:italic}
+.preview-table .new{color:var(--good);font-weight:600}
 .import-stats{display:flex;gap:16px;margin-bottom:14px;font-family:'IBM Plex Mono',monospace;font-size:12px}
 .import-stats span{display:flex;align-items:center;gap:4px}
 .import-stats .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
-.tab-bar{display:flex;gap:0;border-bottom:2px solid var(--paper-line);margin-bottom:16px}
-.tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:8px 16px;font-size:13px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:all .15s;margin-bottom:-2px}
-.tab-btn.active{color:var(--ink);border-bottom-color:var(--gold)}
-.tab-btn:hover{color:var(--ink)}
-.tab-content{display:none}
-.tab-content.active{display:block}
+.confirm-box{background:var(--absent-bg);border:1px solid var(--absent);border-radius:var(--radius);padding:14px;margin-bottom:14px;font-size:13px;line-height:1.5}
+.confirm-box strong{color:var(--absent)}
+.format-info{background:rgba(255,255,255,.6);border:1px solid var(--paper-line);border-radius:var(--radius);padding:12px;margin-bottom:14px;font-size:12px;line-height:1.6;color:var(--ink-soft)}
+.format-info code{background:var(--paper-dark);padding:1px 5px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:11px}
+.chk-picker{border:1px solid var(--paper-line);border-radius:var(--radius);background:#fff;display:flex;flex-direction:column}
+.chk-header{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--paper-line);background:var(--paper-dark);flex-wrap:wrap}
+.chk-header input{flex:1;min-width:140px;font-size:12px;padding:5px 8px}
+.chk-actions{display:flex;gap:6px;align-items:center}
+.chk-actions button{font-size:10px;padding:3px 7px;background:var(--binder);color:var(--paper);border:none;border-radius:3px;cursor:pointer;font-family:'IBM Plex Mono',monospace}
+.chk-actions button:hover{background:var(--binder-light)}
+.chk-count{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold);font-weight:600;white-space:nowrap}
+.chk-list{max-height:220px;overflow-y:auto;padding:4px 0}
+.chk-item{display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;font-size:13px;transition:background .1s}
+.chk-item:hover{background:rgba(184,147,74,.06)}
+.chk-item.checked{background:rgba(184,147,74,.12);font-weight:600}
+.chk-item input[type="checkbox"]{accent-color:var(--gold);width:15px;height:15px;cursor:pointer;flex-shrink:0}
+.chk-empty{padding:20px;text-align:center;color:var(--ink-soft);font-size:12px;font-style:italic}
 </style>
 </head>
 <body>
 <div id="loading" class="loading">Ouverture du registre...</div>
 <div id="app" class="app" style="display:none"></div>
 <div id="toast" class="toast"></div>
-<div id="modal-root"></div>
 
 <script id="seed-data" type="application/json">
 [{"filiere":"SS","semestre":"S2","date":"2026-04-10","seance":"08H30 - 12H30","etudiant":"BOURADOUAN MAHDI","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0001"},{"filiere":"SS","semestre":"S2","date":"2026-04-10","seance":"08H30 - 12H30","etudiant":"SALOUT YASSINE","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0002"},{"filiere":"SS","semestre":"S2","date":"2026-04-10","seance":"08H30 - 12H30","etudiant":"IZIKKI HIND","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0003"},{"filiere":"SS","semestre":"S2","date":"2026-05-19","seance":"08H30 - 12H30","etudiant":"OUALI FADOUA","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0004"},{"filiere":"SS","semestre":"S2","date":"2026-05-19","seance":"08H30 - 12H30","etudiant":"GRICH MOHAMED AYOUB","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0005"},{"filiere":"SS","semestre":"S2","date":"2026-05-22","seance":"08H30 - 12H30","etudiant":"RAHHAL ABDERRAHMANE","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0006"},{"filiere":"SS","semestre":"S2","date":"2026-05-22","seance":"08H30 - 12H30","etudiant":"GRICH MOHAMED AYOUB","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0007"},{"filiere":"SS","semestre":"S2","date":"2026-05-22","seance":"08H30 - 12H30","etudiant":"ZAMRANI CHAIMAE","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0008"},{"filiere":"SS","semestre":"S2","date":"2026-05-22","seance":"08H30 - 12H30","etudiant":"OUALI FADOUA","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0009"},{"filiere":"SS","semestre":"S2","date":"2026-06-02","seance":"08H30 - 12H30","etudiant":"BELAKZIZ AYA","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0010"},{"filiere":"SS","semestre":"S2","date":"2026-06-02","seance":"08H30 - 12H30","etudiant":"ELATMANI ABDELHAK","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0011"},{"filiere":"SS","semestre":"S2","date":"2026-06-02","seance":"08H30 - 12H30","etudiant":"EDDAHANI ISMAIL","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0012"},{"filiere":"SS","semestre":"S2","date":"2026-06-05","seance":"08H30 - 12H30","etudiant":"BOURADOUAN MAHDI","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0013"},{"filiere":"SS","semestre":"S2","date":"2026-06-05","seance":"08H30 - 12H30","etudiant":"ELATMANI ABDELHAK","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0014"},{"filiere":"SS","semestre":"S2","date":"2026-06-05","seance":"08H30 - 12H30","etudiant":"GRICH MOHAMED AYOUB","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0015"},{"filiere":"SS","semestre":"S2","date":"2026-06-05","seance":"08H30 - 12H30","etudiant":"RAHHAL ABDERRAHMANE","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0016"},{"filiere":"SS","semestre":"S2","date":"2026-06-05","seance":"08H30 - 12H30","etudiant":"OUTGOUGA OUMNIA","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0017"},{"filiere":"SS","semestre":"S2","date":"2026-06-09","seance":"08H30 - 12H30","etudiant":"ELATMANI ABDELHAK","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0018"},{"filiere":"SS","semestre":"S2","date":"2026-06-09","seance":"08H30 - 12H30","etudiant":"ZEMRANI NAJOUA","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0019"},{"filiere":"SS","semestre":"S2","date":"2026-06-12","seance":"08H30 - 12H30","etudiant":"ELATMANI ABDELHAK","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0020"},{"filiere":"SS","semestre":"S2","date":"2026-03-26","seance":"14H00 - 16H00","etudiant":"BOUSSIF NADIA","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0021"},{"filiere":"SS","semestre":"S2","date":"2026-04-09","seance":"14H00 - 18H00","etudiant":"EL HALI WALID","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0022"},{"filiere":"SS","semestre":"S2","date":"2026-04-09","seance":"14H00 - 18H00","etudiant":"IHYA OMAR","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0023"},{"filiere":"SS","semestre":"S2","date":"2026-04-09","seance":"14H00 - 18H00","etudiant":"TAHIMI HAMZA","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0024"},{"filiere":"SS","semestre":"S2","date":"2026-04-09","seance":"14H00 - 18H00","etudiant":"BOUSSIF NADIA","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0025"},{"filiere":"SS","semestre":"S2","date":"2026-04-16","seance":"14H00 - 16H00","etudiant":"IZIKKI HIND","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0026"},{"filiere":"SS","semestre":"S2","date":"2026-04-16","seance":"14H00 - 16H00","etudiant":"TAHIMI HAMZA","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0027"},{"filiere":"SS","semestre":"S2","date":"2026-04-16","seance":"14H00 - 16H00","etudiant":"AIT BENELGHAZI KHADIJA","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0028"},{"filiere":"SS","semestre":"S2","date":"2026-04-16","seance":"14H00 - 16H00","etudiant":"BOUSSIF NADIA","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0029"},{"filiere":"SS","semestre":"S2","date":"2026-04-22","seance":"14H00 - 16H00","etudiant":"TAHIMI HAMZA","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0030"},{"filiere":"SS","semestre":"S2","date":"2026-04-22","seance":"14H00 - 16H00","etudiant":"AIT BENELGHAZI KHADIJA","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0031"},{"filiere":"SS","semestre":"S2","date":"2026-04-22","seance":"14H00 - 16H00","etudiant":"BOUSSIF NADIA","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0032"},{"filiere":"SS","semestre":"S2","date":"2026-04-29","seance":"14H00 - 18H00","etudiant":"BENNANI ZINEB","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0033"},{"filiere":"SS","semestre":"S2","date":"2026-04-29","seance":"16H00 - 18H00","etudiant":"BOUSSIF NADIA","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0034"},{"filiere":"SS","semestre":"S2","date":"2026-04-29","seance":"16H00 - 18H00","etudiant":"ZAMRANI CHAIMAE","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0035"},{"filiere":"SS","semestre":"S2","date":"2026-05-20","seance":"14H00 - 18H00","etudiant":"GRICH MOHAMED AYOUB","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0036"},{"filiere":"SS","semestre":"S2","date":"2026-05-20","seance":"14H00 - 18H00","etudiant":"SALOUT YASSINE","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0037"},{"filiere":"SS","semestre":"S2","date":"2026-05-20","seance":"14H00 - 18H00","etudiant":"BOUSSIF NADIA","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0038"},{"filiere":"SS","semestre":"S2","date":"2026-08-03","seance":"14H00 - 16H00","etudiant":"ELATMANI ABDELHAK","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0039"},{"filiere":"SS","semestre":"S2","date":"2026-08-03","seance":"14H00 - 16H00","etudiant":"OUALI FADOUA","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0040"},{"filiere":"SS","semestre":"S2","date":"2026-08-03","seance":"14H00 - 16H00","etudiant":"BOUSSIF NADIA","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0041"},{"filiere":"SS","semestre":"S2","date":"2026-08-04","seance":"14H00 - 16H00","etudiant":"ELATMANI ABDELHAK","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0042"},{"filiere":"SS","semestre":"S2","date":"2026-08-04","seance":"14H00 - 16H00","etudiant":"GRICH MOHAMED AYOUB","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0043"},{"filiere":"SS","semestre":"S2","date":"2026-08-04","seance":"14H00 - 16H00","etudiant":"OUTGOUGA OUMNIA","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0044"},{"filiere":"SS","semestre":"S2","date":"2026-08-04","seance":"14H00 - 16H00","etudiant":"BOUSSIF NADIA","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0045"},{"filiere":"SS","semestre":"S2","date":"2026-08-13","seance":"08H30 - 12H30","etudiant":"ELATMANI ABDELHAK","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0046"},{"filiere":"SS","semestre":"S2","date":"2026-03-31","seance":"08H30 - 12H30","etudiant":"OUTGOUGA OUMNIA","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0047"},{"filiere":"SS","semestre":"S2","date":"2026-03-31","seance":"08H30 - 12H30","etudiant":"IHYA OMAR","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0048"},{"filiere":"SS","semestre":"S2","date":"2026-04-02","seance":"08H30 - 12H30","etudiant":"TAHIMI HAMZA","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0050"},{"filiere":"SS","semestre":"S2","date":"2026-04-02","seance":"10H30 - 12H30","etudiant":"BENNANI ZINEB","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0051"},{"filiere":"SS","semestre":"S2","date":"2026-04-07","seance":"08H30 - 12H30","etudiant":"IHYA OMAR","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0052"},{"filiere":"SS","semestre":"S2","date":"2026-04-09","seance":"10H30 - 12H30","etudiant":"IHYA OMAR","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0053"},{"filiere":"SS","semestre":"S2","date":"2026-04-09","seance":"10H30 - 12H30","etudiant":"BOURADOUAN MAHDI","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0054"},{"filiere":"SS","semestre":"S2","date":"2026-04-09","seance":"10H30 - 12H30","etudiant":"GRICH MOHAMED AYOUB","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0055"},{"filiere":"SS","semestre":"S2","date":"2026-04-09","seance":"10H30 - 12H30","etudiant":"SALOUT YASSINE","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0056"},{"filiere":"SS","semestre":"S2","date":"2026-04-09","seance":"10H30 - 12H30","etudiant":"EDDAHANI ISMAIL","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0057"},{"filiere":"SS","semestre":"S2","date":"2026-04-09","seance":"10H30 - 12H30","etudiant":"EL HALI WALID","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0058"},{"filiere":"SS","semestre":"S2","date":"2026-04-14","seance":"08H30 - 12H30","etudiant":"KHROUF OUISSAL","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0059"},{"filiere":"SS","semestre":"S2","date":"2026-04-14","seance":"08H30 - 12H30","etudiant":"ZAMRANI CHAIMAE","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0060"},{"filiere":"SS","semestre":"S2","date":"2026-05-14","seance":"10H30 - 12H30","etudiant":"SALOUT YASSINE","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0061"},{"filiere":"SS","semestre":"S2","date":"2026-05-14","seance":"10H30 - 12H30","etudiant":"GRICH MOHAMED AYOUB","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0062"},{"filiere":"SS","semestre":"S2","date":"2026-05-21","seance":"08H30 - 12H30","etudiant":"GRICH MOHAMED AYOUB","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0063"},{"filiere":"SS","semestre":"S2","date":"2026-06-04","seance":"08H30 - 10H30","etudiant":"ZEMRANI NAJOUA","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0064"},{"filiere":"SS","semestre":"S2","date":"2026-06-04","seance":"08H30 - 10H30","etudiant":"IZIKKI HIND","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0065"},{"filiere":"SS","semestre":"S2","date":"2026-06-04","seance":"08H30 - 12H30","etudiant":"ELATMANI ABDELHAK","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0066"},{"filiere":"SS","semestre":"S2","date":"2026-06-04","seance":"08H30 - 12H30","etudiant":"GRICH MOHAMED AYOUB","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0067"},{"filiere":"SS","semestre":"S2","date":"2026-03-30","seance":"10H30 - 12H30","etudiant":"OUTGOUGA OUMNIA","module":"Analyse D\u00e9mographique","observation":null,"id":"r0069"},{"filiere":"SS","semestre":"S2","date":"2026-04-06","seance":"10H30 - 12H30","etudiant":"BELAKZIZ AYA","module":"Analyse D\u00e9mographique","observation":null,"id":"r0070"},{"filiere":"SS","semestre":"S2","date":"2026-04-06","seance":"14H00 - 16H00","etudiant":"BELAKZIZ AYA","module":"Analyse D\u00e9mographique","observation":null,"id":"r0071"},{"filiere":"SS","semestre":"S2","date":"2026-04-20","seance":"08H30 - 12H30","etudiant":"ZAMRANI CHAIMAE","module":"Analyse D\u00e9mographique","observation":null,"id":"r0072"},{"filiere":"SS","semestre":"S2","date":"2026-04-21","seance":"08H30 - 12H30","etudiant":"SALOUT YASSINE","module":"Analyse D\u00e9mographique","observation":null,"id":"r0073"},{"filiere":"SS","semestre":"S2","date":"2026-04-21","seance":"08H30 - 12H30","etudiant":"IHYA OMAR","module":"Analyse D\u00e9mographique","observation":null,"id":"r0074"},{"filiere":"SS","semestre":"S2","date":"2026-04-21","seance":"08H30 - 12H30","etudiant":"IZIKKI HIND","module":"Analyse D\u00e9mographique","observation":null,"id":"r0075"},{"filiere":"SS","semestre":"S2","date":"2026-04-27","seance":"08H30 - 12H30","etudiant":"EDDAHANI ISMAIL","module":"Analyse D\u00e9mographique","observation":null,"id":"r0076"},{"filiere":"SS","semestre":"S2","date":"2026-04-27","seance":"08H30 - 12H30","etudiant":"EL HALI WALID","module":"Analyse D\u00e9mographique","observation":"12H30-14H30","id":"r0077"},{"filiere":"SS","semestre":"S2","date":"2026-05-18","seance":"14H00 - 18H00","etudiant":"GRICH MOHAMED AYOUB","module":"Analyse D\u00e9mographique","observation":null,"id":"r0078"},{"filiere":"SS","semestre":"S2","date":"2026-05-18","seance":"14H00 - 18H00","etudiant":"IHYA OMAR","module":"Analyse D\u00e9mographique","observation":null,"id":"r0079"},{"filiere":"SS","semestre":"S2","date":"2026-03-31","seance":"14H00 - 18H00","etudiant":"OUTGOUGA OUMNIA","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0080"},{"filiere":"SS","semestre":"S2","date":"2026-04-21","seance":"14H00 - 18H00","etudiant":"EDDAHANI ISMAIL","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0081"},{"filiere":"SS","semestre":"S2","date":"2026-05-12","seance":"14H00 - 18H00","etudiant":"SALOUT YASSINE","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0082"},{"filiere":"SS","semestre":"S2","date":"2026-05-12","seance":"14H00 - 18H00","etudiant":"IHYA OMAR","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0083"},{"filiere":"SS","semestre":"S2","date":"2026-05-20","seance":"10H30 - 12H30","etudiant":"GRICH MOHAMED AYOUB","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0084"},{"filiere":"SS","semestre":"S2","date":"2026-05-20","seance":"10H30 - 12H30","etudiant":"SALOUT YASSINE","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0085"},{"filiere":"SS","semestre":"S2","date":"2026-05-21","seance":"14H00 - 18H00","etudiant":"GRICH MOHAMED AYOUB","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0086"},{"filiere":"SS","semestre":"S2","date":"2026-05-21","seance":"14H00 - 18H00","etudiant":"SALOUT YASSINE","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0087"},{"filiere":"SS","semestre":"S2","date":"2026-05-21","seance":"14H00 - 18H00","etudiant":"ADNAN MOHAMED","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0088"},{"filiere":"SS","semestre":"S2","date":"2026-05-21","seance":"14H00 - 18H00","etudiant":"RAHHAL ABDERRAHMANE","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0089"},{"filiere":"SS","semestre":"S2","date":"2026-05-21","seance":"14H00 - 18H00","etudiant":"BOURADOUAN MAHDI","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0090"},{"filiere":"SS","semestre":"S2","date":"2026-06-02","seance":"14H00 - 18H00","etudiant":"ELATMANI ABDELHAK","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0091"},{"filiere":"SS","semestre":"S2","date":"2026-06-08","seance":"14H00 - 18H00","etudiant":"ELATMANI ABDELHAK","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0092"},{"filiere":"SS","semestre":"S2","date":"2026-06-09","seance":"14H00 - 18H00","etudiant":"ELATMANI ABDELHAK","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0093"},{"filiere":"SS","semestre":"S2","date":"2026-06-09","seance":"14H00 - 18H00","etudiant":"EL HALI WALID","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0094"},{"filiere":"SS","semestre":"S2","date":"2026-06-09","seance":"14H00 - 18H00","etudiant":"IZIKKI HIND","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0095"},{"filiere":"SS","semestre":"S2","date":"2026-06-09","seance":"14H00 - 18H00","etudiant":"ZEMRANI NAJOUA","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0096"},{"filiere":"SS","semestre":"S2","date":"2026-03-18","seance":"08H30 - 12H30","etudiant":"GRICH MOHAMED AYOUB","module":"Syst\u00e8me d'Information Sanitaire (SIS)","observation":"9H-12H","id":"r0097"},{"filiere":"SS","semestre":"S2","date":"2026-03-18","seance":"08H30 - 12H30","etudiant":"OUTGOUGA OUMNIA","module":"Syst\u00e8me d'Information Sanitaire (SIS)","observation":"9H-12H","id":"r0098"},{"filiere":"SS","semestre":"S2","date":"2026-03-18","seance":"08H30 - 12H30","etudiant":"ZAMRANI CHAIMAE","module":"Syst\u00e8me d'Information Sanitaire (SIS)","observation":"9H-12H","id":"r0099"},{"filiere":"SS","semestre":"S2","date":"2026-03-18","seance":"08H30 - 12H30","etudiant":"SALOUT YASSINE","module":"Syst\u00e8me d'Information Sanitaire (SIS)","observation":"9H-12H","id":"r0100"},{"filiere":"SS","semestre":"S2","date":"2026-03-18","seance":"08H30 - 12H30","etudiant":"IHYA OMAR","module":"Syst\u00e8me d'Information Sanitaire (SIS)","observation":"9H-12H","id":"r0101"},{"filiere":"SS","semestre":"S2","date":"2026-04-01","seance":"08H30 - 12H30","etudiant":"OUTGOUGA OUMNIA","module":"Syst\u00e8me d'Information Sanitaire (SIS)","observation":null,"id":"r0102"},{"filiere":"SS","semestre":"S2","date":"2026-04-17","seance":"14H00 - 18H00","etudiant":"SALOUT YASSINE","module":"Syst\u00e8me d'Information Sanitaire (SIS)","observation":null,"id":"r0103"},{"filiere":"SS","semestre":"S2","date":"2026-04-17","seance":"14H00 - 18H00","etudiant":"BENNANI ZINEB","module":"Syst\u00e8me d'Information Sanitaire (SIS)","observation":null,"id":"r0104"},{"filiere":"SS","semestre":"S2","date":"2026-04-17","seance":"14H00 - 18H00","etudiant":"IZIKKI HIND","module":"Syst\u00e8me d'Information Sanitaire (SIS)","observation":null,"id":"r0105"},{"filiere":"SS","semestre":"S2","date":"2026-04-17","seance":"14H00 - 18H00","etudiant":"BOURADOUAN MAHDI","module":"Syst\u00e8me d'Information Sanitaire (SIS)","observation":null,"id":"r0106"},{"filiere":"SS","semestre":"S2","date":"2026-05-14","seance":"14H00 - 18H00","etudiant":"BOUSSIF NADIA","module":"Syst\u00e8me d'Information Sanitaire (SIS)","observation":null,"id":"r0107"},{"filiere":"SS","semestre":"S2","date":"2026-05-14","seance":"14H00 - 18H00","etudiant":"OUALI FADOUA","module":"Syst\u00e8me d'Information Sanitaire (SIS)","observation":null,"id":"r0108"},{"filiere":"SS","semestre":"S2","date":"2026-05-15","seance":"14H00 - 18H00","etudiant":"ZEMRANI NAJOUA","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0109"},{"filiere":"SS","semestre":"S2","date":"2026-05-15","seance":"14H00 - 18H00","etudiant":"IZIKKI HIND","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0110"},{"filiere":"SS","semestre":"S2","date":"2026-05-20","seance":"14H00 - 18H00","etudiant":"GRICH MOHAMED AYOUB","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0111"},{"filiere":"SS","semestre":"S2","date":"2026-05-20","seance":"14H00 - 18H00","etudiant":"EDDAHANI ISMAIL","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0112"},{"filiere":"SS","semestre":"S2","date":"2026-05-20","seance":"14H00 - 18H00","etudiant":"ELATMANI ABDELHAK","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0113"},{"filiere":"SS","semestre":"S2","date":"2026-05-20","seance":"14H00 - 18H00","etudiant":"ZAMRANI CHAIMAE","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0114"},{"filiere":"SS","semestre":"S2","date":"2026-05-20","seance":"14H00 - 18H00","etudiant":"BOUSSIF NADIA","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0115"},{"filiere":"SS","semestre":"S2","date":"2026-06-03","seance":"08H30 - 12H30","etudiant":"RAHHAL ABDERRAHMANE","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0116"},{"filiere":"SS","semestre":"S2","date":"2026-06-05","seance":"14H00 - 18H00","etudiant":"ELATMANI ABDELHAK","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0117"},{"filiere":"SS","semestre":"S2","date":"2026-06-05","seance":"14H00 - 18H00","etudiant":"OUTGOUGA OUMNIA","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0118"},{"filiere":"SS","semestre":"S2","date":"2026-06-05","seance":"14H00 - 18H00","etudiant":"SALOUT YASSINE","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0119"},{"filiere":"SS","semestre":"S2","date":"2026-06-10","seance":"08H30 - 12H30","etudiant":"ELATMANI ABDELHAK","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0120"},{"filiere":"SS","semestre":"S2","date":"2026-06-10","seance":"08H30 - 12H30","etudiant":"KHROUF OUISSAL","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0121"},{"filiere":"SS","semestre":"S2","date":"2026-06-11","seance":"08H30 - 12H30","etudiant":"ELATMANI ABDELHAK","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0122"},{"filiere":"SS","semestre":"S2","date":"2026-06-12","seance":"14H00 - 18H00","etudiant":"ELATMANI ABDELHAK","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0123"},{"filiere":"SS","semestre":"S2","date":"2026-06-15","seance":"14H00 - 18H00","etudiant":"OUALI FADOUA","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0124"},{"filiere":"SS","semestre":"S2","date":"2026-06-19","seance":"08H30 - 12H30","etudiant":"BOUSSIF NADIA","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0125"},{"filiere":"LABO","semestre":"S1","date":"2025-12-01","seance":"15H00 - 18H00","etudiant":"KANOUNI JIHAD","module":"Langue et TIC","observation":null,"id":"r0126"},{"filiere":"LABO","semestre":"S1","date":"2025-12-01","seance":"15H00 - 18H00","etudiant":"SANOUSSI ALI","module":"Langue et TIC","observation":null,"id":"r0127"},{"filiere":"LABO","semestre":"S1","date":"2025-12-15","seance":"15H00 - 18H00","etudiant":"EL HAFIAN BASSMA","module":"Langue et TIC","observation":null,"id":"r0128"},{"filiere":"LABO","semestre":"S1","date":"2025-12-19","seance":"15H00 - 18H00","etudiant":"KANOUNI JIHAD","module":"Langue et TIC","observation":null,"id":"r0129"},{"filiere":"LABO","semestre":"S1","date":"2025-12-19","seance":"15H00 - 18H00","etudiant":"SANOUSSI ALI","module":"Langue et TIC","observation":null,"id":"r0130"},{"filiere":"LABO","semestre":"S1","date":"2025-11-17","seance":"08H30 - 10H30","etudiant":"EL GHAZI AYA","module":"Biologie cellulaire, H\u00e9matologie& Immunologie","observation":null,"id":"r0131"},{"filiere":"LABO","semestre":"S1","date":"2025-12-01","seance":"08H30 - 12H30","etudiant":"KANOUNI JIHAD","module":"Biologie cellulaire, H\u00e9matologie& Immunologie","observation":null,"id":"r0132"},{"filiere":"LABO","semestre":"S1","date":"2025-12-01","seance":"08H30 - 12H30","etudiant":"SANOUSSI ALI","module":"Biologie cellulaire, H\u00e9matologie& Immunologie","observation":null,"id":"r0133"},{"filiere":"LABO","semestre":"S1","date":"2025-12-08","seance":"08H30 - 12H30","etudiant":"AYANI RIMA","module":"Biologie cellulaire, H\u00e9matologie& Immunologie","observation":null,"id":"r0134"},{"filiere":"LABO","semestre":"S1","date":"2025-12-22","seance":"08H30 - 12H30","etudiant":"HILALBIK IKRAM","module":"Biologie cellulaire, H\u00e9matologie& Immunologie","observation":null,"id":"r0135"},{"filiere":"LABO","semestre":"S1","date":"2025-12-22","seance":"08H30 - 12H30","etudiant":"OUIRGHANE ILHAM","module":"Biologie cellulaire, H\u00e9matologie& Immunologie","observation":null,"id":"r0136"},{"filiere":"LABO","semestre":"S1","date":"2025-12-05","seance":"08H30 - 12H30","etudiant":"EL HOUFATI YASAMIN","module":"Anatomie & Physiologie","observation":null,"id":"r0137"},{"filiere":"LABO","semestre":"S1","date":"2025-12-05","seance":"08H30 - 12H30","etudiant":"NACIRI MOHAMED","module":"Anatomie & Physiologie","observation":null,"id":"r0138"},{"filiere":"LABO","semestre":"S1","date":"2025-12-05","seance":"08H30 - 12H30","etudiant":"BOUHAMMOU AYOUB","module":"Anatomie & Physiologie","observation":null,"id":"r0139"},{"filiere":"LABO","semestre":"S1","date":"2025-12-09","seance":"08H30 - 12H30","etudiant":"BENOUADDAH RABAB","module":"Anatomie & Physiologie","observation":null,"id":"r0140"},{"filiere":"LABO","semestre":"S1","date":"2025-12-09","seance":"08H30 - 12H30","etudiant":"HILALBIK IKRAM","module":"Anatomie & Physiologie","observation":null,"id":"r0141"},{"filiere":"LABO","semestre":"S1","date":"2025-12-16","seance":"08H30 - 12H30","etudiant":"EL GHAZI AYA","module":"Anatomie & Physiologie","observation":null,"id":"r0142"},{"filiere":"LABO","semestre":"S1","date":"2025-12-19","seance":"08H30 - 12H30","etudiant":"SANOUSSI ALI","module":"Anatomie & Physiologie","observation":null,"id":"r0143"},{"filiere":"LABO","semestre":"S1","date":"2025-12-19","seance":"08H30 - 12H30","etudiant":"MANTOURANE HAJAR","module":"Anatomie & Physiologie","observation":"1h45","id":"r0144"},{"filiere":"LABO","semestre":"S1","date":"2025-12-19","seance":"08H30 - 12H30","etudiant":"KANOUNI JIHAD","module":"Anatomie & Physiologie","observation":null,"id":"r0145"},{"filiere":"LABO","semestre":"S1","date":"2025-12-26","seance":"08H30 - 12H30","etudiant":"EL MOSLIH CYRINE","module":"Anatomie & Physiologie","observation":null,"id":"r0146"},{"filiere":"LABO","semestre":"S1","date":"2026-01-13","seance":"08H30 - 12H30","etudiant":"MARRI SOUKAINA","module":"Anatomie & Physiologie","observation":null,"id":"r0147"},{"filiere":"LABO","semestre":"S1","date":"2026-01-15","seance":"08H30 - 12H30","etudiant":"ABBOU  SARA","module":"Anatomie & Physiologie","observation":null,"id":"r0148"},{"filiere":"LABO","semestre":"S1","date":"2026-01-15","seance":"08H30 - 12H30","etudiant":"CHESTAFIQ RIDA","module":"Anatomie & Physiologie","observation":null,"id":"r0149"},{"filiere":"LABO","semestre":"S1","date":"2026-01-20","seance":"08H30 - 12H30","etudiant":"NACIRI MOHAMED","module":"Anatomie & Physiologie","observation":null,"id":"r0150"},{"filiere":"LABO","semestre":"S1","date":"2026-01-20","seance":"08H30 - 12H30","etudiant":"BOUHAMMOU AYOUB","module":"Anatomie & Physiologie","observation":null,"id":"r0151"},{"filiere":"LABO","semestre":"S1","date":"2026-01-20","seance":"08H30 - 12H30","etudiant":"SANOUSSI ALI","module":"Anatomie & Physiologie","observation":null,"id":"r0152"},{"filiere":"LABO","semestre":"S1","date":"2025-12-11","seance":"08H30 - 12H30","etudiant":"MOULAHID HAFSSA","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0153"},{"filiere":"LABO","semestre":"S1","date":"2026-01-02","seance":"08H30 - 12H30","etudiant":"EL MAHFOUDI MARYAM","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0154"},{"filiere":"LABO","semestre":"S1","date":"2026-01-02","seance":"08H30 - 12H30","etudiant":"ZINEDDINE FATIMA EZZAHRA","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0155"},{"filiere":"LABO","semestre":"S1","date":"2026-01-12","seance":"08H30 - 12H30","etudiant":"AYANI RIMA","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0156"},{"filiere":"LABO","semestre":"S1","date":"2026-01-12","seance":"08H30 - 12H30","etudiant":"EL MOSLIH CYRINE","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0157"},{"filiere":"LABO","semestre":"S1","date":"2026-01-12","seance":"08H30 - 12H30","etudiant":"EZ-ZAKI HIND","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0158"},{"filiere":"LABO","semestre":"S1","date":"2026-01-12","seance":"08H30 - 12H30","etudiant":"HILALBIK IKRAM","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0159"},{"filiere":"LABO","semestre":"S1","date":"2026-01-12","seance":"08H30 - 12H30","etudiant":"KANOUNI JIHAD","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0160"},{"filiere":"LABO","semestre":"S1","date":"2026-01-12","seance":"08H30 - 12H30","etudiant":"LAGHFIRI WAFA","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0161"},{"filiere":"LABO","semestre":"S1","date":"2026-01-12","seance":"08H30 - 12H30","etudiant":"MARRI SOUKAINA","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0162"},{"filiere":"LABO","semestre":"S1","date":"2026-01-12","seance":"08H30 - 12H30","etudiant":"NACIRI MOHAMED","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0163"},{"filiere":"LABO","semestre":"S1","date":"2026-01-12","seance":"08H30 - 12H30","etudiant":"HIJABALLAH KHADIJA","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0164"},{"filiere":"LABO","semestre":"S1","date":"2026-01-16","seance":"08H30 - 12H30","etudiant":"SANOUSSI ALI","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0165"},{"filiere":"LABO","semestre":"S1","date":"2026-01-16","seance":"08H30 - 12H30","etudiant":"BOUHAMMOU AYOUB","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0166"},{"filiere":"LABO","semestre":"S1","date":"2026-01-16","seance":"08H30 - 12H30","etudiant":"NACIRI MOHAMED","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0167"},{"filiere":"LABO","semestre":"S1","date":"2025-12-04","seance":"08H30 - 12H30","etudiant":"AYANI RIMA","module":"Chimie g\u00e9n\u00e9rale  & organique","observation":null,"id":"r0168"},{"filiere":"LABO","semestre":"S1","date":"2026-02-02","seance":"08H30 - 12H30","etudiant":"BOUHAMMOU AYOUB","module":"Chimie g\u00e9n\u00e9rale  & organique","observation":null,"id":"r0169"},{"filiere":"LABO","semestre":"S1","date":"2026-02-02","seance":"08H30 - 12H30","etudiant":"NACIRI MOHAMED","module":"Chimie g\u00e9n\u00e9rale  & organique","observation":null,"id":"r0170"},{"filiere":"LABO","semestre":"S1","date":"2026-02-02","seance":"08H30 - 12H30","etudiant":"MAHIBBA SARA","module":"Chimie g\u00e9n\u00e9rale  & organique","observation":null,"id":"r0171"},{"filiere":"LABO","semestre":"S1","date":"2025-12-25","seance":"14H00 - 18H00","etudiant":"EL MOSLIH CYRINE","module":"Biochimie structurale &Nutrition","observation":"14h-17h","id":"r0172"},{"filiere":"LABO","semestre":"S1","date":"2025-12-30","seance":"08H30 - 12H30","etudiant":"HILALBIK IKRAM","module":"Biochimie structurale &Nutrition","observation":"14h-17h","id":"r0173"},{"filiere":"LABO","semestre":"S1","date":"2026-01-13","seance":"14H00 - 18H00","etudiant":"KANOUNI JIHAD","module":"Biochimie structurale &Nutrition","observation":"13h30-17h30","id":"r0174"},{"filiere":"LABO","semestre":"S1","date":"2026-01-13","seance":"14H00 - 18H00","etudiant":"MARRI SOUKAINA","module":"Biochimie structurale &Nutrition","observation":"13h30-17h30","id":"r0175"},{"filiere":"LABO","semestre":"S1","date":"2026-01-13","seance":"14H00 - 18H00","etudiant":"SANOUSSI ALI","module":"Biochimie structurale &Nutrition","observation":"13h30-17h30","id":"r0176"},{"filiere":"LABO","semestre":"S1","date":"2026-01-15","seance":"14H00 - 18H00","etudiant":"LAGHFIRI WAFA","module":"Biochimie structurale &Nutrition","observation":"14h-17h30","id":"r0177"},{"filiere":"LABO","semestre":"S1","date":"2026-01-21","seance":"14H00 - 18H00","etudiant":"OUIRGHANE ILHAM","module":"Biochimie structurale &Nutrition","observation":"14h-17h30","id":"r0178"},{"filiere":"LABO","semestre":"S1","date":"2026-01-21","seance":"14H00 - 18H00","etudiant":"ELHARRAZ AMALE","module":"Biochimie structurale &Nutrition","observation":"14h-17h30","id":"r0179"},{"filiere":"LABO","semestre":"S1","date":"2026-02-03","seance":"14H00 - 18H00","etudiant":"DLIMI HIBA","module":"Biochimie structurale &Nutrition","observation":"13h30-16h30","id":"r0180"},{"filiere":"LABO","semestre":"S1","date":"2026-02-03","seance":"14H00 - 18H00","etudiant":"ENNASSIRI KHADIJA","module":"Biochimie structurale &Nutrition","observation":"13h30-16h30","id":"r0181"},{"filiere":"LABO","semestre":"S1","date":"2026-02-03","seance":"14H00 - 18H00","etudiant":"ZINEDDINE FATIMA EZZAHRA","module":"Biochimie structurale &Nutrition","observation":"13h30-16h30","id":"r0182"},{"filiere":"LABO","semestre":"S1","date":"2026-02-03","seance":"14H00 - 18H00","etudiant":"EZ-ZAKI HIND","module":"Biochimie structurale &Nutrition","observation":"13h30-16h30","id":"r0183"},{"filiere":"LABO","semestre":"S1","date":"2026-02-03","seance":"14H00 - 18H00","etudiant":"ILTAF SAFIA","module":"Biochimie structurale &Nutrition","observation":"13h30-16h30","id":"r0184"},{"filiere":"LABO","semestre":"S1","date":"2026-02-03","seance":"14H00 - 18H00","etudiant":"HIJABALLAH KHADIJA","module":"Biochimie structurale &Nutrition","observation":"13h30-16h30","id":"r0185"},{"filiere":"LABO","semestre":"S1","date":"2026-01-23","seance":"08H30 - 12H30","etudiant":"AYANI RIMA","module":"Maths  et Physique","observation":"9h-12h30","id":"r0186"},{"filiere":"LABO","semestre":"S1","date":"2026-01-23","seance":"08H30 - 12H30","etudiant":"ELHARRAZ AMALE","module":"Maths  et Physique","observation":"9h-12h30","id":"r0187"},{"filiere":"LABO","semestre":"S1","date":"2026-01-23","seance":"08H30 - 12H30","etudiant":"LAGHFIRI WAFA","module":"Maths  et Physique","observation":"9h-12h30","id":"r0188"},{"filiere":"LABO","semestre":"S1","date":"2026-01-23","seance":"08H30 - 12H30","etudiant":"BOUHAMMOU AYOUB","module":"Maths  et Physique","observation":"9h-12h30","id":"r0189"},{"filiere":"LABO","semestre":"S1","date":"2026-01-23","seance":"08H30 - 12H30","etudiant":"NACIRI MOHAMED","module":"Maths  et Physique","observation":"9h-12h30","id":"r0190"},{"filiere":"LABO","semestre":"S1","date":"2026-02-02","seance":"14H00 - 18H00","etudiant":"EZ-ZAKI HIND","module":"Maths  et Physique","observation":null,"id":"r0191"},{"filiere":"LABO","semestre":"S1","date":"2026-02-02","seance":"14H00 - 18H00","etudiant":"MAHIBBA SARA","module":"Maths  et Physique","observation":null,"id":"r0192"},{"filiere":"LABO","semestre":"S1","date":"2026-02-02","seance":"14H00 - 18H00","etudiant":"ZINEDDINE FATIMA EZZAHRA","module":"Maths  et Physique","observation":null,"id":"r0193"},{"filiere":"LABO","semestre":"S1","date":"2026-02-02","seance":"14H00 - 18H00","etudiant":"NACIRI MOHAMED","module":"Maths  et Physique","observation":null,"id":"r0194"},{"filiere":"LABO","semestre":"S1","date":"2026-02-11","seance":"08H30 - 12H30","etudiant":"EZ-ZAKI HIND","module":"Chimie g\u00e9n\u00e9rale  & organique","observation":null,"id":"r0198"},{"filiere":"LABO","semestre":"S1","date":"2026-02-11","seance":"08H30 - 12H30","etudiant":"HIJABALLAH KHADIJA","module":"Chimie g\u00e9n\u00e9rale  & organique","observation":null,"id":"r0199"},{"filiere":"LABO","semestre":"S1","date":"2026-02-11","seance":"08H30 - 12H30","etudiant":"HILALBIK IKRAM","module":"Chimie g\u00e9n\u00e9rale  & organique","observation":null,"id":"r0200"},{"filiere":"LABO","semestre":"S1","date":"2026-02-11","seance":"08H30 - 12H30","etudiant":"LAGHFIRI WAFA","module":"Chimie g\u00e9n\u00e9rale  & organique","observation":null,"id":"r0201"},{"filiere":"LABO","semestre":"S1","date":"2026-02-11","seance":"08H30 - 12H30","etudiant":"QBIB SAAD","module":"Chimie g\u00e9n\u00e9rale  & organique","observation":null,"id":"r0202"}]
@@ -121,892 +128,336 @@ tbody tr:last-child td{border-bottom:none}
 
 <script>
 /* ═══════ Chargement dynamique XLSX ═══════ */
-var xlsxLoaded = false, xlsxLoading = false;
-function loadXlsxLib() {
-    return new Promise(function(ok, no) {
-        if (xlsxLoaded && window.XLSX) { ok(); return; }
-        if (xlsxLoading) {
-            var c = setInterval(function() { if (xlsxLoaded) { clearInterval(c); ok(); } }, 100);
-            setTimeout(function() { clearInterval(c); no(new Error('Timeout')); }, 15000);
-            return;
-        }
-        xlsxLoading = true;
-        var s = document.createElement('script');
-        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-        s.onload = function() { xlsxLoaded = true; xlsxLoading = false; ok(); };
-        s.onerror = function() { xlsxLoading = false; no(new Error('Connexion requise pour l\'import XLSX.')); };
-        document.head.appendChild(s);
-    });
-}
+var xlsxLoaded=false,xlsxLoading=false;
+function loadXlsxLib(){return new Promise(function(ok,no){if(xlsxLoaded&&window.XLSX){ok();return}if(xlsxLoading){var c=setInterval(function(){if(xlsxLoaded){clearInterval(c);ok()}},100);setTimeout(function(){clearInterval(c);no(new Error('Timeout'))},15000);return}xlsxLoading=true;var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=function(){xlsxLoaded=true;xlsxLoading=false;ok()};s.onerror=function(){xlsxLoading=false;no(new Error('Connexion requise.'))};document.head.appendChild(s)})}
 
-/* ═══════ Constantes & État ═══════ */
-var SEED, LS_REC = 'abs_rec_v5', LS_MOD = 'abs_mod_v5', LS_STU = 'abs_stu_v5', PP = 15;
-var st = { rec: [], f: { fil: '', sem: '', mod: '', df: '', dt: '', q: '' }, p: 1, eid: null };
-var modReg = {}, stuReg = {};
-try { SEED = JSON.parse(document.getElementById('seed-data').textContent); } catch(e) { SEED = []; }
+/* ═══════ État & données ═══════ */
+var SEED,LS_REC='abs_rec_v4',LS_MOD='abs_mod_v4',LS_STU='abs_stu_v4',PP=15;
+var st={rec:[],f:{fil:'',sem:'',mod:'',df:'',dt:'',q:''},p:1,eid:null};
+var modReg={},stuReg={};
+try{SEED=JSON.parse(document.getElementById('seed-data').textContent)}catch(e){SEED=[]}
 
-/* ═══════ LocalStorage helper ═══════ */
-function ls(k, v) {
-    try {
-        if (v !== undefined) { localStorage.setItem(k, JSON.stringify(v)); return; }
-        var r = localStorage.getItem(k);
-        return r ? JSON.parse(r) : null;
-    } catch(e) { return v !== undefined ? undefined : null; }
-}
+/* ── IMPORTANT : v4 pour forcer le rechargement des registres ── */
+function ls(k,v){try{if(v!==undefined)localStorage.setItem(k,JSON.stringify(v));else{var r=localStorage.getItem(k);return r?JSON.parse(r):null}}catch(e){return v!==undefined?undefined:null}}
 
-/* ═══════ Clé registre : FILIERE_SEMESTRE ═══════ */
-function mkKey(fil, sem) { return (fil || '') + '_' + (sem || ''); }
-function parseKey(k) { var p = k.split('_'); return { fil: p[0] || '', sem: p[1] || '' }; }
-function allKeys() {
-    var s = {};
-    Object.keys(stuReg).forEach(function(k) { s[k] = 1; });
-    Object.keys(modReg).forEach(function(k) { s[k] = 1; });
-    return Object.keys(s).sort();
-}
+function regKeys(){var s={};Object.keys(stuReg).forEach(function(k){s[k]=1});Object.keys(modReg).forEach(function(k){s[k]=1});return Object.keys(s)}
+function parseKey(k){var p=k.split('_');return{fil:p[0]||'',sem:p[1]||''}}
 
-/* ═══════ Chargement des données ═══════ */
-function loadMods() {
-    modReg = ls(LS_MOD);
-    if (!modReg) {
-        /* Construire depuis les seed data */
-        modReg = {};
-        SEED.forEach(function(r) {
-            var k = mkKey(r.filiere, r.semestre);
-            if (!modReg[k]) modReg[k] = [];
-            if (r.module && modReg[k].indexOf(r.module) === -1) modReg[k].push(r.module);
-        });
-        /* Trier chaque liste */
-        Object.keys(modReg).forEach(function(k) { modReg[k].sort(); });
-        saveMods();
-    }
-}
-
-function loadStus() {
-    stuReg = ls(LS_STU);
-    if (!stuReg) {
-        stuReg = {};
-        SEED.forEach(function(r) {
-            var k = mkKey(r.filiere, r.semestre);
-            if (!stuReg[k]) stuReg[k] = [];
-            if (r.etudiant && stuReg[k].indexOf(r.etudiant) === -1) stuReg[k].push(r.etudiant);
-        });
-        Object.keys(stuReg).forEach(function(k) { stuReg[k].sort(); });
-        saveStus();
-    }
-}
-
-function loadRecs() {
-    st.rec = ls(LS_REC);
-    if (!st.rec) {
-        st.rec = SEED.slice();
-        saveRecs();
-    }
-}
-
-function saveMods() { ls(LS_MOD, modReg); }
-function saveStus() { ls(LS_STU, stuReg); }
-function saveRecs() { ls(LS_REC, st.rec); }
+function loadMods(){modReg=ls(LS_MOD);if(!modReg){modReg={};SEED.forEach(function(r){if(!r.module)return;var k=(r.filiere||'')+'_'+(r.semestre||'');if(!modReg[k])modReg[k]=[];if(modReg[k].indexOf(r.module)<0)modReg[k].push(r.module)});ls(LS_MOD,modReg)}}
+function loadStus(){stuReg=ls(LS_STU);if(!stuReg){stuReg={};SEED.forEach(function(r){if(!r.etudiant)return;var k=(r.filiere||'')+'_'+(r.semestre||'');if(!stuReg[k])stuReg[k]=[];if(stuReg[k].indexOf(r.etudiant)<0)stuReg[k].push(r.etudiant)});ls(LS_STU,stuReg)}}
+function loadRecs(){st.rec=ls(LS_REC);if(!st.rec){st.rec=JSON.parse(JSON.stringify(SEED));ls(LS_REC,st.rec)}}
+function save(){ls(LS_REC,st.rec);ls(LS_MOD,modReg);ls(LS_STU,stuReg)}
 
 /* ═══════ Utilitaires ═══════ */
-function esc(s) { if (!s) return ''; var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-function fmtDate(d) { if (!d) return ''; var p = d.split('-'); return p[2] + '/' + p[1] + '/' + p[0]; }
-function newId() { return 'r' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4); }
+function uq(a){var s={};return a.filter(function(x){if(!x)return false;if(s[x])return false;s[x]=true;return true})}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fDate(d){if(!d)return'\u2014';var p=d.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d}
 
-function toast(msg) {
-    var t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(t._tid);
-    t._tid = setTimeout(function() { t.classList.remove('show'); }, 2600);
+/* ── CORRIGÉ : agrège depuis st.rec + stuReg + modReg ── */
+function gFil(){
+  var a=[];
+  st.rec.forEach(function(r){if(r.filiere&&a.indexOf(r.filiere)<0)a.push(r.filiere)});
+  Object.keys(stuReg).forEach(function(k){var p=parseKey(k);if(p.fil&&a.indexOf(p.fil)<0)a.push(p.fil)});
+  Object.keys(modReg).forEach(function(k){var p=parseKey(k);if(p.fil&&a.indexOf(p.fil)<0)a.push(p.fil)});
+  return a.sort();
 }
-
-/* ═══════ Données dérivées ═══════ */
-function filieres() { var s = {}; allKeys().forEach(function(k) { var p = parseKey(k); if (p.fil) s[p.fil] = 1; }); return Object.keys(s).sort(); }
-function semestres(fil) { var s = {}; allKeys().forEach(function(k) { var p = parseKey(k); if (p.fil === fil && p.sem) s[p.sem] = 1; }); return Object.keys(s).sort(); }
-function modules(fil, sem) { var k = mkKey(fil, sem); return (modReg[k] || []).slice().sort(); }
-function etudiants(fil, sem) { var k = mkKey(fil, sem); return (stuReg[k] || []).slice().sort(); }
-
-/* ═══════ Filtrage & pagination ═══════ */
-function filtered() {
-    var f = st.f, r = st.rec;
-    if (f.fil) r = r.filter(function(x) { return x.filiere === f.fil; });
-    if (f.sem) r = r.filter(function(x) { return x.semestre === f.sem; });
-    if (f.mod) r = r.filter(function(x) { return x.module === f.mod; });
-    if (f.df) r = r.filter(function(x) { return x.date >= f.df; });
-    if (f.dt) r = r.filter(function(x) { return x.date <= f.dt; });
-    if (f.q) {
-        var q = f.q.toLowerCase();
-        r = r.filter(function(x) {
-            return (x.etudiant || '').toLowerCase().indexOf(q) !== -1 ||
-                   (x.module || '').toLowerCase().indexOf(q) !== -1 ||
-                   (x.observation || '').toLowerCase().indexOf(q) !== -1;
-        });
-    }
-    r.sort(function(a, b) { return (b.date + b.seance).localeCompare(a.date + a.seance); });
-    return r;
+function gSem(){
+  var a=[];
+  st.rec.forEach(function(r){if(r.semestre&&a.indexOf(r.semestre)<0)a.push(r.semestre)});
+  Object.keys(stuReg).forEach(function(k){var p=parseKey(k);if(p.sem&&a.indexOf(p.sem)<0)a.push(p.sem)});
+  Object.keys(modReg).forEach(function(k){var p=parseKey(k);if(p.sem&&a.indexOf(p.sem)<0)a.push(p.sem)});
+  return a.sort();
 }
-
-function paged() {
-    var all = filtered();
-    var total = all.length;
-    var maxP = Math.max(1, Math.ceil(total / PP));
-    if (st.p > maxP) st.p = maxP;
-    var start = (st.p - 1) * PP;
-    return { rows: all.slice(start, start + PP), total: total, maxP: maxP };
+/* ── CORRIGÉ : filtre modules depuis st.rec + modReg ── */
+function gModFilt(){
+  var f=st.f.fil,s=st.f.sem,a=[];
+  st.rec.filter(function(r){if(f&&r.filiere!==f)return false;if(s&&r.semestre!==s)return false;return r.module}).forEach(function(m){if(a.indexOf(m)<0)a.push(m)});
+  Object.keys(modReg).forEach(function(k){var p=parseKey(k);if(f&&p.fil!==f)return;if(s&&p.sem!==s)return false;(modReg[k]||[]).forEach(function(m){if(a.indexOf(m)<0)a.push(m)})});
+  return a.sort();
 }
-
-/* ═══════ Statistiques ═══════ */
-function topAbsents(n) {
-    var c = {};
-    st.rec.forEach(function(r) { c[r.etudiant] = (c[r.etudiant] || 0) + 1; });
-    return Object.keys(c).map(function(n) { return { name: n, count: c[n] }; })
-        .sort(function(a, b) { return b.count - a.count; }).slice(0, n || 5);
+/* ── CORRIGÉ : modules pour formulaire, toujours fonctionnel ── */
+function gModForm(fil,sem){
+  var a=[];
+  var k=(fil||'')+'_'+(sem||'');
+  (modReg[k]||[]).forEach(function(m){if(a.indexOf(m)<0)a.push(m)});
+  st.rec.filter(function(r){return(!fil||r.filiere===fil)&&(!sem||r.semestre===sem)&&r.module}).forEach(function(r){if(a.indexOf(r.module)<0)a.push(r.module)});
+  return a.sort();
 }
-
-/* ═══════ Modales ═══════ */
-function openModal(html, cls) {
-    var root = document.getElementById('modal-root');
-    root.innerHTML = '<div class="modal-backdrop" id="modal-bd">' +
-        '<div class="modal ' + (cls || '') + '">' + html + '</div></div>';
-    document.getElementById('modal-bd').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-    });
+/* ── CORRIGÉ : étudiants pour formulaire, toujours fonctionnel ── */
+function gStuForm(fil,sem){
+  var a=[];
+  var k=(fil||'')+'_'+(sem||'');
+  (stuReg[k]||[]).forEach(function(n){if(a.indexOf(n)<0)a.push(n)});
+  st.rec.filter(function(r){return(!fil||r.filiere===fil)&&(!sem||r.semestre===sem)&&r.etudiant}).forEach(function(r){if(a.indexOf(r.etudiant)<0)a.push(r.etudiant)});
+  return a.sort();
 }
+function gAllStu(){var m={};st.rec.forEach(function(r){if(!r.etudiant)return;if(!m[r.etudiant])m[r.etudiant]={n:r.etudiant,f:{},c:0};if(r.filiere)m[r.etudiant].f[r.filiere]=1;m[r.etudiant].c++});Object.keys(stuReg).forEach(function(k){var p=parseKey(k);(stuReg[k]||[]).forEach(function(n){if(!m[n])m[n]={n:n,f:{},c:0};if(p.fil)m[n].f[p.fil]=1})});return Object.keys(m).map(function(k){var e=m[k];e.filieres=Object.keys(e.f).sort();return e}).sort(function(a,b){return a.n.localeCompare(b.n)})}
+function gAllMod(){var m={};st.rec.forEach(function(r){if(!r.module)return;var k=r.module+'||'+(r.filiere||'')+'||'+(r.semestre||'');if(!m[k])m[k]={name:r.module,fil:r.filiere||'',sem:r.semestre||'',c:0};m[k].c++});Object.keys(modReg).forEach(function(k){var p=parseKey(k);(modReg[k]||[]).forEach(function(n){var fk=n+'||'+(p.fil||'')+'||'+(p.sem||'');if(!m[fk])m[fk]={name:n,fil:p.fil||'',sem:p.sem||'',c:0}})});return Object.keys(m).map(function(k){return m[k]}).sort(function(a,b){return a.name.localeCompare(b.name)})}
+function filt(){var f=st.f;return st.rec.filter(function(r){if(f.fil&&r.filiere!==f.fil)return false;if(f.sem&&r.semestre!==f.sem)return false;if(f.mod&&r.module!==f.mod)return false;if(f.df&&r.date&&r.date<f.df)return false;if(f.dt&&r.date&&r.date>f.dt)return false;if(f.q){var q=f.q.toLowerCase();if(!(r.etudiant||'').toLowerCase().indexOf(q)>=0&&!(r.module||'').toLowerCase().indexOf(q)>=0&&!(r.observation||'').toLowerCase().indexOf(q)>=0)return false}return true})}
+function topN(n){var m={};st.rec.forEach(function(r){if(!r.etudiant)return;if(st.f.fil&&r.filiere!==st.f.fil)return false;if(st.f.sem&&r.semestre!==st.f.sem)return false;m[r.etudiant]=(m[r.etudiant]||0)+1});return Object.keys(m).map(function(k){return[k,m[k]]}).sort(function(a,b){return b[1]-a[1]}).slice(0,n)}
+function nId(){var m=0;st.rec.forEach(function(r){var n=parseInt(r.id.replace('r',''),10);if(n>m)m=n});return'r'+String(m+1).padStart(4,'0')}
+function fCol(h,c){for(var i=0;i<c.length;i++)for(var j=0;j<h.length;j++)if(h[j].trim().toLowerCase()===c[i].toLowerCase())return h[j];for(var i=0;i<c.length;i++)for(var j=0;j<h.length;j++)if(h[j].trim().toLowerCase().indexOf(c[i].toLowerCase())>=0)return h[j];return null}
 
-function closeModal() {
-    document.getElementById('modal-root').innerHTML = '';
-}
-
-/* ═══════ Modale : Ajouter/Modifier une absence ═══════ */
-function openRecForm(editId) {
-    var rec = editId ? st.rec.find(function(r) { return r.id === editId; }) : null;
-    var fils = filieres(), sems = rec ? semestres(rec.filiere) : (st.f.fil ? semestres(st.f.fil) : []);
-    var mods = rec ? modules(rec.filiere, rec.semestre) : (st.f.fil && st.f.sem ? modules(st.f.fil, st.f.sem) : []);
-    var stus = rec ? etudiants(rec.filiere, rec.semestre) : (st.f.fil && st.f.sem ? etudiants(st.f.fil, st.f.sem) : []);
-
-    var html = '<h3>' + (rec ? 'Modifier l\'absence' : 'Enregistrer une absence') + '</h3>' +
-        '<div class="two-col">' +
-            '<div class="field"><label>Filiere</label><select id="rf-fil">' +
-                '<option value="">-- Choisir --</option>' +
-                fils.map(function(f) { return '<option value="' + esc(f) + '"' + (rec && rec.filiere === f ? ' selected' : '') + '>' + esc(f) + '</option>'; }).join('') +
-            '</select></div>' +
-            '<div class="field"><label>Semestre</label><select id="rf-sem">' +
-                '<option value="">-- Choisir --</option>' +
-                sems.map(function(s) { return '<option value="' + esc(s) + '"' + (rec && rec.semestre === s ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') +
-            '</select></div>' +
-        '</div>' +
-        '<div class="field"><label>Module</label><select id="rf-mod">' +
-            '<option value="">-- Choisir --</option>' +
-            mods.map(function(m) { return '<option value="' + esc(m) + '"' + (rec && rec.module === m ? ' selected' : '') + '>' + esc(m) + '</option>'; }).join('') +
-        '</select></div>' +
-        '<div class="field"><label>Etudiant</label><select id="rf-stu">' +
-            '<option value="">-- Choisir --</option>' +
-            stus.map(function(s) { return '<option value="' + esc(s) + '"' + (rec && rec.etudiant === s ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') +
-        '</select></div>' +
-        '<div class="two-col">' +
-            '<div class="field"><label>Date</label><input type="date" id="rf-date" value="' + (rec ? rec.date : '') + '"></div>' +
-            '<div class="field"><label>Seance</label><input type="text" id="rf-seance" value="' + (rec ? esc(rec.seance) : '') + '" placeholder="08H30 - 12H30"></div>' +
-        '</div>' +
-        '<div class="field"><label>Observation</label><textarea id="rf-obs" placeholder="Optionnel">' + (rec ? esc(rec.observation || '') : '') + '</textarea></div>' +
-        '<div class="modal-actions">' +
-            '<button class="btn ghost" onclick="closeModal()">Annuler</button>' +
-            '<button class="btn gold" onclick="saveRecForm(\'' + (editId || '') + '\')">Enregistrer</button>' +
-        '</div>';
-
-    openModal(html);
-
-    /* Cascade filière → semestre → module/étudiant */
-    setTimeout(function() {
-        var filSel = document.getElementById('rf-fil');
-        var semSel = document.getElementById('rf-sem');
-        var modSel = document.getElementById('rf-mod');
-        var stuSel = document.getElementById('rf-stu');
-
-        if (filSel) {
-            filSel.addEventListener('change', function() {
-                var ss = semestres(this.value);
-                semSel.innerHTML = '<option value="">-- Choisir --</option>' + ss.map(function(s) { return '<option value="' + esc(s) + '">' + esc(s) + '</option>'; }).join('');
-                modSel.innerHTML = '<option value="">-- Choisir --</option>';
-                stuSel.innerHTML = '<option value="">-- Choisir --</option>';
-            });
-        }
-        if (semSel) {
-            semSel.addEventListener('change', function() {
-                var fil = filSel.value, sem = this.value;
-                var ms = modules(fil, sem);
-                var es = etudiants(fil, sem);
-                modSel.innerHTML = '<option value="">-- Choisir --</option>' + ms.map(function(m) { return '<option value="' + esc(m) + '">' + esc(m) + '</option>'; }).join('');
-                stuSel.innerHTML = '<option value="">-- Choisir --</option>' + es.map(function(s) { return '<option value="' + esc(s) + '">' + esc(s) + '</option>'; }).join('');
-            });
-        }
-    }, 50);
-}
-
-function saveRecForm(editId) {
-    var fil = document.getElementById('rf-fil').value;
-    var sem = document.getElementById('rf-sem').value;
-    var mod = document.getElementById('rf-mod').value;
-    var stu = document.getElementById('rf-stu').value;
-    var dat = document.getElementById('rf-date').value;
-    var sea = document.getElementById('rf-seance').value.trim();
-    var obs = document.getElementById('rf-obs').value.trim();
-
-    if (!fil || !sem || !mod || !stu || !dat || !sea) {
-        toast('Veuillez remplir tous les champs obligatoires.');
-        return;
-    }
-
-    if (editId) {
-        var rec = st.rec.find(function(r) { return r.id === editId; });
-        if (rec) {
-            rec.filiere = fil; rec.semestre = sem; rec.module = mod;
-            rec.etudiant = stu; rec.date = dat; rec.seance = sea; rec.observation = obs || null;
-        }
-        toast('Absence modifiee.');
-    } else {
-        st.rec.push({ id: newId(), filiere: fil, semestre: sem, module: mod, etudiant: stu, date: dat, seance: sea, observation: obs || null });
-        toast('Absence enregistree.');
-    }
-
-    /* Mettre à jour les registres si nouveau */
-    var k = mkKey(fil, sem);
-    if (!modReg[k]) modReg[k] = [];
-    if (modReg[k].indexOf(mod) === -1) { modReg[k].push(mod); modReg[k].sort(); }
-    if (!stuReg[k]) stuReg[k] = [];
-    if (stuReg[k].indexOf(stu) === -1) { stuReg[k].push(stu); stuReg[k].sort(); }
-
-    saveRecs(); saveMods(); saveStus();
-    closeModal();
-    render();
-}
-
-/* ═══════ Supprimer un enregistrement ═══════ */
-function deleteRec(id) {
-    var rec = st.rec.find(function(r) { return r.id === id; });
-    if (!rec) return;
-    openModal(
-        '<h3>Confirmer la suppression</h3>' +
-        '<div class="confirm-box">Voulez-vous vraiment supprimer l\'absence de <strong>' + esc(rec.etudiant) + '</strong> du ' + fmtDate(rec.date) + ' en <strong>' + esc(rec.module) + '</strong> ?</div>' +
-        '<div class="modal-actions">' +
-            '<button class="btn ghost" onclick="closeModal()">Annuler</button>' +
-            '<button class="btn danger" onclick="confirmDeleteRec(\'' + id + '\')">Supprimer</button>' +
-        '</div>'
-    );
-}
-
-function confirmDeleteRec(id) {
-    st.rec = st.rec.filter(function(r) { return r.id !== id; });
-    saveRecs();
-    closeModal();
-    toast('Absence supprimee.');
-    render();
-}
-
-/* ═══════ GESTION DES MODULES ═══════ */
-function openModMgmt() {
-    renderModMgmt();
-}
-
-function renderModMgmt(searchTerm) {
-    var keys = allKeys();
-    var allMods = [];
-    keys.forEach(function(k) {
-        var p = parseKey(k);
-        (modReg[k] || []).forEach(function(m) {
-            var count = st.rec.filter(function(r) { return r.filiere === p.fil && r.semestre === p.sem && r.module === m; }).length;
-            allMods.push({ key: k, fil: p.fil, sem: p.sem, name: m, count: count });
-        });
-    });
-
-    if (searchTerm) {
-        var q = searchTerm.toLowerCase();
-        allMods = allMods.filter(function(m) {
-            return m.name.toLowerCase().indexOf(q) !== -1 || m.fil.toLowerCase().indexOf(q) !== -1 || m.sem.toLowerCase().indexOf(q) !== -1;
-        });
-    }
-
-    var html = '<h3>Gestion des modules</h3>' +
-        '<div class="mgmt-search"><input type="text" id="mod-search" placeholder="Rechercher un module..." value="' + esc(searchTerm || '') + '" style="width:100%"></div>' +
-        '<div style="margin-bottom:12px"><button class="btn gold sm" onclick="openAddModForm()">+ Ajouter un module</button></div>' +
-        '<div class="mgmt-list" style="max-height:400px">' +
-        (allMods.length === 0 ? '<div class="empty" style="padding:30px">Aucun module trouve.</div>' :
-        allMods.map(function(m) {
-            return '<div class="mgmt-item">' +
-                '<div class="mgmt-item-info">' +
-                    '<div class="mgmt-item-name">' + esc(m.name) + '</div>' +
-                    '<div class="mgmt-item-meta"><span class="tag">' + esc(m.fil) + '</span>' + esc(m.sem) + ' &middot; ' + m.count + ' absence' + (m.count > 1 ? 's' : '') + '</div>' +
-                '</div>' +
-                '<button class="btn danger sm" data-mod-key="' + esc(m.key) + '" data-mod-name="' + esc(m.name).replace(/"/g, '&quot;') + '" data-mod-count="' + m.count + '" onclick="deleteModPrompt(this)">Supprimer</button>' +
-            '</div>';
-        }).join('')) +
-        '</div>' +
-        '<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>';
-
-    openModal(html, 'wide');
-
-    /* Recherche en temps réel */
-    setTimeout(function() {
-        var searchInput = document.getElementById('mod-search');
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                renderModMgmt(this.value);
-                /* Restaurer le focus et le curseur */
-                setTimeout(function() {
-                    var si = document.getElementById('mod-search');
-                    if (si) { si.focus(); si.setSelectionRange(si.value.length, si.value.length); }
-                }, 10);
-            });
-        }
-    }, 50);
-}
-
-/* ═══════ SUPPRIMER UN MODULE — avec confirmation ═══════ */
-function deleteModPrompt(btn) {
-    var key = btn.getAttribute('data-mod-key');
-    var name = btn.getAttribute('data-mod-name');
-    var count = parseInt(btn.getAttribute('data-mod-count'), 10);
-    var p = parseKey(key);
-
-    var html = '<h3>Supprimer un module</h3>';
-
-    if (count > 0) {
-        html += '<div class="confirm-box">' +
-            'Le module <strong>' + esc(name) + '</strong> (' + esc(p.fil) + ' / ' + esc(p.sem) + ') est lie a <strong>' + count + ' absence' + (count > 1 ? 's' : '') + '</strong>.<br><br>' +
-            'Que souhaitez-vous faire ?' +
-        '</div>' +
-        '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">' +
-            '<button class="btn danger" onclick="confirmDeleteMod(\'' + esc(key).replace(/'/g, "\\'") + '\',\'' + esc(name).replace(/'/g, "\\'") + '\',true)">Supprimer le module ET les ' + count + ' absence' + (count > 1 ? 's' : '') + '</button>' +
-            '<button class="btn gold" onclick="confirmDeleteMod(\'' + esc(key).replace(/'/g, "\\'") + '\',\'' + esc(name).replace(/'/g, "\\'") + '\',false)">Supprimer le module uniquement (garder les absences)</button>' +
-        '</div>';
-    } else {
-        html += '<div class="confirm-box">' +
-            'Supprimer le module <strong>' + esc(name) + '</strong> (' + esc(p.fil) + ' / ' + esc(p.sem) + ') ?<br>Aucune absence n\'est liee a ce module.' +
-        '</div>' +
-        '<div style="margin-bottom:14px">' +
-            '<button class="btn danger" onclick="confirmDeleteMod(\'' + esc(key).replace(/'/g, "\\'") + '\',\'' + esc(name).replace(/'/g, "\\'") + '\',true)">Confirmer la suppression</button>' +
-        '</div>';
-    }
-
-    html += '<div class="modal-actions"><button class="btn ghost" onclick="openModMgmt()">Retour</button></div>';
-
-    openModal(html);
-}
-
-function confirmDeleteMod(key, name, deleteRecords) {
-    /* Retirer le module du registre */
-    if (modReg[key]) {
-        modReg[key] = modReg[key].filter(function(m) { return m !== name; });
-        if (modReg[key].length === 0) delete modReg[key];
-    }
-
-    /* Supprimer les enregistrements liés si demandé */
-    var p = parseKey(key);
-    if (deleteRecords) {
-        st.rec = st.rec.filter(function(r) {
-            return !(r.filiere === p.fil && r.semestre === p.sem && r.module === name);
-        });
-        saveRecs();
-    }
-
-    /* Réinitialiser le filtre module si le module supprimé était sélectionné */
-    if (st.f.mod === name) {
-        st.f.mod = '';
-    }
-
-    saveMods();
-    toast('Module "' + name + '" supprime.' + (deleteRecords ? ' Absences supprimees.' : ''));
-    openModMgmt(); /* Retourner à la liste des modules */
-    render();
-}
-
-/* ═══════ Ajouter un module ═══════ */
-function openAddModForm() {
-    var fils = filieres();
-    var html = '<h3>Ajouter un module</h3>' +
-        '<div class="two-col">' +
-            '<div class="field"><label>Filiere</label><select id="am-fil">' +
-                '<option value="">-- Choisir --</option>' +
-                fils.map(function(f) { return '<option value="' + esc(f) + '">' + esc(f) + '</option>'; }).join('') +
-            '</select></div>' +
-            '<div class="field"><label>Semestre</label><select id="am-sem"><option value="">-- Choisir --</option></select></div>' +
-        '</div>' +
-        '<div class="field"><label>Nom du module</label><input type="text" id="am-name" placeholder="Ex : Mathematiques I"></div>' +
-        '<div class="modal-actions">' +
-            '<button class="btn ghost" onclick="openModMgmt()">Annuler</button>' +
-            '<button class="btn gold" onclick="saveAddMod()">Ajouter</button>' +
-        '</div>';
-
-    openModal(html);
-
-    setTimeout(function() {
-        var filSel = document.getElementById('am-fil');
-        if (filSel) {
-            filSel.addEventListener('change', function() {
-                var ss = semestres(this.value);
-                document.getElementById('am-sem').innerHTML = '<option value="">-- Choisir --</option>' +
-                    ss.map(function(s) { return '<option value="' + esc(s) + '">' + esc(s) + '</option>'; }).join('');
-            });
-        }
-    }, 50);
-}
-
-function saveAddMod() {
-    var fil = document.getElementById('am-fil').value;
-    var sem = document.getElementById('am-sem').value;
-    var name = document.getElementById('am-name').value.trim();
-
-    if (!fil || !sem || !name) { toast('Veuillez remplir tous les champs.'); return; }
-
-    var k = mkKey(fil, sem);
-    if (!modReg[k]) modReg[k] = [];
-    if (modReg[k].indexOf(name) !== -1) { toast('Ce module existe deja.'); return; }
-
-    modReg[k].push(name);
-    modReg[k].sort();
-    saveMods();
-    toast('Module "' + name + '" ajoute.');
-    openModMgmt();
-    render();
-}
-
-/* ═══════ GESTION DES ÉTUDIANTS ═══════ */
-function openStuMgmt() {
-    renderStuMgmt();
-}
-
-function renderStuMgmt(searchTerm) {
-    var keys = allKeys();
-    var allStus = [];
-    keys.forEach(function(k) {
-        var p = parseKey(k);
-        (stuReg[k] || []).forEach(function(s) {
-            var count = st.rec.filter(function(r) { return r.filiere === p.fil && r.semestre === p.sem && r.etudiant === s; }).length;
-            allStus.push({ key: k, fil: p.fil, sem: p.sem, name: s, count: count });
-        });
-    });
-
-    if (searchTerm) {
-        var q = searchTerm.toLowerCase();
-        allStus = allStus.filter(function(s) {
-            return s.name.toLowerCase().indexOf(q) !== -1 || s.fil.toLowerCase().indexOf(q) !== -1;
-        });
-    }
-
-    var html = '<h3>Gestion des etudiants</h3>' +
-        '<div class="mgmt-search"><input type="text" id="stu-search" placeholder="Rechercher un etudiant..." value="' + esc(searchTerm || '') + '" style="width:100%"></div>' +
-        '<div style="margin-bottom:12px"><button class="btn gold sm" onclick="openAddStuForm()">+ Ajouter un etudiant</button></div>' +
-        '<div class="mgmt-list" style="max-height:400px">' +
-        (allStus.length === 0 ? '<div class="empty" style="padding:30px">Aucun etudiant trouve.</div>' :
-        allStus.map(function(s) {
-            return '<div class="mgmt-item">' +
-                '<div class="mgmt-item-info">' +
-                    '<div class="mgmt-item-name">' + esc(s.name) + '</div>' +
-                    '<div class="mgmt-item-meta"><span class="tag">' + esc(s.fil) + '</span>' + esc(s.sem) + ' &middot; ' + s.count + ' absence' + (s.count > 1 ? 's' : '') + '</div>' +
-                '</div>' +
-                '<button class="btn danger sm" onclick="deleteStuPrompt(\'' + esc(s.key).replace(/'/g, "\\'") + '\',\'' + esc(s.name).replace(/'/g, "\\'") + '\',' + s.count + ')">Supprimer</button>' +
-            '</div>';
-        }).join('')) +
-        '</div>' +
-        '<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>';
-
-    openModal(html, 'wide');
-
-    setTimeout(function() {
-        var si = document.getElementById('stu-search');
-        if (si) {
-            si.addEventListener('input', function() {
-                renderStuMgmt(this.value);
-                setTimeout(function() {
-                    var si2 = document.getElementById('stu-search');
-                    if (si2) { si2.focus(); si2.setSelectionRange(si2.value.length, si2.value.length); }
-                }, 10);
-            });
-        }
-    }, 50);
-}
-
-function deleteStuPrompt(key, name, count) {
-    var p = parseKey(key);
-    var html = '<h3>Supprimer un etudiant</h3>';
-    if (count > 0) {
-        html += '<div class="confirm-box">L\'etudiant <strong>' + esc(name) + '</strong> (' + esc(p.fil) + ' / ' + esc(p.sem) + ') a <strong>' + count + ' absence' + (count > 1 ? 's' : '') + '</strong>.<br><br>Que souhaitez-vous faire ?</div>' +
-            '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">' +
-                '<button class="btn danger" onclick="confirmDeleteStu(\'' + esc(key).replace(/'/g, "\\'") + '\',\'' + esc(name).replace(/'/g, "\\'") + '\',true)">Supprimer l\'etudiant ET ses absences</button>' +
-                '<button class="btn gold" onclick="confirmDeleteStu(\'' + esc(key).replace(/'/g, "\\'") + '\',\'' + esc(name).replace(/'/g, "\\'") + '\',false)">Supprimer l\'etudiant uniquement</button>' +
-            '</div>';
-    } else {
-        html += '<div class="confirm-box">Supprimer <strong>' + esc(name) + '</strong> (' + esc(p.fil) + ' / ' + esc(p.sem) + ') ?</div>' +
-            '<div style="margin-bottom:14px"><button class="btn danger" onclick="confirmDeleteStu(\'' + esc(key).replace(/'/g, "\\'") + '\',\'' + esc(name).replace(/'/g, "\\'") + '\',true)">Confirmer</button></div>';
-    }
-    html += '<div class="modal-actions"><button class="btn ghost" onclick="openStuMgmt()">Retour</button></div>';
-    openModal(html);
-}
-
-function confirmDeleteStu(key, name, deleteRecords) {
-    var p = parseKey(key);
-    if (stuReg[key]) {
-        stuReg[key] = stuReg[key].filter(function(s) { return s !== name; });
-        if (stuReg[key].length === 0) delete stuReg[key];
-    }
-    if (deleteRecords) {
-        st.rec = st.rec.filter(function(r) {
-            return !(r.filiere === p.fil && r.semestre === p.sem && r.etudiant === name);
-        });
-        saveRecs();
-    }
-    saveStus();
-    toast('Etudiant "' + name + '" supprime.' + (deleteRecords ? ' Absences supprimees.' : ''));
-    openStuMgmt();
-    render();
-}
-
-function openAddStuForm() {
-    var fils = filieres();
-    var html = '<h3>Ajouter un etudiant</h3>' +
-        '<div class="two-col">' +
-            '<div class="field"><label>Filiere</label><select id="as-fil"><option value="">-- Choisir --</option>' +
-                fils.map(function(f) { return '<option value="' + esc(f) + '">' + esc(f) + '</option>'; }).join('') +
-            '</select></div>' +
-            '<div class="field"><label>Semestre</label><select id="as-sem"><option value="">-- Choisir --</option></select></div>' +
-        '</div>' +
-        '<div class="field"><label>Nom complet</label><input type="text" id="as-name" placeholder="Ex : DUPONT MARIE"></div>' +
-        '<div class="modal-actions">' +
-            '<button class="btn ghost" onclick="openStuMgmt()">Annuler</button>' +
-            '<button class="btn gold" onclick="saveAddStu()">Ajouter</button>' +
-        '</div>';
-    openModal(html);
-    setTimeout(function() {
-        var filSel = document.getElementById('as-fil');
-        if (filSel) filSel.addEventListener('change', function() {
-            var ss = semestres(this.value);
-            document.getElementById('as-sem').innerHTML = '<option value="">-- Choisir --</option>' +
-                ss.map(function(s) { return '<option value="' + esc(s) + '">' + esc(s) + '</option>'; }).join('');
-        });
-    }, 50);
-}
-
-function saveAddStu() {
-    var fil = document.getElementById('as-fil').value;
-    var sem = document.getElementById('as-sem').value;
-    var name = document.getElementById('as-name').value.trim().toUpperCase();
-    if (!fil || !sem || !name) { toast('Veuillez remplir tous les champs.'); return; }
-    var k = mkKey(fil, sem);
-    if (!stuReg[k]) stuReg[k] = [];
-    if (stuReg[k].indexOf(name) !== -1) { toast('Cet etudiant existe deja.'); return; }
-    stuReg[k].push(name);
-    stuReg[k].sort();
-    saveStus();
-    toast('Etudiant "' + name + '" ajoute.');
-    openStuMgmt();
-    render();
-}
-
-/* ═══════ Import XLSX ═══════ */
-function openImport() {
-    var html = '<h3>Importer des absences (XLSX)</h3>' +
-        '<div class="format-info">' +
-            'Le fichier doit contenir les colonnes : <code>Filiere</code>, <code>Semestre</code>, <code>Date</code>, <code>Seance</code>, <code>Etudiant</code>, <code>Module</code>, <code>Observation</code> (optionnelle).<br>' +
-            'Les dates doivent etre au format <code>AAAA-MM-JJ</code>.' +
-        '</div>' +
-        '<div class="drop-zone" id="drop-zone">' +
-            '<div class="drop-zone-icon">&#128196;</div>' +
-            '<div class="drop-zone-text">Deposez votre fichier XLSX ici</div>' +
-            '<div class="drop-zone-hint">ou cliquez pour parcourir</div>' +
-        '</div>' +
-        '<input type="file" id="file-input" accept=".xlsx,.xls" style="display:none">' +
-        '<div id="import-preview"></div>' +
-        '<div class="modal-actions">' +
-            '<button class="btn ghost" onclick="closeModal()">Annuler</button>' +
-            '<button class="btn gold" id="import-btn" style="display:none" onclick="doImport()">Importer</button>' +
-        '</div>';
-
-    openModal(html, 'wide');
-
-    setTimeout(function() {
-        var dz = document.getElementById('drop-zone');
-        var fi = document.getElementById('file-input');
-        if (!dz || !fi) return;
-
-        dz.addEventListener('click', function() { fi.click(); });
-        dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.classList.add('dragover'); });
-        dz.addEventListener('dragleave', function() { dz.classList.remove('dragover'); });
-        dz.addEventListener('drop', function(e) { e.preventDefault(); dz.classList.remove('dragover'); if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
-        fi.addEventListener('change', function() { if (fi.files.length) handleFile(fi.files[0]); });
-    }, 50);
-}
-
-var _importData = [];
-
-function handleFile(file) {
-    loadXlsxLib().then(function() {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                var wb = XLSX.read(e.target.result, { type: 'array' });
-                var ws = wb.Sheets[wb.SheetNames[0]];
-                var rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
-                if (!rows.length) { toast('Le fichier est vide.'); return; }
-
-                /* Normaliser les clés */
-                _importData = rows.map(function(r) {
-                    function g(keys) {
-                        for (var i = 0; i < keys.length; i++) {
-                            var found = null;
-                            Object.keys(r).forEach(function(k) {
-                                if (k.toLowerCase().trim() === keys[i].toLowerCase()) found = r[k];
-                            });
-                            if (found !== null) return String(found).trim();
-                        }
-                        return '';
-                    }
-                    return {
-                        filiere: g(['filiere', 'filière']),
-                        semestre: g(['semestre', 'sem']),
-                        date: g(['date']),
-                        seance: g(['seance', 'séance', 'créneau', 'horaire']),
-                        etudiant: g(['etudiant', 'étudiant', 'nom', 'nom complet', 'etud']),
-                        module: g(['module', 'matiere', 'matière']),
-                        observation: g(['observation', 'obs', 'remarque']) || null
-                    };
-                }).filter(function(r) { return r.etudiant && r.date && r.module; });
-
-                if (!_importData.length) { toast('Aucune ligne valide trouvee.'); return; }
-
-                /* Compter doublons */
-                var existingIds = {};
-                st.rec.forEach(function(r) { existingIds[r.filiere + '|' + r.semestre + '|' + r.date + '|' + r.seance + '|' + r.etudiant + '|' + r.module] = true; });
-                var newCount = 0, dupCount = 0;
-                _importData.forEach(function(r) {
-                    var sig = r.filiere + '|' + r.semestre + '|' + r.date + '|' + r.seance + '|' + r.etudiant + '|' + r.module;
-                    r._dup = !!existingIds[sig];
-                    if (r._dup) dupCount++; else newCount++;
-                });
-
-                /* Prévisualisation */
-                var prev = document.getElementById('import-preview');
-                if (prev) {
-                    prev.innerHTML =
-                        '<div class="import-stats">' +
-                            '<span><span class="dot" style="background:var(--good)"></span> ' + newCount + ' nouvelles</span>' +
-                            '<span><span class="dot" style="background:var(--gold)"></span> ' + dupCount + ' doublons</span>' +
-                        '</div>' +
-                        '<table class="preview-table"><thead><tr><th>Statut</th><th>Date</th><th>Etudiant</th><th>Module</th></tr></thead><tbody>' +
-                        _importData.slice(0, 20).map(function(r) {
-                            return '<tr><td class="' + (r._dup ? 'dup' : 'new') + '">' + (r._dup ? 'Doublon' : 'Nouveau') + '</td><td>' + esc(r.date) + '</td><td>' + esc(r.etudiant) + '</td><td>' + esc(r.module) + '</td></tr>';
-                        }).join('') +
-                        (_importData.length > 20 ? '<tr><td colspan="4" style="text-align:center;color:var(--ink-soft);font-style:italic">... et ' + (_importData.length - 20) + ' autres lignes</td></tr>' : '') +
-                        '</tbody></table>';
-
-                    var btn = document.getElementById('import-btn');
-                    if (btn) btn.style.display = '';
-                }
-            } catch(err) { toast('Erreur de lecture du fichier : ' + err.message); }
-        };
-        reader.readAsArrayBuffer(file);
-    }).catch(function(err) { toast(err.message); });
-}
-
-function doImport() {
-    var added = 0;
-    _importData.forEach(function(r) {
-        if (r._dup) return;
-        var id = newId();
-        st.rec.push({ id: id, filiere: r.filiere, semestre: r.semestre, date: r.date, seance: r.seance, etudiant: r.etudiant, module: r.module, observation: r.observation });
-
-        /* Mettre à jour les registres */
-        var k = mkKey(r.filiere, r.semestre);
-        if (!modReg[k]) modReg[k] = [];
-        if (modReg[k].indexOf(r.module) === -1) { modReg[k].push(r.module); modReg[k].sort(); }
-        if (!stuReg[k]) stuReg[k] = [];
-        if (stuReg[k].indexOf(r.etudiant) === -1) { stuReg[k].push(r.etudiant); stuReg[k].sort(); }
-        added++;
-    });
-
-    saveRecs(); saveMods(); saveStus();
-    closeModal();
-    toast(added + ' absence' + (added > 1 ? 's' : '') + ' importee' + (added > 1 ? 's' : '') + '.');
-    render();
-}
-
-/* ═══════ Export XLSX ═══════ */
-function doExport() {
-    var data = filtered();
-    if (!data.length) { toast('Aucune donnee a exporter.'); return; }
-
-    loadXlsxLib().then(function() {
-        var rows = data.map(function(r) {
-            return { 'Filiere': r.filiere, 'Semestre': r.semestre, 'Date': r.date, 'Seance': r.seance, 'Etudiant': r.etudiant, 'Module': r.module, 'Observation': r.observation || '' };
-        });
-        var ws = XLSX.utils.json_to_sheet(rows);
-        var wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Absences');
-        XLSX.writeFile(wb, 'absences_' + new Date().toISOString().slice(0, 10) + '.xlsx');
-        toast('Fichier exporte.');
-    }).catch(function(err) { toast(err.message); });
-}
-
-/* ═══════ Réinitialisation ═══════ */
-function resetAll() {
-    openModal(
-        '<h3>Reinitialiser les donnees</h3>' +
-        '<div class="confirm-box">Cette action supprimera <strong>toutes les donnees</strong> (absences, modules, etudiants) et les remplacera par les donnees d\'exemple.<br><br>Cette operation est <strong>irreversible</strong>.</div>' +
-        '<div class="modal-actions">' +
-            '<button class="btn ghost" onclick="closeModal()">Annuler</button>' +
-            '<button class="btn danger" onclick="confirmReset()">Reinitialiser</button>' +
-        '</div>'
-    );
-}
-
-function confirmReset() {
-    localStorage.removeItem(LS_REC);
-    localStorage.removeItem(LS_MOD);
-    localStorage.removeItem(LS_STU);
-    modReg = {}; stuReg = {}; st.rec = []; st.f = { fil: '', sem: '', mod: '', df: '', dt: '', q: '' }; st.p = 1;
-    loadRecs(); loadMods(); loadStus();
-    closeModal();
-    toast('Donnees reinitialisees.');
-    render();
-}
+/* ═══════ Toast ═══════ */
+var tt=null;
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show')},2600)}
 
 /* ═══════ Rendu principal ═══════ */
-function render() {
-    var app = document.getElementById('app');
-    var fils = filieres();
-    var sems = st.f.fil ? semestres(st.f.fil) : [];
-    var mods = (st.f.fil && st.f.sem) ? modules(st.f.fil, st.f.sem) : [];
-    var pg = paged();
-    var top = topAbsents(5);
-    var totalRec = st.rec.length;
-
-    var h = '';
-    /* ── Header ── */
-    h += '<header>' +
-        '<div><h1>Registre des absences</h1><div class="sub">Institut — Gestion scolaire</div></div>' +
-        '<div class="header-stats">' +
-            '<div class="header-stat"><b>' + totalRec + '</b><span>Total</span></div>' +
-            '<div class="header-stat"><b>' + pg.total + '</b><span>Filtre</span></div>' +
-        '</div>' +
-    '</header>';
-
-    /* ── Filtres ── */
-    h += '<div class="filters">' +
-        '<label>Filiere<select onchange="setFilter(\'fil\',this.value)"><option value="">Toutes</option>' +
-            fils.map(function(f) { return '<option value="' + esc(f) + '"' + (st.f.fil === f ? ' selected' : '') + '>' + esc(f) + '</option>'; }).join('') +
-        '</select></label>' +
-        '<label>Semestre<select onchange="setFilter(\'sem\',this.value)"><option value="">Tous</option>' +
-            sems.map(function(s) { return '<option value="' + esc(s) + '"' + (st.f.sem === s ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') +
-        '</select></label>' +
-        '<label>Module<select onchange="setFilter(\'mod\',this.value)"><option value="">Tous</option>' +
-            mods.map(function(m) { return '<option value="' + esc(m) + '"' + (st.f.mod === m ? ' selected' : '') + '>' + esc(m) + '</option>'; }).join('') +
-        '</select></label>' +
-        '<label>Du<input type="date" value="' + esc(st.f.df) + '" onchange="setFilter(\'df\',this.value)"></label>' +
-        '<label>Au<input type="date" value="' + esc(st.f.dt) + '" onchange="setFilter(\'dt\',this.value)"></label>' +
-        '<label>Recherche<input type="text" value="' + esc(st.f.q) + '" placeholder="Nom, module..." oninput="setFilter(\'q\',this.value)"></label>' +
-        '<div class="spacer"></div>' +
-        '<button class="btn gold" onclick="openRecForm()">+ Absence</button>' +
-    '</div>';
-
-    /* ── Corps ── */
-    h += '<div class="body-grid"><main>';
-
-    /* Compteur résultats */
-    h += '<div class="results-count">' + pg.total + ' resultat' + (pg.total > 1 ? 's' : '') + '</div>';
-
-    /* Tableau */
-    if (pg.rows.length) {
-        h += '<div class="roster"><table><thead><tr>' +
-            '<th>Date</th><th>Seance</th><th>Etudiant</th><th>Fil.</th><th>Module</th><th>Obs.</th><th></th>' +
-            '</tr></thead><tbody>';
-
-        pg.rows.forEach(function(r) {
-            h += '<tr>' +
-                '<td class="cell-date">' + fmtDate(r.date) + '</td>' +
-                '<td class="cell-seance">' + esc(r.seance) + '</td>' +
-                '<td class="cell-name">' + esc(r.etudiant) + '</td>' +
-                '<td><span class="tag">' + esc(r.filiere) + '</span></td>' +
-                '<td class="cell-module">' + esc(r.module) + '</td>' +
-                '<td class="cell-obs">' + esc(r.observation) + '</td>' +
-                '<td class="row-actions">' +
-                    '<button class="icon-btn" title="Modifier" onclick="openRecForm(\'' + r.id + '\')">&#9998;</button>' +
-                    '<button class="icon-btn" title="Supprimer" onclick="deleteRec(\'' + r.id + '\')">&#10005;</button>' +
-                '</td>' +
-            '</tr>';
-        });
-
-        h += '</tbody></table></div>';
-
-        /* Pagination */
-        if (pg.maxP > 1) {
-            h += '<div class="pagination">' +
-                '<button' + (st.p <= 1 ? ' disabled' : '') + ' onclick="goPage(' + (st.p - 1) + ')">&#9664;</button>' +
-                '<span>Page ' + st.p + ' / ' + pg.maxP + '</span>' +
-                '<button' + (st.p >= pg.maxP ? ' disabled' : '') + ' onclick="goPage(' + (st.p + 1) + ')">&#9654;</button>' +
-            '</div>';
-        }
-    } else {
-        h += '<div class="empty">Aucune absence enregistree.</div>';
-    }
-
-    h += '</main>';
-
-    /* ── Sidebar ── */
-    h += '<aside>';
-    h += '<div><p class="stats-title">Etudiants les plus absents</p>';
-    if (top.length) {
-        top.forEach(function(t) {
-            h += '<div class="top-item"><span>' + esc(t.name) + '</span><b>' + t.count + '</b></div>';
-        });
-    } else {
-        h += '<div style="font-size:12px;color:var(--ink-soft);font-style:italic">Aucune donnee.</div>';
-    }
-    h += '</div>';
-
-    h += '<div><p class="stats-title">Actions</p>' +
-        '<div style="display:flex;flex-direction:column;gap:6px">' +
-            '<button class="btn ghost sm" onclick="openModMgmt()">Gestion des modules</button>' +
-            '<button class="btn ghost sm" onclick="openStuMgmt()">Gestion des etudiants</button>' +
-            '<button class="btn ghost sm" onclick="openImport()">Importer (XLSX)</button>' +
-            '<button class="btn ghost sm" onclick="doExport()">Exporter (XLSX)</button>' +
-            '<button class="btn ghost sm" style="color:var(--absent);border-color:var(--absent)" onclick="resetAll()">Reinitialiser</button>' +
-        '</div>' +
-    '</div>';
-
-    h += '</aside></div>';
-
-    app.innerHTML = h;
+function render(){
+var app=document.getElementById('app'),fils=gFil(),sems=gSem(),mods=gModFilt();
+var recs=filt(),tot=recs.length,tp=Math.max(1,Math.ceil(tot/PP));
+if(st.p>tp)st.p=tp;var pr=recs.slice((st.p-1)*PP,st.p*PP),top=topN(8),ta=st.rec.length;
+var h='';
+h+='<header><div><h1>Registre des absences</h1><div class="sub">Institut des Sciences de la Sant\u00e9 \u2014 Gestion acad\u00e9mique</div></div><div class="header-stats"><div class="header-stat"><b>'+ta+'</b><span>Absences</span></div><div class="header-stat"><b>'+gAllStu().length+'</b><span>\u00c9tudiants</span></div><div class="header-stat"><b>'+gAllMod().length+'</b><span>Modules</span></div></div></header>';
+h+='<div class="filters"><label>Fili\u00e8re<select id="fF"><option value="">Toutes</option>';fils.forEach(function(f){h+='<option value="'+esc(f)+'"'+(st.f.fil===f?' selected':'')+'>'+esc(f)+'</option>'});h+='</select></label>';
+h+='<label>Semestre<select id="fS"><option value="">Tous</option>';sems.forEach(function(s){h+='<option value="'+esc(s)+'"'+(st.f.sem===s?' selected':'')+'>'+esc(s)+'</option>'});h+='</select></label>';
+h+='<label>Module<select id="fM"><option value="">Tous</option>';mods.forEach(function(m){h+='<option value="'+esc(m)+'"'+(st.f.mod===m?' selected':'')+'>'+esc(m)+'</option>'});h+='</select></label>';
+h+='<label>Du<input type="date" id="fDf" value="'+(st.f.df||'')+'"></label><label>Au<input type="date" id="fDt" value="'+(st.f.dt||'')+'"></label>';
+h+='<label>Rechercher<input type="text" id="fQ" placeholder="Nom, module..." value="'+esc(st.f.q||'')+'"></label><div class="spacer"></div>';
+h+='<button class="btn" onclick="openAbsModal()">+ Absence</button><button class="btn ghost" onclick="openStuMgmt()">G\u00e9rer \u00e9tudiants</button><button class="btn ghost" onclick="openModMgmt()">G\u00e9rer modules</button></div>';
+h+='<div class="body-grid"><main><div class="results-count">'+tot+' r\u00e9sultat'+(tot!==1?'s':'')+'</div><div class="roster">';
+if(pr.length){h+='<table><thead><tr><th>Date</th><th>S\u00e9ance</th><th>\u00c9tudiant</th><th>Fili\u00e8re</th><th>Module</th><th>Obs.</th><th></th></tr></thead><tbody>';
+pr.forEach(function(r){h+='<tr><td class="cell-date">'+fDate(r.date)+'</td><td class="cell-seance">'+esc(r.seance||'\u2014')+'</td><td class="cell-name">'+esc(r.etudiant)+'</td><td><span class="tag">'+esc(r.filiere)+'</span> '+(r.semestre||'')+'</td><td class="cell-module">'+esc(r.module)+'</td><td class="cell-obs">'+esc(r.observation||'')+'</td><td class="row-actions"><button class="icon-btn" title="Modifier" onclick="openAbsModal(\''+r.id+'\')">&#9998;</button><button class="icon-btn" title="Supprimer" onclick="delRec(\''+r.id+'\')">&#10005;</button></td></tr>'});
+h+='</tbody></table>'}else{h+='<div class="empty">Aucune absence enregistr\u00e9e pour ces crit\u00e8res.</div>'}
+h+='</div>';
+if(tp>1){h+='<div class="pagination"><button'+(st.p<=1?' disabled':'')+' onclick="st.p='+(st.p-1)+';render()">Pr\u00e9c.</button><span>'+st.p+' / '+tp+'</span><button'+(st.p>=tp?' disabled':'')+' onclick="st.p='+(st.p+1)+';render()">Suiv.</button></div>'}
+h+='</main><aside><div><p class="stats-title">Absences les plus fr\u00e9quentes</p>';
+if(top.length)top.forEach(function(t){h+='<div class="top-item"><span>'+esc(t[0])+'</span><b>'+t[1]+'</b></div>'});else h+='<div class="top-item"><span style="color:var(--ink-soft)">Aucune donn\u00e9e</span></div>';
+h+='</div><div><p class="stats-title">R\u00e9partition par fili\u00e8re</p>';
+fils.forEach(function(f){var c=st.rec.filter(function(r){return r.filiere===f}).length;h+='<div class="top-item"><span>'+esc(f)+'</span><b>'+c+' ('+(ta?Math.round(c/ta*100):0)+'%)</b></div>'});
+h+='</div></aside></div>';app.innerHTML=h;
+document.getElementById('fF').onchange=function(e){st.f.fil=e.target.value;st.p=1;render()};
+document.getElementById('fS').onchange=function(e){st.f.sem=e.target.value;st.p=1;render()};
+document.getElementById('fM').onchange=function(e){st.f.mod=e.target.value;st.p=1;render()};
+document.getElementById('fDf').onchange=function(e){st.f.df=e.target.value;st.p=1;render()};
+document.getElementById('fDt').onchange=function(e){st.f.dt=e.target.value;st.p=1;render()};
+var sq;document.getElementById('fQ').oninput=function(e){clearTimeout(sq);sq=setTimeout(function(){st.f.q=e.target.value;st.p=1;render()},250)}
 }
 
-/* ═══════ Interactions filtres/pagination ═══════ */
-function setFilter(key, val) {
-    st.f[key] = val;
-    /* Réinitialiser les filtres en cascade */
-    if (key === 'fil') { st.f.sem = ''; st.f.mod = ''; }
-    if (key === 'sem') { st.f.mod = ''; }
-    st.p = 1;
-    render();
+/* ═══════ Supprimer enregistrement ═══════ */
+function delRec(id){var r=st.rec.find(function(x){return x.id===id});if(!r)return;confirmDlg('Supprimer cette absence ?','<strong>'+esc(r.etudiant)+'</strong> \u2014 '+esc(r.module)+'<br>'+fDate(r.date)+' '+(r.seance||''),function(){st.rec=st.rec.filter(function(x){return x.id!==id});save();render();toast('Absence supprim\u00e9e.')})}
+
+/* ═══════ Modale confirmation ═══════ */
+function confirmDlg(t,b,fn){var d=document.createElement('div');d.className='modal-backdrop';d.innerHTML='<div class="modal" style="width:380px"><h3>'+t+'</h3><div class="confirm-box">'+b+'</div><div class="modal-actions"><button class="btn ghost" id="cC">Annuler</button><button class="btn danger" id="cO">Confirmer</button></div></div>';document.body.appendChild(d);d.querySelector('#cC').onclick=function(){d.remove()};d.querySelector('#cO').onclick=function(){d.remove();fn()};d.onclick=function(e){if(e.target===d)d.remove()}}
+
+/* ═══════ Modale absence avec cases \u00e0 cocher ═══════ */
+function openAbsModal(eid){
+var rec=eid?st.rec.find(function(r){return r.id===eid}):null,isE=!!rec;
+var fils=gFil(),sems=gSem(),dF=rec?rec.filiere:st.f.fil||'',dS=rec?rec.semestre:st.f.sem||'';
+var bd=document.createElement('div');bd.className='modal-backdrop';
+var h='<div class="modal wide"><h3>'+(isE?"Modifier l'absence":"Nouvelle absence")+'</h3>';
+h+='<div class="two-col"><div class="field"><label>Fili\u00e8re</label><select id="aFil"><option value="">--</option>';
+fils.forEach(function(f){h+='<option value="'+esc(f)+'"'+(f===dF?' selected':'')+'>'+esc(f)+'</option>'});
+h+='<option value="__n">+ Nouvelle fili\u00e8re</option></select></div>';
+h+='<div class="field"><label>Semestre</label><select id="aSem"><option value="">--</option>';
+sems.forEach(function(s){h+='<option value="'+esc(s)+'"'+(s===dS?' selected':'')+'>'+esc(s)+'</option>'});
+h+='<option value="__n">+ Nouveau</option></select></div></div>';
+h+='<div id="nfF" class="field" style="display:none"><label>Nom fili\u00e8re</label><input type="text" id="aNF" placeholder="Ex: SM"></div>';
+h+='<div id="nfS" class="field" style="display:none"><label>Nom semestre</label><input type="text" id="aNS" placeholder="Ex: S3"></div>';
+h+='<div class="field"><label>Module</label><select id="aMod"><option value="">\u2014 Choisir \u2014</option></select></div>';
+h+='<div class="field"><label>\u00c9tudiants absents</label><div class="chk-picker" id="chkP">';
+h+='<div class="chk-header"><input type="text" id="chkQ" placeholder="Filtrer les \u00e9tudiants..."><div class="chk-actions"><button id="chkAll" type="button">Tout cocher</button><button id="chkNone" type="button">Tout d\u00e9cocher</button><span class="chk-count" id="chkCnt">0 s\u00e9lectionn\u00e9(s)</span></div></div>';
+h+='<div class="chk-list" id="chkL"><div class="chk-empty">S\u00e9lectionnez une fili\u00e8re et un semestre</div></div></div></div>';
+h+='<div class="two-col"><div class="field"><label>Date</label><input type="date" id="aDt" value="'+(rec?rec.date||'':'')+'"></div>';
+h+='<div class="field"><label>S\u00e9ance</label><select id="aSe"><option value="">\u2014 Choisir \u2014</option>';
+['08H30 - 10H30','08H30 - 12H30','10H30 - 12H30','14H00 - 16H00','14H00 - 18H00','15H00 - 18H00','16H00 - 18H00'].forEach(function(s){h+='<option value="'+s+'"'+(rec&&rec.seance===s?' selected':'')+'>'+s+'</option>'});
+h+='<option value="__c">Autre...</option></select></div></div>';
+h+='<div id="csF" class="field" style="display:none"><label>Horaire personnalis\u00e9</label><input type="text" id="aCS" placeholder="Ex: 09H00 - 11H00"></div>';
+h+='<div class="field"><label>Observation</label><textarea id="aOb" rows="2">'+(rec?esc(rec.observation||''):'')+'</textarea></div>';
+h+='<div class="modal-actions"><button class="btn ghost" id="aCa">Annuler</button><button class="btn" id="aSv">'+(isE?'Enregistrer':'Ajouter')+'</button></div></div>';
+bd.innerHTML=h;document.body.appendChild(bd);
+
+var checked={};
+if(rec)checked[rec.etudiant]=true;
+
+function gCF(){return bd.querySelector('#aFil').value==='__n'?bd.querySelector('#aNF').value.trim():bd.querySelector('#aFil').value}
+function gCS(){return bd.querySelector('#aSem').value==='__n'?bd.querySelector('#aNS').value.trim():bd.querySelector('#aSem').value}
+
+function refreshMods(){
+  var f=gCF(),s=gCS(),ms=gModForm(f,s),cv=rec?rec.module:'';
+  var sel=bd.querySelector('#aMod');
+  sel.innerHTML='<option value="">\u2014 Choisir \u2014</option>';
+  ms.forEach(function(m){sel.innerHTML+='<option value="'+esc(m)+'"'+(m===cv?' selected':'')+'>'+esc(m)+'</option>'});
 }
 
-function goPage(p) {
-    st.p = p;
-    render();
-    window.scrollTo(0, 0);
+function refreshChk(q){
+  var f=gCF(),s=gCS(),all=gStuForm(f,s),ql=(q||'').toLowerCase();
+  var filtered=ql?all.filter(function(n){return n.toLowerCase().indexOf(ql)>=0}):all;
+  var box=bd.querySelector('#chkL');
+  if(!filtered.length){box.innerHTML='<div class="chk-empty">Aucun \u00e9tudiant trouv\u00e9</div>';updCnt();return}
+  box.innerHTML='';
+  filtered.forEach(function(n){
+    var lbl=document.createElement('label');lbl.className='chk-item'+(checked[n]?' checked':'');
+    var cb=document.createElement('input');cb.type='checkbox';cb.checked=!!checked[n];
+    cb.onchange=function(){if(cb.checked)checked[n]=true;else delete checked[n];lbl.className='chk-item'+(cb.checked?' checked':'');updCnt()};
+    lbl.appendChild(cb);lbl.appendChild(document.createTextNode(' '));
+    lbl.appendChild(document.createTextNode(n));
+    box.appendChild(lbl);
+  });
+  updCnt();
+}
+
+function updCnt(){var c=Object.keys(checked).length;bd.querySelector('#chkCnt').textContent=c+' s\u00e9lectionn\u00e9'+(c>1?'s':'')}
+
+bd.querySelector('#aFil').onchange=function(e){bd.querySelector('#nfF').style.display=e.target.value==='__n'?'':'none';refreshMods();checked={};refreshChk(bd.querySelector('#chkQ').value)};
+bd.querySelector('#aSem').onchange=function(e){bd.querySelector('#nfS').style.display=e.target.value==='__n'?'':'none';refreshMods();checked={};refreshChk(bd.querySelector('#chkQ').value)};
+bd.querySelector('#aNF').oninput=function(){refreshMods();checked={};refreshChk(bd.querySelector('#chkQ').value)};
+bd.querySelector('#aNS').oninput=function(){refreshMods();checked={};refreshChk(bd.querySelector('#chkQ').value)};
+bd.querySelector('#aSe').onchange=function(e){bd.querySelector('#csF').style.display=e.target.value==='__c'?'':'none'};
+
+var chkT;bd.querySelector('#chkQ').oninput=function(e){clearTimeout(chkT);chkT=setTimeout(function(){refreshChk(e.target.value)},150)};
+bd.querySelector('#chkAll').onclick=function(){var items=bd.querySelector('#chkL').querySelectorAll('input[type="checkbox"]');items.forEach(function(cb){cb.checked=true;var t=cb.parentNode.textContent.trim();checked[t]=true;cb.parentNode.className='chk-item checked'});updCnt()};
+bd.querySelector('#chkNone').onclick=function(){var items=bd.querySelector('#chkL').querySelectorAll('input[type="checkbox"]');items.forEach(function(cb){cb.checked=false;var t=cb.parentNode.textContent.trim();delete checked[t];cb.parentNode.className='chk-item'});updCnt()};
+
+refreshMods();refreshChk('');
+
+bd.querySelector('#aCa').onclick=function(){bd.remove()};
+bd.querySelector('#aSv').onclick=function(){
+  var f=gCF(),s=gCS(),mod=bd.querySelector('#aMod').value,dt=bd.querySelector('#aDt').value;
+  var sea=bd.querySelector('#aSe').value;if(sea==='__c')sea=bd.querySelector('#aCS').value.trim();
+  var ob=bd.querySelector('#aOb').value.trim()||null;
+  if(!f){toast('Choisissez une fili\u00e8re.');return}
+  if(!s){toast('Choisissez un semestre.');return}
+  if(!mod){toast('Choisissez un module.');return}
+  var sel=Object.keys(checked);if(!sel.length){toast('S\u00e9lectionnez au moins un \u00e9tudiant.');return}
+  if(isE)st.rec=st.rec.filter(function(r){return r.id!==eid});
+  sel.forEach(function(n){st.rec.push({id:nId(),filiere:f,semestre:s,module:mod,etudiant:n,date:dt||null,seance:sea||null,observation:ob})});
+  save();bd.remove();render();toast(isE?'Absence modifi\u00e9e.':sel.length+' absence(s) ajout\u00e9e(s).')};
+bd.onclick=function(e){if(e.target===bd)bd.remove()}
+}
+
+/* ═══════ Gestion \u00e9tudiants ═══════ */
+function openStuMgmt(q){
+var all=gAllStu(),ql=(q||'').toLowerCase();
+var filtered=ql?all.filter(function(s){return s.n.toLowerCase().indexOf(ql)>=0}):all;
+var bd=document.createElement('div');bd.className='modal-backdrop';
+var h='<div class="modal wide"><h3>Gestion des \u00e9tudiants <span style="font-size:13px;color:var(--ink-soft);font-family:\'IBM Plex Mono\',monospace">('+all.length+' au total)</span></h3>';
+h+='<div class="mgmt-search"><input type="text" id="stuQ" placeholder="Rechercher..." value="'+esc(q||'')+'" style="width:100%;font-family:\'Libre Franklin\',sans-serif;font-size:13.5px;border:1px solid var(--paper-line);border-radius:var(--radius);padding:8px 10px;background:#fff;margin-bottom:10px">';
+h+='<button class="btn gold" id="stuImp" style="width:100%">Importer des \u00e9tudiants depuis Excel</button></div>';
+h+='<div class="mgmt-list" id="stuL" style="max-height:300px">';
+if(filtered.length){filtered.forEach(function(s){h+='<div class="mgmt-item"><div class="mgmt-item-info"><div class="mgmt-item-name">'+esc(s.n)+'</div><div class="mgmt-item-meta">'+esc(s.filieres.join(', '))+' \u2014 '+s.c+' absence'+(s.c>1?'s':'')+'</div></div><button class="btn danger" data-n="'+esc(s.n)+'" data-c="'+s.c+'">Supprimer</button></div>'})}
+else{h+='<div class="empty" style="padding:30px">Aucun \u00e9tudiant trouv\u00e9.</div>'}
+h+='</div><div class="modal-actions"><button class="btn ghost" id="stuX">Fermer</button></div></div>';
+bd.innerHTML=h;document.body.appendChild(bd);
+var st2;bd.querySelector('#stuQ').oninput=function(e){clearTimeout(st2);st2=setTimeout(function(){var v=e.target.value;bd.remove();openStuMgmt(v)},300)};
+bd.querySelector('#stuImp').onclick=function(){var sv=bd.querySelector('#stuQ').value;bd.remove();openStuExcelImport(sv)};
+bd.querySelectorAll('.btn.danger').forEach(function(btn){btn.onclick=function(){
+var name=btn.getAttribute('data-n'),cnt=parseInt(btn.getAttribute('data-c'),10);
+confirmDlg('Supprimer un \u00e9tudiant','Voulez-vous supprimer <strong>'+esc(name)+'</strong> et ses <strong>'+cnt+'</strong> enregistrement(s) ? Action irr\u00e9versible.',function(){st.rec=st.rec.filter(function(r){return r.etudiant!==name});Object.keys(stuReg).forEach(function(k){stuReg[k]=stuReg[k].filter(function(n){return n!==name});if(!stuReg[k].length)delete stuReg[k]});save();var sv=bd.querySelector('#stuQ').value;bd.remove();openStuMgmt(sv);render();toast('\u00c9tudiant "'+name+'" supprim\u00e9.')})}});
+bd.querySelector('#stuX').onclick=function(){bd.remove()};bd.onclick=function(e){if(e.target===bd)bd.remove()}
+}
+
+/* ═══════ Import \u00e9tudiants Excel ═══════ */
+function openStuExcelImport(retQ){
+var pending=null;
+var bd=document.createElement('div');bd.className='modal-backdrop';
+var h='<div class="modal wide"><h3>Importer des \u00e9tudiants depuis Excel</h3>';
+h+='<div class="format-info"><strong>Format attendu :</strong><br><code>Nom</code> ou <code>\u00c9tudiant</code> (obligatoire)<br><code>Fili\u00e8re</code> (optionnel)<br><code>Semestre</code> (optionnel)<br>Premi\u00e8re ligne = en-t\u00eates. Accepte .xlsx, .xls, .csv</div>';
+h+='<div class="two-col" style="margin-bottom:14px"><div class="field"><label>Fili\u00e8re par d\u00e9faut</label><select id="xF"><option value="">\u2014 Aucune \u2014</option>';gFil().forEach(function(f){h+='<option value="'+esc(f)+'">'+esc(f)+'</option>'});h+='</select></div>';
+h+='<div class="field"><label>Semestre par d\u00e9faut</label><select id="xS"><option value="">\u2014 Aucun \u2014</option>';gSem().forEach(function(s){h+='<option value="'+esc(s)+'">'+esc(s)+'</option>'});h+='</select></div></div>';
+h+='<div class="drop-zone" id="dz"><div class="drop-zone-icon">&#128196;</div><div class="drop-zone-text">Glissez votre fichier ici ou cliquez pour parcourir</div><div class="drop-zone-hint">.xlsx, .xls, .csv</div><input type="file" id="xFI" accept=".xlsx,.xls,.csv" style="display:none"></div>';
+h+='<div id="xPrev" style="display:none"><div class="import-stats" id="xSt"></div><div style="max-height:220px;overflow:auto;border:1px solid var(--paper-line);border-radius:var(--radius)"><table class="preview-table" id="xPT"></table></div><div class="modal-actions" style="justify-content:space-between"><button class="btn ghost" id="xBk">Retour</button><button class="btn" id="xOk">Confirmer l\'import</button></div></div>';
+h+='<div id="xNoP"><div class="modal-actions"><button class="btn ghost" id="xCa">Annuler</button></div></div></div>';
+bd.innerHTML=h;document.body.appendChild(bd);
+var dz=bd.querySelector('#dz'),fi=bd.querySelector('#xFI');
+dz.onclick=function(){fi.click()};dz.ondragover=function(e){e.preventDefault();dz.classList.add('dragover')};dz.ondragleave=function(){dz.classList.remove('dragover')};
+dz.ondrop=function(e){e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer.files.length)proc(e.dataTransfer.files[0])};fi.onchange=function(){if(fi.files.length)proc(fi.files[0])};
+function proc(file){loadXlsxLib().then(function(){doProc(file)}).catch(function(e){toast(e.message||'Erreur')})}
+function doProc(file){
+var reader=new FileReader();reader.onload=function(e){
+try{var data=new Uint8Array(e.target.result),wb=XLSX.read(data,{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],json=XLSX.utils.sheet_to_json(ws,{defval:''});
+if(!json.length){toast('Fichier vide.');return}
+var headers=Object.keys(json[0]);
+var nc=fCol(headers,['nom','nom complet','nom et pr\u00e9nom','etudiant','\u00e9tudiant','name','full name','student']);
+var fc=fCol(headers,['filiere','fili\u00e8re','section']);
+var sc=fCol(headers,['semestre','sem','niveau']);
+if(!nc){toast('Colonne "Nom" ou "\u00c9tudiant" introuvable.');return}
+var dF=bd.querySelector('#xF').value,dS=bd.querySelector('#xS').value,toI=[];
+json.forEach(function(row){var name=String(row[nc]||'').trim();if(!name)return;var fil=String(row[fc]||dF||'').trim();var sem=String(row[sc]||dS||'').trim();if(!fil||!sem)return;var key=fil+'_'+sem;if(!stuReg[key])stuReg[key]=[];var exists=stuReg[key].indexOf(name)>=0;toI.push({name:name,fil:fil,sem:sem,key:key,exists:exists})});
+if(!toI.length){toast('Aucun \u00e9tudiant valide (v\u00e9rifiez fili\u00e8re/semestre).');return}
+pending=toI;var nw=toI.filter(function(r){return!r.exists}).length,dp=toI.filter(function(r){return r.exists}).length;
+bd.querySelector('#xPrev').style.display='';bd.querySelector('#xNoP').style.display='none';dz.style.display='none';
+bd.querySelector('#xSt').innerHTML='<span><span class="dot" style="background:var(--good)"></span> '+nw+' nouveau'+(nw>1?'x':'')+'</span><span><span class="dot" style="background:var(--gold)"></span> '+dp+' doublon'+(dp>1?'s':'')+'</span>';
+var pt=bd.querySelector('#xPT');pt.innerHTML='<thead><tr><th>Nom</th><th>Fili\u00e8re</th><th>Semestre</th><th>Statut</th></tr></thead><tbody>';
+toI.forEach(function(r){pt.innerHTML+='<tr><td>'+esc(r.name)+'</td><td>'+esc(r.fil)+'</td><td>'+esc(r.sem)+'</td><td class="'+(r.exists?'dup':'new')+'">'+(r.exists?'Existe d\u00e9j\u00e0':'Nouveau')+'</td></tr>'});
+pt.innerHTML+='</tbody>'
+}catch(err){console.error(err);toast('Erreur lecture fichier : '+err.message)}};reader.readAsArrayBuffer(file)}
+bd.querySelector('#xOk').onclick=function(){if(!pending)return;var added=0;pending.forEach(function(r){if(r.exists)return;if(!stuReg[r.key])stuReg[r.key]=[];stuReg[r.key].push(r.name);added++});save();bd.remove();openStuMgmt(retQ||'');render();toast(added+' \u00e9tudiant'+(added>1?'s':'')+' import\u00e9'+(added>1?'s':'')+'.');pending=null};
+bd.querySelector('#xBk').onclick=function(){pending=null;bd.remove();openStuMgmt(retQ||'')};
+bd.querySelector('#xCa').onclick=function(){bd.remove()};bd.onclick=function(e){if(e.target===bd)bd.remove()}
+}
+
+/* ═══════ Gestion modules ═══════ */
+function openModMgmt(q){
+var all=gAllMod(),ql=(q||'').toLowerCase();
+var filtered=ql?all.filter(function(m){return m.name.toLowerCase().indexOf(ql)>=0||m.fil.toLowerCase().indexOf(ql)>=0}):all;
+var bd=document.createElement('div');bd.className='modal-backdrop';
+var h='<div class="modal wide"><h3>Gestion des modules <span style="font-size:13px;color:var(--ink-soft);font-family:\'IBM Plex Mono\',monospace">('+all.length+' au total)</span></h3>';
+h+='<div class="mgmt-search"><input type="text" id="modQ" placeholder="Rechercher..." value="'+esc(q||'')+'" style="width:100%;font-family:\'Libre Franklin\',sans-serif;font-size:13.5px;border:1px solid var(--paper-line);border-radius:var(--radius);padding:8px 10px;background:#fff;margin-bottom:10px">';
+h+='<button class="btn gold" id="modImp" style="width:100%">Importer des modules depuis Excel</button></div>';
+h+='<div class="mgmt-list" id="modL" style="max-height:280px">';
+if(filtered.length){filtered.forEach(function(m){h+='<div class="mgmt-item"><div class="mgmt-item-info"><div class="mgmt-item-name">'+esc(m.name)+'</div><div class="mgmt-item-meta"><span class="tag" style="margin:0">'+esc(m.fil)+'</span> '+esc(m.sem)+' \u2014 '+m.c+' absence'+(m.c>1?'s':'')+'</div></div><button class="btn danger" data-n="'+esc(m.name)+'" data-f="'+esc(m.fil)+'" data-s="'+esc(m.sem)+'" data-c="'+m.c+'">Supprimer</button></div>'})}
+else{h+='<div class="empty" style="padding:30px">Aucun module trouv\u00e9.</div>'}
+h+='</div><div class="modal-actions"><button class="btn ghost" id="modX">Fermer</button></div></div>';
+bd.innerHTML=h;document.body.appendChild(bd);
+var mt;bd.querySelector('#modQ').oninput=function(e){clearTimeout(mt);mt=setTimeout(function(){bd.remove();openModMgmt(e.target.value)},300)};
+bd.querySelector('#modImp').onclick=function(){var sv=bd.querySelector('#modQ').value;bd.remove();openModExcelImport(sv)};
+bd.querySelectorAll('.btn.danger').forEach(function(btn){btn.onclick=function(){
+var name=btn.getAttribute('data-n'),fil=btn.getAttribute('data-f'),sem=btn.getAttribute('data-s'),cnt=parseInt(btn.getAttribute('data-c'),10);
+var msg=cnt>0?'Supprimer <strong>'+esc(name)+'</strong> ('+esc(fil)+'/'+esc(sem)+') et ses <strong>'+cnt+'</strong> absences ?':'Supprimer <strong>'+esc(name)+'</strong> ('+esc(fil)+'/'+esc(sem)+') du registre ?';
+confirmDlg('Supprimer un module',msg,function(){st.rec=st.rec.filter(function(r){return!(r.module===name&&r.filiere===fil&&r.semestre===sem)});var key=fil+'_'+sem;if(modReg[key]){modReg[key]=modReg[key].filter(function(m){return m!==name});if(!modReg[key].length)delete modReg[key]}save();var sv=bd.querySelector('#modQ').value;bd.remove();openModMgmt(sv);render();toast('Module "'+name+'" supprim\u00e9.')})}});
+bd.querySelector('#modX').onclick=function(){bd.remove()};bd.onclick=function(e){if(e.target===bd)bd.remove()}
+}
+
+/* ═══════ Import modules Excel ═══════ */
+function openModExcelImport(retQ){
+var pending=null;
+var bd=document.createElement('div');bd.className='modal-backdrop';
+var h='<div class="modal wide"><h3>Importer des modules depuis Excel</h3>';
+h+='<div class="format-info"><strong>Format attendu :</strong><br><code>Module</code> (obligatoire)<br><code>Fili\u00e8re</code> (optionnel)<br><code>Semestre</code> (optionnel)</div>';
+h+='<div class="two-col" style="margin-bottom:14px"><div class="field"><label>Fili\u00e8re par d\u00e9faut</label><select id="mF"><option value="">\u2014 Aucune \u2014</option>';gFil().forEach(function(f){h+='<option value="'+esc(f)+'">'+esc(f)+'</option>'});h+='</select></div>';
+h+='<div class="field"><label>Semestre par d\u00e9faut</label><select id="mS"><option value="">\u2014 Aucun \u2014</option>';gSem().forEach(function(s){h+='<option value="'+esc(s)+'">'+esc(s)+'</option>'});h+='</select></div></div>';
+h+='<div class="drop-zone" id="dz2"><div class="drop-zone-icon">&#128196;</div><div class="drop-zone-text">Glissez votre fichier ici ou cliquez</div><div class="drop-zone-hint">.xlsx, .xls, .csv</div><input type="file" id="mFI" accept=".xlsx,.xls,.csv" style="display:none"></div>';
+h+='<div id="mPrev" style="display:none"><div class="import-stats" id="mSt"></div><div style="max-height:200px;overflow:auto;border:1px solid var(--paper-line);border-radius:var(--radius)"><table class="preview-table" id="mPT"></table></div><div class="modal-actions" style="justify-content:space-between"><button class="btn ghost" id="mBk">Retour</button><button class="btn" id="mOk">Confirmer l\'import</button></div></div>';
+h+='<div id="mNoP"><div class="modal-actions"><button class="btn ghost" id="mCa">Annuler</button></div></div></div>';
+bd.innerHTML=h;document.body.appendChild(bd);
+var dz=bd.querySelector('#dz2'),fi=bd.querySelector('#mFI');
+dz.onclick=function(){fi.click()};dz.ondragover=function(e){e.preventDefault();dz.classList.add('dragover')};dz.ondragleave=function(){dz.classList.remove('dragover')};
+dz.ondrop=function(e){e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer.files.length)proc(e.dataTransfer.files[0])};fi.onchange=function(){if(fi.files.length)proc(fi.files[0])};
+function proc(file){loadXlsxLib().then(function(){doProc(file)}).catch(function(e){toast(e.message||'Erreur')})}
+function doProc(file){
+var reader=new FileReader();reader.onload=function(e){
+try{var data=new Uint8Array(e.target.result),wb=XLSX.read(data,{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],json=XLSX.utils.sheet_to_json(ws,{defval:''});
+if(!json.length){toast('Fichier vide.');return}
+var headers=Object.keys(json[0]);
+var mc=fCol(headers,['module','modules','nom du module','nom_module','intitule','intitulé']);
+var fc=fCol(headers,['filiere','filière','section']);
+var sc=fCol(headers,['semestre','sem','niveau']);
+if(!mc){toast('Colonne "Module" introuvable.');return}
+var dF=bd.querySelector('#mF').value,dS=bd.querySelector('#mS').value,toI=[];
+json.forEach(function(row){var mod=String(row[mc]||'').trim();if(!mod)return;var fil=String(row[fc]||dF||'').trim();var sem=String(row[sc]||dS||'').trim();if(!fil||!sem)return;var key=fil+'_'+sem;var exists=(modReg[key]||[]).indexOf(mod)>=0;toI.push({mod:mod,fil:fil,sem:sem,key:key,exists:exists})});
+if(!toI.length){toast('Aucun module valide.');return}
+pending=toI;var nw=toI.filter(function(r){return!r.exists}).length,dp=toI.filter(function(r){return r.exists}).length;
+bd.querySelector('#mPrev').style.display='';bd.querySelector('#mNoP').style.display='none';dz.style.display='none';
+bd.querySelector('#mSt').innerHTML='<span><span class="dot" style="background:var(--good)"></span> '+nw+' nouveau'+(nw>1?'x':'')+'</span><span><span class="dot" style="background:var(--gold)"></span> '+dp+' doublon'+(dp>1?'s':'')+'</span>';
+var pt=bd.querySelector('#mPT');pt.innerHTML='<thead><tr><th>Module</th><th>Fili\u00e8re</th><th>Semestre</th><th>Statut</th></tr></thead><tbody>';
+toI.forEach(function(r){pt.innerHTML+='<tr><td>'+esc(r.mod)+'</td><td>'+esc(r.fil)+'</td><td>'+esc(r.sem)+'</td><td class="'+(r.exists?'dup':'new')+'">'+(r.exists?'Existe d\u00e9j\u00e0':'Nouveau')+'</td></tr>'});
+pt.innerHTML+='</tbody>'
+}catch(err){console.error(err);toast('Erreur : '+err.message)}};reader.readAsArrayBuffer(file)}
+bd.querySelector('#mOk').onclick=function(){if(!pending)return;var added=0;pending.forEach(function(r){if(r.exists)return;if(!modReg[r.key])modReg[r.key]=[];modReg[r.key].push(r.mod);added++});save();bd.remove();openModMgmt(retQ||'');render();toast(added+' module'+(added>1?'s':'')+' import\u00e9'+(added>1?'s':'')+'.');pending=null};
+bd.querySelector('#mBk').onclick=function(){pending=null;bd.remove();openModMgmt(retQ||'')};
+bd.querySelector('#mCa').onclick=function(){bd.remove()};bd.onclick=function(e){if(e.target===bd)bd.remove()}
 }
 
 /* ═══════ Initialisation ═══════ */
-function init() {
-    loadMods();
-    loadStus();
-    loadRecs();
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('app').style.display = '';
-    render();
-}
-
-/* Lancer au chargement */
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    init();
+try{
+  loadRecs();loadMods();loadStus();
+  document.getElementById('loading').style.display='none';
+  document.getElementById('app').style.display='';
+  render();
+}catch(err){
+  document.getElementById('loading').innerHTML='Erreur : '+err.message+'<br><br><button class="btn" onclick="localStorage.clear();location.reload()">R\u00e9initialiser</button>';
+  console.error(err);
 }
 </script>
 </body>
