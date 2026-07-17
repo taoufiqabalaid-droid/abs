@@ -1,528 +1,1049 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Registre des absences — Institut</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Libre+Franklin:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-:root{--paper:#F3EEE1;--paper-line:#D9CFB8;--paper-dark:#E7DFC9;--ink:#1B2A3C;--ink-soft:#4A5568;--binder:#22314A;--binder-light:#324667;--absent:#A6303A;--absent-bg:#F5E3E1;--gold:#B8934A;--good:#3E6B4F;--radius:4px}
-*{box-sizing:border-box;margin:0;padding:0}html,body{margin:0;padding:0}
-body{background:var(--paper);color:var(--ink);font-family:'Libre Franklin',sans-serif;min-height:100vh}
-.app{display:flex;flex-direction:column;min-height:100vh}
-header{background:var(--binder);color:var(--paper);padding:22px 32px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;border-bottom:4px solid var(--gold)}
-header h1{font-family:'Fraunces',serif;font-size:26px;margin:0 0 2px}
-header .sub{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#C7D1E2}
-.header-stats{display:flex;gap:22px}
-.header-stat{text-align:right}
-.header-stat b{display:block;font-family:'Fraunces',serif;font-size:22px;color:var(--gold)}
-.header-stat span{font-size:11px;color:#B9C4D8;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.05em}
-.filters{background:var(--paper-dark);border-bottom:1px solid var(--paper-line);padding:14px 32px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-select,input[type="text"],input[type="date"]{font-family:'IBM Plex Mono',monospace;font-size:12.5px;border:1px solid var(--paper-line);background:#fff;padding:8px 10px;border-radius:var(--radius);color:var(--ink)}
-input[type="text"]{font-family:'Libre Franklin',sans-serif;min-width:200px}
-select:focus,input:focus,button:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
-.filters label{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);display:flex;flex-direction:column;gap:4px;font-family:'IBM Plex Mono',monospace}
-button{font-family:'Libre Franklin',sans-serif;cursor:pointer}
-.btn{background:var(--ink);color:var(--paper);border:none;padding:9px 16px;border-radius:var(--radius);font-size:13px;font-weight:600;transition:background .15s}
-.btn:hover{background:var(--binder-light)}
-.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink)}
-.btn.ghost:hover{background:rgba(0,0,0,.05)}
-.btn.danger{background:var(--absent);color:#fff}
-.btn.danger:hover{background:#8a252e}
-.btn.gold{background:var(--gold);color:#fff}
-.btn.gold:hover{background:#9a7a3c}
-.btn.sm{padding:5px 10px;font-size:11px}
-.spacer{flex:1}
-.body-grid{display:grid;grid-template-columns:1fr 260px;gap:0;flex:1}
-@media(max-width:900px){.body-grid{grid-template-columns:1fr}}
-main{padding:22px 32px 40px}
-aside{border-left:1px solid var(--paper-line);padding:22px 20px;display:flex;flex-direction:column;gap:20px}
-.stats-title{font-family:'Fraunces',serif;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 8px}
-.top-item{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;border-bottom:1px dotted var(--paper-line)}
-.top-item:last-child{border-bottom:none}
-.top-item b{font-family:'IBM Plex Mono',monospace;color:var(--absent)}
-.roster{background:rgba(255,255,255,.55);border:1px solid var(--paper-line);border-radius:6px;overflow:hidden}
-table{width:100%;border-collapse:collapse}
-thead th{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);padding:10px 12px;border-bottom:1px solid var(--paper-line);background:var(--paper-dark);white-space:nowrap}
-tbody td{padding:9px 12px;border-bottom:1px solid var(--paper-line);vertical-align:top;font-size:13px}
-tbody tr:hover{background:rgba(166,48,58,.04)}
-tbody tr:last-child td{border-bottom:none}
-.cell-date{font-family:'IBM Plex Mono',monospace;white-space:nowrap;font-size:12px}
-.cell-seance{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-soft);white-space:nowrap}
-.cell-name{font-weight:600}
-.tag{display:inline-block;font-size:10.5px;font-family:'IBM Plex Mono',monospace;background:var(--binder);color:var(--paper);padding:2px 6px;border-radius:3px;margin-right:4px}
-.cell-module{font-size:12.5px;color:var(--ink-soft);max-width:220px}
-.cell-obs{font-size:12px;color:var(--ink-soft);font-style:italic;max-width:160px}
-.row-actions{white-space:nowrap}
-.icon-btn{background:none;border:none;color:var(--ink-soft);font-size:14px;opacity:.55;margin-right:6px;cursor:pointer;padding:2px 4px}
-.icon-btn:hover{opacity:1;color:var(--absent)}
-.empty{padding:50px 20px;text-align:center;color:var(--ink-soft);font-family:'Fraunces',serif;font-size:16px}
-.pagination{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft)}
-.pagination button{background:#fff;border:1px solid var(--paper-line);border-radius:var(--radius);padding:6px 10px;font-size:12px}
-.pagination button:disabled{opacity:.4;cursor:default}
-.results-count{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);padding:0 2px 10px}
-.modal-backdrop{position:fixed;inset:0;background:rgba(27,42,60,.45);display:flex;align-items:center;justify-content:center;z-index:60;padding:20px;animation:fadeIn .15s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal{background:var(--paper);border-radius:8px;padding:24px;width:540px;max-width:100%;box-shadow:0 14px 36px rgba(0,0,0,.25);border:1px solid var(--paper-line);max-height:90vh;overflow:auto;animation:slideUp .2s ease}
-@keyframes slideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal.wide{width:700px}
-.modal h3{margin:0 0 16px;font-family:'Fraunces',serif;font-size:18px}
-.field{margin-bottom:12px;display:flex;flex-direction:column;gap:5px}
-.field label{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace}
-.field input,.field select,.field textarea{width:100%;font-family:'Libre Franklin',sans-serif;font-size:13.5px;border:1px solid var(--paper-line);border-radius:var(--radius);padding:8px 10px;background:#fff}
-.field textarea{resize:vertical;min-height:50px}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:6px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;z-index:80}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
-.loading{position:fixed;inset:0;background:var(--paper);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;color:var(--ink-soft);font-size:15px;z-index:100}
-.mgmt-list{max-height:340px;overflow-y:auto;border:1px solid var(--paper-line);border-radius:var(--radius);background:#fff}
-.mgmt-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--paper-line);font-size:13px;gap:8px}
-.mgmt-item:last-child{border-bottom:none}
-.mgmt-item:hover{background:var(--paper-dark)}
-.mgmt-item-info{flex:1;min-width:0}
-.mgmt-item-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mgmt-item-meta{font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace}
-.mgmt-item .btn{padding:4px 10px;font-size:11px;flex-shrink:0}
-.mgmt-search{margin-bottom:12px}
-.drop-zone{border:2px dashed var(--paper-line);border-radius:8px;padding:32px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:16px}
-.drop-zone:hover,.drop-zone.dragover{border-color:var(--gold);background:rgba(184,147,74,.06)}
-.drop-zone-icon{font-size:32px;margin-bottom:8px;opacity:.5}
-.drop-zone-text{font-size:13px;color:var(--ink-soft);margin-bottom:4px}
-.drop-zone-hint{font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;opacity:.7}
-.preview-table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:12px}
-.preview-table th{background:var(--paper-dark);font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;padding:6px 8px;text-align:left;border-bottom:1px solid var(--paper-line)}
-.preview-table td{padding:5px 8px;border-bottom:1px solid var(--paper-line)}
-.preview-table .dup{color:var(--gold);font-style:italic}
-.preview-table .new{color:var(--good);font-weight:600}
-.import-stats{display:flex;gap:16px;margin-bottom:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;flex-wrap:wrap}
-.import-stats span{display:flex;align-items:center;gap:4px}
-.import-stats .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
-.confirm-box{background:var(--absent-bg);border:1px solid var(--absent);border-radius:var(--radius);padding:14px;margin-bottom:14px;font-size:13px;line-height:1.5}
-.confirm-box strong{color:var(--absent)}
-.format-info{background:rgba(255,255,255,.6);border:1px solid var(--paper-line);border-radius:var(--radius);padding:12px;margin-bottom:14px;font-size:12px;line-height:1.6;color:var(--ink-soft)}
-.format-info code{background:var(--paper-dark);padding:1px 5px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:11px}
-.format-info table{margin-top:6px;border-collapse:collapse;width:100%}
-.format-info td{padding:3px 8px;border:1px solid var(--paper-line);font-size:12px}
-.format-info td:first-child{background:var(--paper-dark);font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;white-space:nowrap;width:100px}
-.warn-tag{display:inline-block;background:var(--gold);color:#fff;font-size:10px;padding:1px 6px;border-radius:3px;font-family:'IBM Plex Mono',monospace;margin-left:6px;vertical-align:middle}
-.mgmt-toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
-.mgmt-toolbar .spacer{flex:1}
-.sem-default-hint{font-size:11px;color:var(--ink-soft);font-style:italic;margin-top:4px;font-family:'IBM Plex Mono',monospace}
-</style>
-</head>
-<body>
-<div id="loading" class="loading">Ouverture du registre...</div>
-<div id="app" class="app" style="display:none"></div>
-<div id="toast" class="toast"></div>
+import { useState, useRef, useCallback } from "react";
+import * as XLSX from "xlsx";
+import {
+  Users,
+  BookOpen,
+  Clock,
+  ClipboardCheck,
+  BarChart3,
+  Upload,
+  Plus,
+  Trash2,
+  Edit3,
+  Check,
+  X,
+  Search,
+  Download,
+  ChevronDown,
+  AlertTriangle,
+  CheckSquare,
+  Square,
+  Calendar,
+} from "lucide-react";
 
-<script id="seed-data" type="application/json">
-[{"filiere":"SS","semestre":"S2","date":"2026-04-10","seance":"08H30 - 12H30","etudiant":"BOURADOUAN MAHDI","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0001"},{"filiere":"SS","semestre":"S2","date":"2026-04-10","seance":"08H30 - 12H30","etudiant":"SALOUT YASSINE","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0002"},{"filiere":"SS","semestre":"S2","date":"2026-04-10","seance":"08H30 - 12H30","etudiant":"IZIKKI HIND","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0003"},{"filiere":"SS","semestre":"S2","date":"2026-05-19","seance":"08H30 - 12H30","etudiant":"OUALI FADOUA","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0004"},{"filiere":"SS","semestre":"S2","date":"2026-05-19","seance":"08H30 - 12H30","etudiant":"GRICH MOHAMED AYOUB","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0005"},{"filiere":"SS","semestre":"S2","date":"2026-05-22","seance":"08H30 - 12H30","etudiant":"RAHHAL ABDERRAHMANE","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0006"},{"filiere":"SS","semestre":"S2","date":"2026-05-22","seance":"08H30 - 12H30","etudiant":"GRICH MOHAMED AYOUB","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0007"},{"filiere":"SS","semestre":"S2","date":"2026-05-22","seance":"08H30 - 12H30","etudiant":"ZAMRANI CHAIMAE","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0008"},{"filiere":"SS","semestre":"S2","date":"2026-06-02","seance":"08H30 - 12H30","etudiant":"BELAKZIZ AYA","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0010"},{"filiere":"SS","semestre":"S2","date":"2026-06-02","seance":"08H30 - 12H30","etudiant":"ELATMANI ABDELHAK","module":"Math\u00e9matique I (Alg\u00e8bre)","observation":null,"id":"r0011"},{"filiere":"SS","semestre":"S2","date":"2026-04-09","seance":"14H00 - 18H00","etudiant":"BOUSSIF NADIA","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0025"},{"filiere":"SS","semestre":"S2","date":"2026-04-16","seance":"14H00 - 16H00","etudiant":"IZIKKI HIND","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0026"},{"filiere":"SS","semestre":"S2","date":"2026-05-20","seance":"14H00 - 18H00","etudiant":"GRICH MOHAMED AYOUB","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0036"},{"filiere":"SS","semestre":"S2","date":"2026-08-03","seance":"14H00 - 16H00","etudiant":"ELATMANI ABDELHAK","module":"Math\u00e9matique II  (Analyse)","observation":null,"id":"r0039"},{"filiere":"SS","semestre":"S2","date":"2026-03-31","seance":"08H30 - 12H30","etudiant":"OUTGOUGA OUMNIA","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0047"},{"filiere":"SS","semestre":"S2","date":"2026-06-04","seance":"08H30 - 12H30","etudiant":"ELATMANI ABDELHAK","module":"Inf\u00e9rence statistique I","observation":null,"id":"r0066"},{"filiere":"SS","semestre":"S2","date":"2026-03-30","seance":"10H30 - 12H30","etudiant":"OUTGOUGA OUMNIA","module":"Analyse D\u00e9mographique","observation":null,"id":"r0069"},{"filiere":"SS","semestre":"S2","date":"2026-04-06","seance":"10H30 - 12H30","etudiant":"BELAKZIZ AYA","module":"Analyse D\u00e9mographique","observation":null,"id":"r0070"},{"filiere":"SS","semestre":"S2","date":"2026-03-31","seance":"14H00 - 18H00","etudiant":"OUTGOUGA OUMNIA","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0080"},{"filiere":"SS","semestre":"S2","date":"2026-05-12","seance":"14H00 - 18H00","etudiant":"SALOUT YASSINE","module":"Informatique I (Bureautique Avanc\u00e9e et Programmation Ev\u00e8nementielle)","observation":null,"id":"r0082"},{"filiere":"SS","semestre":"S2","date":"2026-03-18","seance":"08H30 - 12H30","etudiant":"GRICH MOHAMED AYOUB","module":"Syst\u00e8me d'Information Sanitaire (SIS)","observation":"9H-12H","id":"r0097"},{"filiere":"SS","semestre":"S2","date":"2026-05-15","seance":"14H00 - 18H00","etudiant":"ZEMRANI NAJOUA","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0109"},{"filiere":"SS","semestre":"S2","date":"2026-06-05","seance":"14H00 - 18H00","etudiant":"ELATMANI ABDELHAK","module":"Syst\u00e8me d'Information Hospitalier (SIH)","observation":null,"id":"r0117"},{"filiere":"LABO","semestre":"S1","date":"2025-12-01","seance":"15H00 - 18H00","etudiant":"KANOUNI JIHAD","module":"Langue et TIC","observation":null,"id":"r0126"},{"filiere":"LABO","semestre":"S1","date":"2025-12-15","seance":"15H00 - 18H00","etudiant":"EL HAFIAN BASSMA","module":"Langue et TIC","observation":null,"id":"r0128"},{"filiere":"LABO","semestre":"S1","date":"2025-11-17","seance":"08H30 - 10H30","etudiant":"EL GHAZI AYA","module":"Biologie cellulaire, H\u00e9matologie& Immunologie","observation":null,"id":"r0131"},{"filiere":"LABO","semestre":"S1","date":"2025-12-22","seance":"08H30 - 12H30","etudiant":"HILALBIK IKRAM","module":"Biologie cellulaire, H\u00e9matologie& Immunologie","observation":null,"id":"r0135"},{"filiere":"LABO","semestre":"S1","date":"2025-12-05","seance":"08H30 - 12H30","etudiant":"EL HOUFATI YASAMIN","module":"Anatomie & Physiologie","observation":null,"id":"r0137"},{"filiere":"LABO","semestre":"S1","date":"2025-12-19","seance":"08H30 - 12H30","etudiant":"SANOUSSI ALI","module":"Anatomie & Physiologie","observation":null,"id":"r0143"},{"filiere":"LABO","semestre":"S1","date":"2026-01-12","seance":"08H30 - 12H30","etudiant":"AYANI RIMA","module":"Microbiologie,  Parasitologie& Mycologie","observation":null,"id":"r0156"},{"filiere":"LABO","semestre":"S1","date":"2025-12-04","seance":"08H30 - 12H30","etudiant":"AYANI RIMA","module":"Chimie g\u00e9n\u00e9rale  & organique","observation":null,"id":"r0168"},{"filiere":"LABO","semestre":"S1","date":"2025-12-25","seance":"14H00 - 18H00","etudiant":"EL MOSLIH CYRINE","module":"Biochimie structurale &Nutrition","observation":"14h-17h","id":"r0172"},{"filiere":"LABO","semestre":"S1","date":"2026-01-23","seance":"08H30 - 12H30","etudiant":"AYANI RIMA","module":"Maths  et Physique","observation":"9h-12h30","id":"r0186"}]
-</script>
+// ─── Types ──────────────────────────────────────────────────────────────────
 
-<script>
-/* ═══════ Chargement XLSX ═══════ */
-var xlsxLoaded=false,xlsxLoading=false;
-function loadXlsxLib(){return new Promise(function(ok,no){if(xlsxLoaded&&window.XLSX){ok();return}if(xlsxLoading){var c=setInterval(function(){if(xlsxLoaded){clearInterval(c);ok()}},100);setTimeout(function(){clearInterval(c);no(new Error('Timeout'))},15000);return}xlsxLoading=true;var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=function(){xlsxLoaded=true;xlsxLoading=false;ok()};s.onerror=function(){xlsxLoading=false;no(new Error('Connexion requise.'))};document.head.appendChild(s)})}
-
-/* ═══════ Normalisation ═══════ */
-function norm(s){if(!s)return'';return String(s).replace(/\s+/g,' ').trim()}
-
-/* ═══════ État ═══════ */
-var SEED,LS_REC='abs_rec_v7',LS_MOD='abs_mod_v7',LS_STU='abs_stu_v7',PP=15;
-var st={rec:[],f:{fil:'',sem:'',mod:'',df:'',dt:'',q:''},p:1,eid:null};
-var modReg={},stuReg={};
-try{SEED=JSON.parse(document.getElementById('seed-data').textContent)}catch(e){SEED=[]}
-
-function ls(k,v){try{if(v!==undefined)localStorage.setItem(k,JSON.stringify(v));else{var r=localStorage.getItem(k);return r?JSON.parse(r):null}}catch(e){return v!==undefined?undefined:null}}
-function regKeys(){var s={};Object.keys(stuReg).forEach(function(k){s[k]=1});Object.keys(modReg).forEach(function(k){s[k]=1});return Object.keys(s)}
-function parseKey(k){var p=k.split('___');return{fil:p[0]||'',sem:p[1]||''}}
-function mkKey(fil,sem){return fil+'___'+sem}
-
-/* ═══════ Chargement registres ═══════ */
-function loadMods(){
-  modReg=ls(LS_MOD);
-  if(!modReg){modReg={};SEED.forEach(function(r){var k=mkKey(r.filiere,r.semestre);if(!modReg[k])modReg[k]=[];var nn=norm(r.module);if(nn&&modReg[k].indexOf(nn)===-1)modReg[k].push(nn)});ls(LS_MOD,modReg)}
-  Object.keys(modReg).forEach(function(k){modReg[k]=modReg[k].map(function(m){return norm(m)}).filter(function(m){return m});var seen={};modReg[k]=modReg[k].filter(function(m){if(seen[m])return false;seen[m]=true;return true})});
-  ls(LS_MOD,modReg);
-}
-function loadStus(){
-  stuReg=ls(LS_STU);
-  if(!stuReg){stuReg={};SEED.forEach(function(r){var k=mkKey(r.filiere,r.semestre);if(!stuReg[k])stuReg[k]=[];var nn=norm(r.etudiant);if(nn&&stuReg[k].indexOf(nn)===-1)stuReg[k].push(nn)});ls(LS_STU,stuReg)}
-  Object.keys(stuReg).forEach(function(k){stuReg[k]=stuReg[k].map(function(s){return norm(s)}).filter(function(s){return s});var seen={};stuReg[k]=stuReg[k].filter(function(s){if(seen[s])return false;seen[s]=true;return true})});
-  ls(LS_STU,stuReg);
+interface Student {
+  id: string;
+  nom: string;
+  prenom: string;
+  matricule: string;
+  groupe: string;
+  filiere: string;
 }
 
-/* ═══════ CRUD ═══════ */
-function deleteModule(fil,sem,modName){var k=mkKey(fil,sem);var nn=norm(modName);if(!modReg[k])return{mod:0,rec:0};var before=modReg[k].length;modReg[k]=modReg[k].filter(function(m){return norm(m)!==nn});var rm=before-modReg[k].length;if(!modReg[k].length)delete modReg[k];ls(LS_MOD,modReg);var rr=0;st.rec=st.rec.filter(function(r){if(r.filiere===fil&&r.semestre===sem&&norm(r.module)===nn){rr++;return false}return true});ls(LS_REC,st.rec);return{mod:rm,rec:rr}}
-function addModule(fil,sem,name){var k=mkKey(fil,sem);var nn=norm(name);if(!nn)return false;if(!modReg[k])modReg[k]=[];if(modReg[k].some(function(m){return norm(m)===nn}))return false;modReg[k].push(nn);ls(LS_MOD,modReg);return true}
-function addStudent(fil,sem,name){var k=mkKey(fil,sem);var nn=norm(name);if(!nn)return false;if(!stuReg[k])stuReg[k]=[];if(stuReg[k].some(function(s){return norm(s)===nn}))return false;stuReg[k].push(nn);ls(LS_STU,stuReg);return true}
-function deleteStudent(fil,sem,stuName){var k=mkKey(fil,sem);var nn=norm(stuName);if(!stuReg[k])return{stu:0,rec:0};var before=stuReg[k].length;stuReg[k]=stuReg[k].filter(function(s){return norm(s)!==nn});var rm=before-stuReg[k].length;if(!stuReg[k].length)delete stuReg[k];ls(LS_STU,stuReg);var rr=0;st.rec=st.rec.filter(function(r){if(r.filiere===fil&&r.semestre===sem&&norm(r.etudiant)===nn){rr++;return false}return true});ls(LS_REC,st.rec);return{stu:rm,rec:rr}}
-
-/* ═══════ Filtrage ═══════ */
-function filtered(){var f=st.f,out=st.rec;if(f.fil)out=out.filter(function(r){return r.filiere===f.fil});if(f.sem)out=out.filter(function(r){return r.semestre===f.sem});if(f.mod)out=out.filter(function(r){return norm(r.module)===norm(f.mod)});if(f.df)out=out.filter(function(r){return r.date>=f.df});if(f.dt)out=out.filter(function(r){return r.date<=f.dt});if(f.q){var q=f.q.toLowerCase();out=out.filter(function(r){return r.etudiant.toLowerCase().indexOf(q)!==-1||r.module.toLowerCase().indexOf(q)!==-1||(r.observation||'').toLowerCase().indexOf(q)!==-1})}out.sort(function(a,b){return b.date.localeCompare(a.date)||a.seance.localeCompare(b.seance)||a.etudiant.localeCompare(b.etudiant)});return out}
-function getMods(fil,sem){return(modReg[mkKey(fil,sem)]||[]).slice().sort()}
-function getStus(fil,sem){return(stuReg[mkKey(fil,sem)]||[]).slice().sort()}
-function getFils(){var s={};regKeys().forEach(function(k){var p=parseKey(k);if(p.fil)s[p.fil]=1});return Object.keys(s).sort()}
-function getSems(fil){var s={};regKeys().forEach(function(k){var p=parseKey(k);if(!fil||p.fil===fil)s[p.sem]=1});return Object.keys(s).sort()}
-function topAbsent(n){var c={};st.rec.forEach(function(r){c[r.etudiant]=(c[r.etudiant]||0)+1});return Object.keys(c).map(function(k){return{n:k,c:c[k]}}).sort(function(a,b){return b.c-a.c}).slice(0,n||5)}
-function fmtDate(d){if(!d)return'';var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
-function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
-function nid(){return'r'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
-
-/* ═══════ Recherche flexible de colonne ═══════ */
-function colVal(r,names){for(var i=0;i<names.length;i++){var keys=Object.keys(r);for(var j=0;j<keys.length;j++){if(keys[j].trim().toLowerCase()===names[i].toLowerCase()&&r[keys[j]]!==''&&r[keys[j]]!=null){return String(r[keys[j]]).trim()}}}return''}
-
-/* ═══════ Toast ═══════ */
-var toastTimer=null;
-function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove('show')},2800)}
-
-/* ═══════ Modales ═══════ */
-function openModal(html,wide){closeModal();var bd=document.createElement('div');bd.className='modal-backdrop';bd.id='modal-bd';bd.onclick=function(e){if(e.target===bd)closeModal()};var md=document.createElement('div');md.className='modal'+(wide?' wide':'');md.innerHTML=html;bd.appendChild(md);document.body.appendChild(bd);var inp=md.querySelector('input:not([type=hidden]),select,textarea');if(inp)setTimeout(function(){inp.focus()},50)}
-function closeModal(){var el=document.getElementById('modal-bd');if(el)el.remove()}
-
-/* ═══════ Rendu principal ═══════ */
-function render(){
-  var app=document.getElementById('app');
-  var fils=getFils(),sems=getSems(st.f.fil),mods=getMods(st.f.fil,st.f.sem);
-  var all=filtered(),tp=Math.max(1,Math.ceil(all.length/PP));
-  if(st.p>tp)st.p=tp;
-  var page=all.slice((st.p-1)*PP,st.p*PP);
-  var ta=topAbsent(5);
-  var h='';
-  h+='<header><div><h1>Registre des absences</h1><div class="sub">Institut — '+all.length+' enregistrement'+(all.length>1?'s':'')+'</div></div>';
-  h+='<div class="header-stats"><div class="header-stat"><b>'+all.length+'</b><span>Total filtr\u00e9</span></div><div class="header-stat"><b>'+new Set(all.map(function(r){return r.etudiant})).size+'</b><span>\u00c9tudiants</span></div><div class="header-stat"><b>'+new Set(all.map(function(r){return r.module})).size+'</b><span>Modules</span></div></div></header>';
-  h+='<div class="filters">';
-  h+='<label>Fili\u00e8re<select onchange="st.f.fil=this.value;st.f.sem=\'\';st.f.mod=\'\';st.p=1;render()"><option value="">Toutes</option>';fils.forEach(function(f){h+='<option value="'+f+'"'+(st.f.fil===f?' selected':'')+'>'+f+'</option>'});h+='</select></label>';
-  h+='<label>Semestre<select onchange="st.f.sem=this.value;st.f.mod=\'\';st.p=1;render()"><option value="">Tous</option>';sems.forEach(function(s){h+='<option value="'+s+'"'+(st.f.sem===s?' selected':'')+'>'+s+'</option>'});h+='</select></label>';
-  h+='<label>Module<select onchange="st.f.mod=this.value;st.p=1;render()"><option value="">Tous</option>';mods.forEach(function(m){h+='<option value="'+m+'"'+(norm(st.f.mod)===norm(m)?' selected':'')+'>'+m+'</option>'});h+='</select></label>';
-  h+='<label>Du<input type="date" value="'+(st.f.df||'')+'" onchange="st.f.df=this.value;st.p=1;render()"></label>';
-  h+='<label>Au<input type="date" value="'+(st.f.dt||'')+'" onchange="st.f.dt=this.value;st.p=1;render()"></label>';
-  h+='<label>Recherche<input type="text" placeholder="\u00c9tudiant, module..." value="'+(st.f.q||'')+'" oninput="st.f.q=this.value;st.p=1;render()"></label>';
-  h+='<div class="spacer"></div>';
-  h+='<button class="btn gold" onclick="openAddModal()">+ Absence</button>';
-  h+='<button class="btn ghost" onclick="openModMgmt()">Modules</button>';
-  h+='<button class="btn ghost" onclick="openStuMgmt()">\u00c9tudiants</button>';
-  h+='<button class="btn ghost" onclick="openImportAbsModal()">Import absences</button>';
-  h+='<button class="btn ghost" onclick="exportXlsx()">Export</button>';
-  h+='</div>';
-  h+='<div class="body-grid"><main>';
-  h+='<div class="results-count">'+all.length+' r\u00e9sultat'+(all.length>1?'s':'')+'</div>';
-  if(!page.length){h+='<div class="empty">Aucune absence enregistr\u00e9e pour ces crit\u00e8res.</div>'}
-  else{h+='<div class="roster"><table><thead><tr><th>Date</th><th>S\u00e9ance</th><th>\u00c9tudiant</th><th>Fili\u00e8re</th><th>Module</th><th>Obs.</th><th></th></tr></thead><tbody>';page.forEach(function(r){h+='<tr><td class="cell-date">'+fmtDate(r.date)+'</td><td class="cell-seance">'+esc(r.seance)+'</td><td class="cell-name">'+esc(r.etudiant)+'</td><td><span class="tag">'+esc(r.filiere)+'</span></td><td class="cell-module">'+esc(r.module)+'</td><td class="cell-obs">'+esc(r.observation||'')+'</td><td class="row-actions"><button class="icon-btn" title="Modifier" onclick="openEditModal(\''+r.id+'\')">&#9998;</button><button class="icon-btn" title="Supprimer" onclick="confirmDelRec(\''+r.id+'\')">&#10005;</button></td></tr>'});h+='</tbody></table></div>';if(tp>1){h+='<div class="pagination"><button '+(st.p<=1?'disabled':'')+' onclick="st.p--;render()">\u25C0</button><span>Page '+st.p+' / '+tp+'</span><button '+(st.p>=tp?'disabled':'')+' onclick="st.p++;render()">\u25B6</button></div>'}}
-  h+='</main><aside>';
-  h+='<div><p class="stats-title">Top absences</p>';if(!ta.length)h+='<div style="padding:12px 0;text-align:center;color:var(--ink-soft);font-size:12px;font-style:italic">Aucune donn\u00e9e</div>';else ta.forEach(function(t){h+='<div class="top-item"><span>'+esc(t.n)+'</span><b>'+t.c+'</b></div>'});h+='</div>';
-  var mc={};all.forEach(function(r){mc[r.module]=(mc[r.module]||0)+1});var mcs=Object.keys(mc).map(function(k){return{n:k,c:mc[k]}}).sort(function(a,b){return b.c-a.c});if(mcs.length){h+='<div><p class="stats-title">Par module</p>';mcs.slice(0,8).forEach(function(m){h+='<div class="top-item"><span style="font-size:12px">'+esc(m.n)+'</span><b>'+m.c+'</b></div>'});h+='</div>'}
-  h+='<div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--paper-line);font-size:11px;color:var(--ink-soft);font-family:IBM Plex Mono,monospace"><div style="margin-bottom:4px">Donn\u00e9es : '+st.rec.length+' enregistrements</div><div>Registres : '+regKeys().length+' (fili\u00e8re/semestre)</div></div>';
-  h+='</aside></div>';
-  app.innerHTML=h;
+interface Module {
+  id: string;
+  code: string;
+  intitule: string;
+  enseignant: string;
+  filiere: string;
 }
 
-/* ═══════ Ajouter absence ═══════ */
-function openAddModal(){
-  var fils=getFils();
-  var h='<h3>Nouvelle absence</h3>';
-  h+='<div class="two-col"><div class="field"><label>Fili\u00e8re</label><select id="af" onchange="updAddSems()"><option value="">--</option>';fils.forEach(function(f){h+='<option value="'+f+'">'+f+'</option>'});h+='</select></div><div class="field"><label>Semestre</label><select id="as" onchange="updAddOpts()"><option value="">--</option></select></div></div>';
-  h+='<div class="field"><label>Module</label><select id="am"><option value="">S\u00e9lectionner fili\u00e8re et semestre</option></select></div>';
-  h+='<div class="field"><label>\u00c9tudiant</label><select id="ae"><option value="">S\u00e9lectionner fili\u00e8re et semestre</option></select></div>';
-  h+='<div class="two-col"><div class="field"><label>Date</label><input type="date" id="ad"></div><div class="field"><label>S\u00e9ance</label><input type="text" id="ap" placeholder="08H30 - 12H30"></div></div>';
-  h+='<div class="field"><label>Observation</label><textarea id="ao" rows="2"></textarea></div>';
-  h+='<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn" onclick="saveNew()">Enregistrer</button></div>';
-  openModal(h);
-}
-function updAddSems(){var fil=document.getElementById('af').value;var h='<option value="">--</option>';getSems(fil).forEach(function(s){h+='<option value="'+s+'">'+s+'</option>'});document.getElementById('as').innerHTML=h;updAddOpts()}
-function updAddOpts(){var fil=(document.getElementById('af')||{}).value||'';var sem=(document.getElementById('as')||{}).value||'';var hm='<option value="">-- Choisir --</option>';getMods(fil,sem).forEach(function(m){hm+='<option value="'+m+'">'+m+'</option>'});var he='<option value="">-- Choisir --</option>';getStus(fil,sem).forEach(function(s){he+='<option value="'+s+'">'+s+'</option>'});var em=document.getElementById('am');if(em)em.innerHTML=hm;var ee=document.getElementById('ae');if(ee)ee.innerHTML=he}
-document.addEventListener('change',function(e){if(e.target&&e.target.id==='as')updAddOpts()});
-function saveNew(){var fil=document.getElementById('af').value,sem=document.getElementById('as').value,mod=document.getElementById('am').value,stu=document.getElementById('ae').value,dat=document.getElementById('ad').value,sea=document.getElementById('ap').value,obs=document.getElementById('ao').value;if(!fil||!sem||!mod||!stu||!dat||!sea){toast('Veuillez remplir tous les champs obligatoires.');return}st.rec.push({id:nid(),filiere:fil,semestre:sem,module:norm(mod),etudiant:norm(stu),date:dat,seance:sea.trim(),observation:obs.trim()||null});ls(LS_REC,st.rec);closeModal();render();toast('Absence enregistr\u00e9e.')}
-
-/* ═══════ Modifier absence ═══════ */
-function openEditModal(id){var r=st.rec.find(function(x){return x.id===id});if(!r)return;var fils=getFils();var h='<h3>Modifier l\'absence</h3>';h+='<div class="two-col"><div class="field"><label>Fili\u00e8re</label><select id="ef" onchange="updEditSems()"><option value="">--</option>';fils.forEach(function(f){h+='<option value="'+f+'"'+(r.filiere===f?' selected':'')+'>'+f+'</option>'});h+='</select></div><div class="field"><label>Semestre</label><select id="es" onchange="updEditOpts()"><option value="">--</option>';getSems(r.filiere).forEach(function(s){h+='<option value="'+s+'"'+(r.semestre===s?' selected':'')+'>'+s+'</option>'});h+='</select></div></div>';h+='<div class="field"><label>Module</label><select id="em">';getMods(r.filiere,r.semestre).forEach(function(m){h+='<option value="'+m+'"'+(norm(r.module)===norm(m)?' selected':'')+'>'+m+'</option>'});h+='</select></div>';h+='<div class="field"><label>\u00c9tudiant</label><select id="ee">';getStus(r.filiere,r.semestre).forEach(function(s){h+='<option value="'+s+'"'+(norm(r.etudiant)===norm(s)?' selected':'')+'>'+s+'</option>'});h+='</select></div>';h+='<div class="two-col"><div class="field"><label>Date</label><input type="date" id="ed" value="'+r.date+'"></div><div class="field"><label>S\u00e9ance</label><input type="text" id="ep" value="'+esc(r.seance)+'"></div></div>';h+='<div class="field"><label>Observation</label><textarea id="eo" rows="2">'+esc(r.observation||'')+'</textarea></div>';h+='<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn" onclick="saveEdit(\''+id+'\')">Sauvegarder</button></div>';openModal(h)}
-function updEditSems(){var fil=document.getElementById('ef').value;var h='<option value="">--</option>';getSems(fil).forEach(function(s){h+='<option value="'+s+'">'+s+'</option>'});document.getElementById('es').innerHTML=h}
-function updEditOpts(){var fil=(document.getElementById('ef')||{}).value||'',sem=(document.getElementById('es')||{}).value||'';var hm='';getMods(fil,sem).forEach(function(m){hm+='<option value="'+m+'">'+m+'</option>'});var he='';getStus(fil,sem).forEach(function(s){he+='<option value="'+s+'">'+s+'</option>'});var em=document.getElementById('em');if(em)em.innerHTML=hm;var ee=document.getElementById('ee');if(ee)ee.innerHTML=he}
-document.addEventListener('change',function(e){if(e.target&&e.target.id==='es')updEditOpts()});
-function saveEdit(id){var r=st.rec.find(function(x){return x.id===id});if(!r)return;var fil=document.getElementById('ef').value,sem=document.getElementById('es').value,mod=document.getElementById('em').value,stu=document.getElementById('ee').value,dat=document.getElementById('ed').value,sea=document.getElementById('ep').value,obs=document.getElementById('eo').value;if(!fil||!sem||!mod||!stu||!dat||!sea){toast('Veuillez remplir tous les champs obligatoires.');return}r.filiere=fil;r.semestre=sem;r.module=norm(mod);r.etudiant=norm(stu);r.date=dat;r.seance=sea.trim();r.observation=obs.trim()||null;ls(LS_REC,st.rec);closeModal();render();toast('Modification enregistr\u00e9e.')}
-
-/* ═══════ Supprimer absence ═══════ */
-function confirmDelRec(id){var r=st.rec.find(function(x){return x.id===id});if(!r)return;var h='<h3>Confirmer la suppression</h3><div class="confirm-box">Supprimer l\'absence de <strong>'+esc(r.etudiant)+'</strong> en <strong>'+esc(r.module)+'</strong> du '+fmtDate(r.date)+' ?</div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn danger" onclick="doDelRec(\''+id+'\')">Supprimer</button></div>';openModal(h)}
-function doDelRec(id){st.rec=st.rec.filter(function(r){return r.id!==id});ls(LS_REC,st.rec);closeModal();render();toast('Absence supprim\u00e9e.')}
-
-/* ═══════════════════════════════════════
-   GESTION DES MODULES + import Module/Filiere/Semestre
-   ═══════════════════════════════════════ */
-function openModMgmt(){
-  var keys=regKeys().sort();
-  var h='<h3>Gestion des modules</h3>';
-  if(!keys.length){h+='<div style="padding:20px 0;text-align:center;color:var(--ink-soft);font-size:13px;font-style:italic">Aucun registre. Ajoutez des absences ou importez des modules.</div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>';openModal(h);return}
-  h+='<div class="mgmt-toolbar">';
-  h+='<div class="field" style="margin:0;flex:1;min-width:120px"><label style="display:none">Fili\u00e8re</label><select id="mmf" onchange="updModList()" style="width:100%"><option value="">Toutes fili\u00e8res</option>';getFils().forEach(function(f){h+='<option value="'+f+'">'+f+'</option>'});h+='</select></div>';
-  h+='<div class="field" style="margin:0;flex:1;min-width:100px"><label style="display:none">Semestre</label><select id="mms" onchange="updModList()" style="width:100%"><option value="">Tous semestres</option>';getSems().forEach(function(s){h+='<option value="'+s+'">'+s+'</option>'});h+='</select></div>';
-  h+='<button class="btn sm gold" onclick="openImportModModal()">&#128229; Import modules</button>';
-  h+='</div>';
-  h+='<div class="mgmt-search"><input type="text" id="mmq" placeholder="Rechercher un module..." oninput="updModList()" style="width:100%"></div>';
-  h+='<div id="mmlist" class="mgmt-list"></div>';
-  h+='<div style="margin-top:12px;display:flex;gap:8px;align-items:end"><div class="field" style="flex:1;margin:0"><label>Ajouter un module</label><input type="text" id="mmadd" placeholder="Nom du module" style="width:100%"></div><button class="btn sm" onclick="doAddMod()" style="height:35px">Ajouter</button></div>';
-  h+='<div class="modal-actions" style="margin-top:16px"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>';
-  openModal(h);setTimeout(updModList,30);
-}
-function updModList(){
-  var fil=(document.getElementById('mmf')||{}).value||'',sem=(document.getElementById('mms')||{}).value||'',q=((document.getElementById('mmq')||{}).value||'').toLowerCase();
-  var map={};regKeys().forEach(function(k){var p=parseKey(k);if(fil&&p.fil!==fil)return;if(sem&&p.sem!==sem)return;(modReg[k]||[]).forEach(function(m){var nk=norm(m);if(!map[nk])map[nk]={name:m,fil:p.fil,sem:p.sem}})});
-  var items=Object.keys(map).map(function(k){return map[k]});if(q)items=items.filter(function(it){return it.name.toLowerCase().indexOf(q)!==-1});items.sort(function(a,b){return a.name.localeCompare(b.name)});
-  var el=document.getElementById('mmlist');if(!el)return;
-  if(!items.length){el.innerHTML='<div style="padding:20px 0;text-align:center;color:var(--ink-soft);font-size:12px;font-style:italic">Aucun module trouv\u00e9.</div>';return}
-  var h='';items.forEach(function(it){var ac=st.rec.filter(function(r){return r.filiere===it.fil&&r.semestre===it.sem&&norm(r.module)===norm(it.name)}).length;h+='<div class="mgmt-item"><div class="mgmt-item-info"><div class="mgmt-item-name">'+esc(it.name)+'</div><div class="mgmt-item-meta">'+esc(it.fil)+' / '+esc(it.sem)+(ac?' &mdash; '+ac+' absence'+(ac>1?'s':''):'')+'</div></div><button class="btn sm danger" onclick="confirmDelMod(\''+esc(it.fil)+'\',\''+esc(it.sem)+'\',\''+esc(it.name)+'\')">Supprimer</button></div>'});el.innerHTML=h;
-}
-function doAddMod(){var fil=(document.getElementById('mmf')||{}).value||'',sem=(document.getElementById('mms')||{}).value||'',name=(document.getElementById('mmadd')||{}).value||'';if(!fil||!sem){toast('S\u00e9lectionnez une fili\u00e8re et un semestre.');return}if(!name.trim()){toast('Entrez un nom de module.');return}if(addModule(fil,sem,name.trim())){document.getElementById('mmadd').value='';updModList();render();toast('Module ajout\u00e9.')}else{toast('Ce module existe d\u00e9j\u00e0.')}}
-function confirmDelMod(fil,sem,modName){var nn=norm(modName);var ac=st.rec.filter(function(r){return r.filiere===fil&&r.semestre===sem&&norm(r.module)===nn}).length;var h='<h3>Supprimer le module</h3><div class="confirm-box">Supprimer <strong>'+esc(modName)+'</strong> ('+esc(fil)+' / '+esc(sem)+') ?';if(ac>0)h+='<br><br><span class="warn-tag">ATTENTION</span> '+ac+' absence'+(ac>1?'s':'')+' li\u00e9e'+(ac>1?'s':'')+' seront supprim\u00e9e'+(ac>1?'s':'')+'.';h+='</div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn danger" onclick="doDelMod(\''+esc(fil)+'\',\''+esc(sem)+'\',\''+esc(modName)+'\')">Confirmer</button></div>';openModal(h)}
-function doDelMod(fil,sem,modName){var result=deleteModule(fil,sem,modName);closeModal();render();openModMgmt();var msg='Module supprim\u00e9.';if(result.rec>0)msg+=' '+result.rec+' absence'+(result.rec>1?'s':'')+' supprim\u00e9e'+(result.rec>1?'s':'')+'.';toast(msg)}
-
-/* ═══════ Import modules (Module / Filiere / Semestre) ═══════ */
-var pendingModImport=null;
-function openImportModModal(){
-  var h='<h3>Import de modules</h3>';
-  h+='<div class="format-info"><strong>Format du fichier Excel :</strong><table><tr><td>Module</td><td>Nom du module (obligatoire)</td></tr><tr><td>Filiere</td><td>Nom de la fili\u00e8re (obligatoire)</td></tr><tr><td>Semestre</td><td>Ex : S1, S2 (obligatoire)</td></tr></table><br><span style="font-size:11px">Les noms de colonnes sont insensibles \u00e0 la casse et aux accents.</span></div>';
-  h+='<div class="drop-zone" id="mod-dz" onclick="document.getElementById(\'mod-fi\').click()"><div class="drop-zone-icon">&#128196;</div><div class="drop-zone-text">Cliquez ou glissez un fichier .xlsx / .xls</div><div class="drop-zone-hint">Colonnes : Module, Filiere, Semestre</div></div><input type="file" id="mod-fi" accept=".xlsx,.xls" style="display:none" onchange="handleModFile(this.files[0])">';
-  h+='<div id="mod-prev"></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>';
-  openModal(h,true);
-  var dz=document.getElementById('mod-dz');if(dz){dz.ondragover=function(e){e.preventDefault();dz.classList.add('dragover')};dz.ondragleave=function(){dz.classList.remove('dragover')};dz.ondrop=function(e){e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer.files.length)handleModFile(e.dataTransfer.files[0])}}
-}
-function handleModFile(file){if(!file)return;loadXlsxLib().then(function(){var reader=new FileReader();reader.onload=function(e){try{var wb=XLSX.read(e.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{defval:''});if(!rows.length){toast('Le fichier est vide.');return}parseModImport(rows)}catch(err){toast('Erreur : '+err.message)}};reader.readAsArrayBuffer(file)}).catch(function(err){toast(err.message)})}
-function parseModImport(rows){var parsed=[],errors=0;rows.slice(0,2000).forEach(function(r){var mod=norm(colVal(r,['Module','module','MODULE','Modules']));var fil=norm(colVal(r,['Filiere','filiere','Filière','filière','FILIERE']));var sem=norm(colVal(r,['Semestre','semestre','SEMESTRE','Sem']));if(!mod||!fil||!sem){errors++;return}parsed.push({module:mod,filiere:fil,semestre:sem})});if(!parsed.length){toast('Aucune ligne valide.'+(errors?' ('+errors+' incompl\u00e8te'+(errors>1?'s':'')+')':''));return}var dupCount=0,newRows=[];parsed.forEach(function(r){var k=mkKey(r.filiere,r.semestre);if((modReg[k]||[]).some(function(m){return norm(m)===norm(r.module)})){dupCount++}else{newRows.push(r)}});var seenNew={};newRows=newRows.filter(function(r){var key=r.filiere+'|'+r.semestre+'|'+r.module;if(seenNew[key])return false;seenNew[key]=true;return true});pendingModImport=newRows;var el=document.getElementById('mod-prev');if(!el)return;var h='<div class="import-stats"><span><span class="dot" style="background:var(--good)"></span> Nouveaux : '+newRows.length+'</span>';if(dupCount)h+='<span><span class="dot" style="background:var(--gold)"></span> D\u00e9j\u00e0 existants : '+dupCount+'</span>';if(errors)h+='<span><span class="dot" style="background:var(--absent)"></span> Incomplets : '+errors+'</span></div>';var preview=newRows.slice(0,10);if(preview.length){h+='<table class="preview-table"><thead><tr><th>Module</th><th>Fili\u00e8re</th><th>Semestre</th></tr></thead><tbody>';preview.forEach(function(r){h+='<tr class="new"><td>'+esc(r.module)+'</td><td>'+esc(r.filiere)+'</td><td>'+esc(r.semestre)+'</td></tr>'});if(newRows.length>10)h+='<tr><td colspan="3" style="text-align:center;color:var(--ink-soft);font-style:italic">... et '+(newRows.length-10)+' autres</td></tr>';h+='</tbody></table>'}if(newRows.length)h+='<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn gold" onclick="doModImport()">Importer '+newRows.length+' module'+(newRows.length>1?'s':'')+'</button></div>';el.innerHTML=h}
-function doModImport(){if(!pendingModImport||!pendingModImport.length)return;var count=0;pendingModImport.forEach(function(r){if(addModule(r.filiere,r.semestre,r.module))count++});pendingModImport=null;closeModal();render();openModMgmt();toast(count+' module'+(count>1?'s':'')+' import\u00e9'+(count>1?'s':'')+'.')}
-
-/* ═══════════════════════════════════════════════════════════
-   GESTION DES ÉTUDIANTS + import Nom/Prenom/Filiere/Semestre
-   ═══════════════════════════════════════════════════════════ */
-function openStuMgmt(){
-  var keys=regKeys().sort();
-  var h='<h3>Gestion des \u00e9tudiants</h3>';
-  if(!keys.length){h+='<div style="padding:20px 0;text-align:center;color:var(--ink-soft);font-size:13px;font-style:italic">Aucun registre. Ajoutez des absences ou importez des \u00e9tudiants.</div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>';openModal(h);return}
-
-  /* Toolbar : filtres + bouton import */
-  h+='<div class="mgmt-toolbar">';
-  h+='<div class="field" style="margin:0;flex:1;min-width:120px"><label style="display:none">Fili\u00e8re</label><select id="msf" onchange="updStuList()" style="width:100%"><option value="">Toutes fili\u00e8res</option>';getFils().forEach(function(f){h+='<option value="'+f+'">'+f+'</option>'});h+='</select></div>';
-  h+='<div class="field" style="margin:0;flex:1;min-width:100px"><label style="display:none">Semestre</label><select id="mss" onchange="updStuList()" style="width:100%"><option value="">Tous semestres</option>';getSems().forEach(function(s){h+='<option value="'+s+'">'+s+'</option>'});h+='</select></div>';
-  h+='<button class="btn sm gold" onclick="openImportStuModal()">&#128229; Import \u00e9tudiants</button>';
-  h+='</div>';
-
-  h+='<div class="mgmt-search"><input type="text" id="msq" placeholder="Rechercher un \u00e9tudiant..." oninput="updStuList()" style="width:100%"></div>';
-  h+='<div id="mslist" class="mgmt-list"></div>';
-  h+='<div style="margin-top:12px;display:flex;gap:8px;align-items:end"><div class="field" style="flex:1;margin:0"><label>Ajouter un \u00e9tudiant</label><input type="text" id="msadd" placeholder="Nom complet" style="width:100%"></div><button class="btn sm" onclick="doAddStu()" style="height:35px">Ajouter</button></div>';
-  h+='<div class="modal-actions" style="margin-top:16px"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>';
-  openModal(h);setTimeout(updStuList,30);
+interface PlageHoraire {
+  id: string;
+  debut: string;
+  fin: string;
+  label: string;
 }
 
-function updStuList(){
-  var fil=(document.getElementById('msf')||{}).value||'',sem=(document.getElementById('mss')||{}).value||'',q=((document.getElementById('msq')||{}).value||'').toLowerCase();
-  var map={};regKeys().forEach(function(k){var p=parseKey(k);if(fil&&p.fil!==fil)return;if(sem&&p.sem!==sem)return;(stuReg[k]||[]).forEach(function(s){var nk=norm(s);if(!map[nk])map[nk]={name:s,fil:p.fil,sem:p.sem}})});
-  var items=Object.keys(map).map(function(k){return map[k]});if(q)items=items.filter(function(it){return it.name.toLowerCase().indexOf(q)!==-1});items.sort(function(a,b){return a.name.localeCompare(b.name)});
-  var el=document.getElementById('mslist');if(!el)return;
-  if(!items.length){el.innerHTML='<div style="padding:20px 0;text-align:center;color:var(--ink-soft);font-size:12px;font-style:italic">Aucun \u00e9tudiant trouv\u00e9.</div>';return}
-  var h='';items.forEach(function(it){var ac=st.rec.filter(function(r){return r.filiere===it.fil&&r.semestre===it.sem&&norm(r.etudiant)===norm(it.name)}).length;h+='<div class="mgmt-item"><div class="mgmt-item-info"><div class="mgmt-item-name">'+esc(it.name)+'</div><div class="mgmt-item-meta">'+esc(it.fil)+' / '+esc(it.sem)+(ac?' &mdash; '+ac+' absence'+(ac>1?'s':''):'')+'</div></div><button class="btn sm danger" onclick="confirmDelStu(\''+esc(it.fil)+'\',\''+esc(it.sem)+'\',\''+esc(it.name)+'\')">Supprimer</button></div>'});el.innerHTML=h;
+interface AbsenceRecord {
+  id: string;
+  date: string;
+  moduleId: string;
+  plageId: string;
+  etudiantIds: string[];
 }
 
-function doAddStu(){
-  var fil=(document.getElementById('msf')||{}).value||'',sem=(document.getElementById('mss')||{}).value||'',name=(document.getElementById('msadd')||{}).value||'';
-  if(!fil||!sem){toast('S\u00e9lectionnez une fili\u00e8re et un semestre.');return}if(!name.trim()){toast('Entrez un nom.');return}
-  if(addStudent(fil,sem,name.trim())){document.getElementById('msadd').value='';updStuList();render();toast('\u00c9tudiant ajout\u00e9.')}else{toast('Cet \u00e9tudiant existe d\u00e9j\u00e0.')}
+// ─── Seed data ───────────────────────────────────────────────────────────────
+
+const seedStudents: Student[] = [
+  { id: "s1", nom: "Benali", prenom: "Ahmed", matricule: "20231001", groupe: "G1", filiere: "Informatique" },
+  { id: "s2", nom: "Hadj", prenom: "Fatima", matricule: "20231002", groupe: "G1", filiere: "Informatique" },
+  { id: "s3", nom: "Meziani", prenom: "Karim", matricule: "20231003", groupe: "G1", filiere: "Informatique" },
+  { id: "s4", nom: "Bouzid", prenom: "Sara", matricule: "20231004", groupe: "G2", filiere: "Informatique" },
+  { id: "s5", nom: "Ouali", prenom: "Youcef", matricule: "20231005", groupe: "G2", filiere: "Informatique" },
+  { id: "s6", nom: "Cherif", prenom: "Amina", matricule: "20231006", groupe: "G2", filiere: "Mathématiques" },
+  { id: "s7", nom: "Rahmani", prenom: "Bilal", matricule: "20231007", groupe: "G3", filiere: "Mathématiques" },
+  { id: "s8", nom: "Khelil", prenom: "Nadia", matricule: "20231008", groupe: "G3", filiere: "Mathématiques" },
+];
+
+const seedModules: Module[] = [
+  { id: "m1", code: "INF301", intitule: "Algorithmes Avancés", enseignant: "Dr. Mansouri", filiere: "Informatique" },
+  { id: "m2", code: "INF302", intitule: "Base de Données", enseignant: "Dr. Benaissa", filiere: "Informatique" },
+  { id: "m3", code: "INF303", intitule: "Réseaux Informatiques", enseignant: "Dr. Hamidi", filiere: "Informatique" },
+  { id: "m4", code: "MAT301", intitule: "Analyse Numérique", enseignant: "Dr. Aouadi", filiere: "Mathématiques" },
+  { id: "m5", code: "MAT302", intitule: "Algèbre Linéaire", enseignant: "Dr. Sellami", filiere: "Mathématiques" },
+];
+
+const seedPlages: PlageHoraire[] = [
+  { id: "p1", debut: "08:00", fin: "09:30", label: "08h00 – 09h30" },
+  { id: "p2", debut: "09:45", fin: "11:15", label: "09h45 – 11h15" },
+  { id: "p3", debut: "11:30", fin: "13:00", label: "11h30 – 13h00" },
+  { id: "p4", debut: "13:30", fin: "15:00", label: "13h30 – 15h00" },
+  { id: "p5", debut: "15:15", fin: "16:45", label: "15h15 – 16h45" },
+];
+
+const today = new Date().toISOString().slice(0, 10);
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function uid() {
+  return Math.random().toString(36).slice(2, 10);
 }
 
-function confirmDelStu(fil,sem,stuName){
-  var nn=norm(stuName);var ac=st.rec.filter(function(r){return r.filiere===fil&&r.semestre===sem&&norm(r.etudiant)===nn}).length;
-  var h='<h3>Supprimer l\'\u00e9tudiant</h3><div class="confirm-box">Supprimer <strong>'+esc(stuName)+'</strong> ('+esc(fil)+' / '+esc(sem)+') ?';
-  if(ac>0)h+='<br><br><span class="warn-tag">ATTENTION</span> '+ac+' absence'+(ac>1?'s':'')+' li\u00e9e'+(ac>1?'s':'')+' seront supprim\u00e9e'+(ac>1?'s':'')+'.';h+='</div>';
-  h+='<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn danger" onclick="doDelStu(\''+esc(fil)+'\',\''+esc(sem)+'\',\''+esc(stuName)+'\')">Confirmer</button></div>';openModal(h);
-}
-function doDelStu(fil,sem,stuName){var result=deleteStudent(fil,sem,stuName);closeModal();render();openStuMgmt();var msg='\u00c9tudiant supprim\u00e9.';if(result.rec>0)msg+=' '+result.rec+' absence'+(result.rec>1?'s':'')+' supprim\u00e9e'+(result.rec>1?'s':'')+'.';toast(msg)}
-
-/* ═══════════════════════════════════════════════════════════
-   IMPORT ÉTUDIANTS — fichier avec Nom, Prenom, Filiere, Semestre
-   ═══════════════════════════════════════════════════════════ */
-var pendingStuImport=null;
-
-function openImportStuModal(){
-  var h='<h3>Import d\'\u00e9tudiants</h3>';
-  h+='<div class="format-info">';
-  h+='<strong>Format du fichier Excel :</strong><table>';
-  h+='<tr><td>Nom</td><td>Nom de famille (obligatoire)</td></tr>';
-  h+='<tr><td>Prenom</td><td>Pr\u00e9nom (obligatoire)</td></tr>';
-  h+='<tr><td>Filiere</td><td>Nom de la fili\u00e8re (obligatoire)</td></tr>';
-  h+='<tr><td>Semestre</td><td>Ex : S1, S2 (optionnel)</td></tr>';
-  h+='</table>';
-  h+='<br><span style="font-size:11px">Les noms de colonnes sont insensibles \u00e0 la casse et aux accents.<br>Le nom complet sera enregistr\u00e9 sous la forme <code>NOM Pr\u00e9nom</code>.</span>';
-  if(!getSems().length){
-    h+='<br><br><span class="warn-tag">INFO</span> Aucun semestre existant. Si la colonne <code>Semestre</code> est absente, les \u00e9tudiants ne pourront pas \u00eatre rattach\u00e9s \u00e0 un registre. Ajoutez au moins une absence manuellement avant, ou incluez la colonne Semestre.';
-  }
-  h+='</div>';
-
-  h+='<div class="drop-zone" id="stu-dz" onclick="document.getElementById(\'stu-fi\').click()">';
-  h+='<div class="drop-zone-icon">&#128196;</div>';
-  h+='<div class="drop-zone-text">Cliquez ou glissez un fichier .xlsx / .xls</div>';
-  h+='<div class="drop-zone-hint">Colonnes : Nom, Prenom, Filiere, Semestre</div>';
-  h+='</div>';
-  h+='<input type="file" id="stu-fi" accept=".xlsx,.xls" style="display:none" onchange="handleStuFile(this.files[0])">';
-  h+='<div id="stu-prev"></div>';
-  h+='<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>';
-  openModal(h,true);
-
-  var dz=document.getElementById('stu-dz');
-  if(dz){
-    dz.ondragover=function(e){e.preventDefault();dz.classList.add('dragover')};
-    dz.ondragleave=function(){dz.classList.remove('dragover')};
-    dz.ondrop=function(e){e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer.files.length)handleStuFile(e.dataTransfer.files[0])};
-  }
+function cls(...args: (string | false | undefined | null)[]) {
+  return args.filter(Boolean).join(" ");
 }
 
-function handleStuFile(file){
-  if(!file)return;
-  loadXlsxLib().then(function(){
-    var reader=new FileReader();
-    reader.onload=function(e){
-      try{
-        var wb=XLSX.read(e.target.result,{type:'array'});
-        var ws=wb.Sheets[wb.SheetNames[0]];
-        var rows=XLSX.utils.sheet_to_json(ws,{defval:''});
-        if(!rows.length){toast('Le fichier est vide.');return}
-        parseStuImport(rows);
-      }catch(err){toast('Erreur de lecture : '+err.message)}
-    };
-    reader.readAsArrayBuffer(file);
-  }).catch(function(err){toast(err.message)});
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+function Badge({ children, variant = "default" }: { children: React.ReactNode; variant?: "default" | "success" | "warn" | "danger" | "info" }) {
+  const map = {
+    default: "bg-muted text-muted-foreground",
+    success: "bg-emerald-100 text-emerald-700",
+    warn: "bg-amber-100 text-amber-700",
+    danger: "bg-red-100 text-red-700",
+    info: "bg-blue-100 text-blue-700",
+  };
+  return (
+    <span className={cls("inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold", map[variant])}>
+      {children}
+    </span>
+  );
 }
 
-function parseStuImport(rows){
-  var parsed=[],errors=0;
-  var semestresExistants=getSems();
+function Btn({
+  children,
+  onClick,
+  variant = "primary",
+  size = "md",
+  disabled,
+  className,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  variant?: "primary" | "secondary" | "ghost" | "danger";
+  size?: "sm" | "md";
+  disabled?: boolean;
+  className?: string;
+}) {
+  const base = "inline-flex items-center gap-1.5 rounded font-semibold transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 disabled:opacity-50 disabled:pointer-events-none";
+  const sizes = { sm: "px-3 py-1.5 text-xs", md: "px-4 py-2 text-sm" };
+  const variants = {
+    primary: "bg-primary text-primary-foreground hover:bg-blue-700 shadow-sm",
+    secondary: "bg-secondary text-secondary-foreground hover:bg-blue-100 border border-blue-200",
+    ghost: "bg-transparent text-foreground hover:bg-muted",
+    danger: "bg-destructive text-destructive-foreground hover:bg-red-700",
+  };
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={cls(base, sizes[size], variants[variant], className)}
+    >
+      {children}
+    </button>
+  );
+}
 
-  rows.slice(0,5000).forEach(function(r){
-    /* Lecture flexible des colonnes */
-    var nom = norm(colVal(r,['Nom','nom','NOM','Nom ']));
-    var prenom = norm(colVal(r,['Prenom','Prénom','prenom','prénom','PRENOM','Prénom ','Prenom ']));
-    var fil = norm(colVal(r,['Filiere','filiere','Filière','filière','FILIERE','Filiere ','Filière ']));
-    var sem = norm(colVal(r,['Semestre','semestre','SEMESTRE','Sem','sem']));
+function Input({ label, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { label?: string }) {
+  return (
+    <div className="flex flex-col gap-1">
+      {label && <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{label}</label>}
+      <input
+        {...props}
+        className="bg-input-background border border-border rounded px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+      />
+    </div>
+  );
+}
 
-    if(!nom||!fil){errors++;return}
-    /* Prenom est optionnel : si absent, on garde juste le nom */
-    if(!prenom) prenom='';
+// ─── Dashboard ────────────────────────────────────────────────────────────────
 
-    /* Construire le nom complet : NOM Prénom (nom en majuscules) */
-    var nomUpper = nom.toUpperCase();
-    var fullName = prenom ? (nomUpper + ' ' + prenom) : nomUpper;
+function Dashboard({ students, modules, absences, plages }: {
+  students: Student[];
+  modules: Module[];
+  absences: AbsenceRecord[];
+  plages: PlageHoraire[];
+}) {
+  const todayAbsences = absences.filter((a) => a.date === today);
+  const absentToday = new Set(todayAbsences.flatMap((a) => a.etudiantIds)).size;
 
-    /* Si pas de semestre dans le fichier, prendre le premier existant ou laisser vide */
-    if(!sem && semestresExistants.length===1){
-      sem = semestresExistants[0];
-    }
+  const perModule = modules.map((m) => {
+    const count = absences
+      .filter((a) => a.moduleId === m.id)
+      .flatMap((a) => a.etudiantIds).length;
+    return { ...m, count };
+  }).sort((a, b) => b.count - a.count);
 
-    parsed.push({nom:nomUpper, prenom:prenom, fullName:fullName, filiere:fil, semestre:sem});
-  });
+  const recentAbsences = [...absences]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 8);
 
-  if(!parsed.length){
-    toast('Aucune ligne valide.'+(errors?' ('+errors+' ligne'+(errors>1?'s':'')+' sans Nom/Filiere)':''));
-    return;
-  }
+  return (
+    <div className="space-y-6">
+      {/* Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: "Total Étudiants", value: students.length, icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
+          { label: "Modules", value: modules.length, icon: BookOpen, color: "text-purple-600", bg: "bg-purple-50" },
+          { label: "Absences Aujourd'hui", value: absentToday, icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50" },
+          { label: "Total Absences", value: absences.flatMap((a) => a.etudiantIds).length, icon: ClipboardCheck, color: "text-red-600", bg: "bg-red-50" },
+        ].map(({ label, value, icon: Icon, color, bg }) => (
+          <div key={label} className="bg-card border border-border rounded-xl p-5 flex items-center gap-4 shadow-sm">
+            <div className={cls("w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0", bg)}>
+              <Icon className={cls("w-5 h-5", color)} />
+            </div>
+            <div>
+              <div className="text-2xl font-bold text-foreground">{value}</div>
+              <div className="text-xs text-muted-foreground mt-0.5">{label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
 
-  /* Détecter doublons */
-  var dupCount=0, newRows=[], noSemCount=0;
-  parsed.forEach(function(r){
-    /* Si pas de semestre, on ne peut pas enregistrer */
-    if(!r.semestre){noSemCount++;return}
-    var k=mkKey(r.filiere,r.semestre);
-    var existing=stuReg[k]||[];
-    var isDup=existing.some(function(s){return norm(s)===norm(r.fullName)});
-    if(isDup){dupCount++}
-    else{newRows.push(r)}
-  });
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Top modules */}
+        <div className="bg-card border border-border rounded-xl shadow-sm">
+          <div className="px-5 py-4 border-b border-border">
+            <h3 className="font-bold text-foreground">Absences par Module</h3>
+          </div>
+          <div className="p-5 space-y-3">
+            {perModule.length === 0 && <p className="text-sm text-muted-foreground">Aucune absence enregistrée.</p>}
+            {perModule.map((m) => {
+              const pct = students.length > 0 ? Math.round((m.count / students.length) * 100) : 0;
+              return (
+                <div key={m.id}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="font-medium text-foreground">{m.intitule}</span>
+                    <span className="text-muted-foreground">{m.count} absences</span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(pct, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
-  /* Dédupliquer dans les nouveaux */
-  var seenNew={};
-  newRows=newRows.filter(function(r){
-    var key=r.filiere+'|'+r.semestre+'|'+r.fullName;
-    if(seenNew[key])return false;
-    seenNew[key]=true;return true;
-  });
+        {/* Recent absences */}
+        <div className="bg-card border border-border rounded-xl shadow-sm">
+          <div className="px-5 py-4 border-b border-border">
+            <h3 className="font-bold text-foreground">Dernières Séances</h3>
+          </div>
+          <div className="divide-y divide-border">
+            {recentAbsences.length === 0 && (
+              <p className="text-sm text-muted-foreground p-5">Aucun enregistrement.</p>
+            )}
+            {recentAbsences.map((a) => {
+              const mod = modules.find((m) => m.id === a.moduleId);
+              const plage = plages.find((p) => p.id === a.plageId);
+              return (
+                <div key={a.id} className="flex items-center justify-between px-5 py-3">
+                  <div>
+                    <div className="text-sm font-semibold text-foreground">{mod?.intitule ?? "—"}</div>
+                    <div className="text-xs text-muted-foreground">{a.date} · {plage?.label ?? "—"}</div>
+                  </div>
+                  <Badge variant="danger">{a.etudiantIds.length} absent(s)</Badge>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-  pendingStuImport=newRows;
+// ─── Marquer Absences ─────────────────────────────────────────────────────────
 
-  var el=document.getElementById('stu-prev');
-  if(!el)return;
-  var h='';
+function MarquerAbsences({ students, modules, plages, absences, onSave }: {
+  students: Student[];
+  modules: Module[];
+  plages: PlageHoraire[];
+  absences: AbsenceRecord[];
+  onSave: (record: AbsenceRecord) => void;
+}) {
+  const [date, setDate] = useState(today);
+  const [moduleId, setModuleId] = useState("");
+  const [plageId, setPlageId] = useState("");
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [saved, setSaved] = useState(false);
 
-  h+='<div class="import-stats">';
-  h+='<span><span class="dot" style="background:var(--good)"></span> Nouveaux : '+newRows.length+'</span>';
-  if(dupCount)h+='<span><span class="dot" style="background:var(--gold)"></span> D\u00e9j\u00e0 existants : '+dupCount+'</span>';
-  if(noSemCount)h+='<span><span class="dot" style="background:var(--absent)"></span> Sans semestre : '+noSemCount+'</span>';
-  if(errors)h+='<span><span class="dot" style="background:var(--absent)"></span> Incomplets : '+errors+'</span>';
-  h+='</div>';
-
-  if(noSemCount>0){
-    h+='<div class="confirm-box" style="border-color:var(--gold);background:rgba(184,147,74,.08)">';
-    h+='<strong style="color:var(--gold)">'+noSemCount+' \u00e9tudiant'+(noSemCount>1?'s':'')+' sans semestre</strong><br>';
-    h+='<span style="font-size:12px;color:var(--ink-soft)">Ajoutez une colonne <code>Semestre</code> (S1, S2...) dans votre fichier pour les prendre en compte.</span>';
-    h+='</div>';
-  }
-
-  /* Aperçu tableau */
-  var preview=newRows.slice(0,12);
-  if(preview.length){
-    h+='<table class="preview-table"><thead><tr><th>Nom complet</th><th>Fili\u00e8re</th><th>Semestre</th></tr></thead><tbody>';
-    preview.forEach(function(r){
-      h+='<tr class="new"><td>'+esc(r.fullName)+'</td><td>'+esc(r.filiere)+'</td><td>'+esc(r.semestre)+'</td></tr>';
+  const selectedModule = modules.find((m) => m.id === moduleId);
+  const filteredStudents = students
+    .filter((s) => !selectedModule || s.filiere === selectedModule.filiere || true)
+    .filter((s) => {
+      const q = search.toLowerCase();
+      return s.nom.toLowerCase().includes(q) || s.prenom.toLowerCase().includes(q) || s.matricule.includes(q);
     });
-    if(newRows.length>12)h+='<tr><td colspan="3" style="text-align:center;color:var(--ink-soft);font-style:italic">... et '+(newRows.length-12)+' autres</td></tr>';
-    h+='</tbody></table>';
-  }
 
-  if(newRows.length){
-    h+='<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn gold" onclick="doStuImport()">Importer '+newRows.length+' \u00e9tudiant'+(newRows.length>1?'s':'')+'</button></div>';
-  }
-  el.innerHTML=h;
+  const toggle = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+    setSaved(false);
+  };
+
+  const toggleAll = () => {
+    if (selected.size === filteredStudents.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(filteredStudents.map((s) => s.id)));
+    }
+    setSaved(false);
+  };
+
+  const handleSave = () => {
+    if (!moduleId || !plageId || !date) return;
+    onSave({ id: uid(), date, moduleId, plageId, etudiantIds: [...selected] });
+    setSaved(true);
+    setSelected(new Set());
+  };
+
+  const allSelected = filteredStudents.length > 0 && selected.size === filteredStudents.length;
+
+  return (
+    <div className="space-y-5">
+      {/* Session info */}
+      <div className="bg-card border border-border rounded-xl shadow-sm p-5">
+        <h3 className="font-bold text-foreground mb-4 flex items-center gap-2"><Calendar className="w-4 h-4" /> Paramètres de la Séance</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <Input label="Date" type="date" value={date} onChange={(e) => { setDate(e.target.value); setSaved(false); }} />
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Module</label>
+            <select
+              value={moduleId}
+              onChange={(e) => { setModuleId(e.target.value); setSaved(false); }}
+              className="bg-input-background border border-border rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              <option value="">— Choisir un module —</option>
+              {modules.map((m) => (
+                <option key={m.id} value={m.id}>{m.code} · {m.intitule}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Plage Horaire</label>
+            <select
+              value={plageId}
+              onChange={(e) => { setPlageId(e.target.value); setSaved(false); }}
+              className="bg-input-background border border-border rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              <option value="">— Choisir une plage —</option>
+              {plages.map((p) => (
+                <option key={p.id} value={p.id}>{p.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Student selection */}
+      <div className="bg-card border border-border rounded-xl shadow-sm">
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-3">
+            <h3 className="font-bold text-foreground">Marquer les Absents</h3>
+            <Badge variant={selected.size > 0 ? "danger" : "default"}>{selected.size} absent(s)</Badge>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Rechercher..."
+                className="bg-input-background border border-border rounded pl-8 pr-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring w-48"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Header row */}
+        <div className="px-5 py-2 border-b border-border bg-muted/40 flex items-center gap-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          <button onClick={toggleAll} className="flex items-center gap-1.5 hover:text-foreground transition-colors">
+            {allSelected ? <CheckSquare className="w-4 h-4 text-primary" /> : <Square className="w-4 h-4" />}
+            Tout sélectionner
+          </button>
+          <span className="ml-auto">{filteredStudents.length} étudiant(s)</span>
+        </div>
+
+        <div className="divide-y divide-border max-h-[420px] overflow-y-auto">
+          {filteredStudents.length === 0 && (
+            <p className="text-sm text-muted-foreground p-6 text-center">Aucun étudiant trouvé.</p>
+          )}
+          {filteredStudents.map((s) => {
+            const isAbsent = selected.has(s.id);
+            return (
+              <button
+                key={s.id}
+                onClick={() => toggle(s.id)}
+                className={cls(
+                  "w-full flex items-center gap-4 px-5 py-3 text-left transition-colors",
+                  isAbsent ? "bg-red-50 hover:bg-red-100" : "hover:bg-muted/40"
+                )}
+              >
+                <div className={cls("w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors",
+                  isAbsent ? "bg-destructive border-destructive" : "border-border"
+                )}>
+                  {isAbsent && <Check className="w-3 h-3 text-white" />}
+                </div>
+                <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+                  style={{ background: isAbsent ? "#fecaca" : "#dbeafe", color: isAbsent ? "#dc2626" : "#1d4ed8" }}>
+                  {s.prenom[0]}{s.nom[0]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-sm text-foreground">{s.prenom} {s.nom}</div>
+                  <div className="text-xs text-muted-foreground">{s.matricule} · {s.groupe} · {s.filiere}</div>
+                </div>
+                {isAbsent && <Badge variant="danger">Absent</Badge>}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="px-5 py-4 border-t border-border flex items-center justify-between flex-wrap gap-3">
+          <div className="text-sm text-muted-foreground">
+            {selected.size} étudiant(s) marqué(s) absent(s) sur {filteredStudents.length}
+          </div>
+          <div className="flex gap-2">
+            <Btn variant="ghost" size="sm" onClick={() => { setSelected(new Set()); setSaved(false); }}>
+              <X className="w-3.5 h-3.5" /> Réinitialiser
+            </Btn>
+            <Btn
+              variant="primary"
+              onClick={handleSave}
+              disabled={!moduleId || !plageId || !date}
+            >
+              <ClipboardCheck className="w-4 h-4" />
+              {saved ? "Enregistré ✓" : "Enregistrer les Absences"}
+            </Btn>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-function doStuImport(){
-  if(!pendingStuImport||!pendingStuImport.length)return;
-  var count=0;
-  pendingStuImport.forEach(function(r){
-    if(addStudent(r.filiere,r.semestre,r.fullName))count++;
+// ─── Student List ─────────────────────────────────────────────────────────────
+
+function EtudiantList({ students, setStudents }: {
+  students: Student[];
+  setStudents: React.Dispatch<React.SetStateAction<Student[]>>;
+}) {
+  const [search, setSearch] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [form, setForm] = useState<Omit<Student, "id">>({ nom: "", prenom: "", matricule: "", groupe: "", filiere: "" });
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const filtered = students.filter((s) => {
+    const q = search.toLowerCase();
+    return s.nom.toLowerCase().includes(q) || s.prenom.toLowerCase().includes(q) || s.matricule.includes(q) || s.filiere.toLowerCase().includes(q);
   });
-  pendingStuImport=null;
-  closeModal();render();openStuMgmt();
-  toast(count+' \u00e9tudiant'+(count>1?'s':'')+' import\u00e9'+(count>1?'s':'')+'.');
+
+  const openAdd = () => { setForm({ nom: "", prenom: "", matricule: "", groupe: "", filiere: "" }); setEditId(null); setShowForm(true); };
+  const openEdit = (s: Student) => { setForm({ nom: s.nom, prenom: s.prenom, matricule: s.matricule, groupe: s.groupe, filiere: s.filiere }); setEditId(s.id); setShowForm(true); };
+
+  const handleSave = () => {
+    if (!form.nom || !form.prenom || !form.matricule) return;
+    if (editId) {
+      setStudents((prev) => prev.map((s) => s.id === editId ? { ...s, ...form } : s));
+    } else {
+      setStudents((prev) => [...prev, { id: uid(), ...form }]);
+    }
+    setShowForm(false);
+  };
+
+  const handleDelete = (id: string) => {
+    setStudents((prev) => prev.filter((s) => s.id !== id));
+  };
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const data = ev.target?.result;
+      const wb = XLSX.read(data, { type: "binary" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json<Record<string, string>>(ws, { defval: "" });
+      const imported: Student[] = rows.map((r) => ({
+        id: uid(),
+        nom: r["Nom"] ?? r["nom"] ?? r["NOM"] ?? "",
+        prenom: r["Prenom"] ?? r["prenom"] ?? r["Prénom"] ?? r["PRENOM"] ?? "",
+        matricule: String(r["Matricule"] ?? r["matricule"] ?? r["MATRICULE"] ?? ""),
+        groupe: r["Groupe"] ?? r["groupe"] ?? r["GROUPE"] ?? "",
+        filiere: r["Filiere"] ?? r["filiere"] ?? r["Filière"] ?? r["FILIERE"] ?? "",
+      })).filter((s) => s.nom || s.prenom);
+      setStudents((prev) => [...prev, ...imported]);
+    };
+    reader.readAsBinaryString(file);
+    e.target.value = "";
+  };
+
+  const handleExportTemplate = () => {
+    const ws = XLSX.utils.aoa_to_sheet([["Nom", "Prenom", "Matricule", "Groupe", "Filiere"]]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Etudiants");
+    XLSX.writeFile(wb, "modele_etudiants.xlsx");
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-card border border-border rounded-xl shadow-sm">
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3">
+            <h3 className="font-bold text-foreground">Liste des Étudiants</h3>
+            <Badge variant="info">{students.length}</Badge>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Rechercher..."
+                className="bg-input-background border border-border rounded pl-8 pr-3 py-1.5 text-sm w-44 focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <Btn variant="ghost" size="sm" onClick={handleExportTemplate}><Download className="w-3.5 h-3.5" /> Modèle Excel</Btn>
+            <Btn variant="secondary" size="sm" onClick={() => fileRef.current?.click()}><Upload className="w-3.5 h-3.5" /> Importer Excel</Btn>
+            <Btn variant="primary" size="sm" onClick={openAdd}><Plus className="w-3.5 h-3.5" /> Ajouter</Btn>
+            <input ref={fileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImport} />
+          </div>
+        </div>
+
+        {/* Form inline */}
+        {showForm && (
+          <div className="px-5 py-4 border-b border-border bg-secondary/30">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              <Input label="Nom" value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} placeholder="Benali" />
+              <Input label="Prénom" value={form.prenom} onChange={(e) => setForm({ ...form, prenom: e.target.value })} placeholder="Ahmed" />
+              <Input label="Matricule" value={form.matricule} onChange={(e) => setForm({ ...form, matricule: e.target.value })} placeholder="20231001" />
+              <Input label="Groupe" value={form.groupe} onChange={(e) => setForm({ ...form, groupe: e.target.value })} placeholder="G1" />
+              <Input label="Filière" value={form.filiere} onChange={(e) => setForm({ ...form, filiere: e.target.value })} placeholder="Informatique" />
+            </div>
+            <div className="flex gap-2 mt-3">
+              <Btn variant="primary" size="sm" onClick={handleSave}><Check className="w-3.5 h-3.5" /> {editId ? "Modifier" : "Ajouter"}</Btn>
+              <Btn variant="ghost" size="sm" onClick={() => setShowForm(false)}><X className="w-3.5 h-3.5" /> Annuler</Btn>
+            </div>
+          </div>
+        )}
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-muted/40 text-muted-foreground text-xs uppercase tracking-wide">
+                <th className="text-left px-5 py-3 font-semibold">#</th>
+                <th className="text-left px-5 py-3 font-semibold">Nom Complet</th>
+                <th className="text-left px-5 py-3 font-semibold">Matricule</th>
+                <th className="text-left px-5 py-3 font-semibold">Groupe</th>
+                <th className="text-left px-5 py-3 font-semibold">Filière</th>
+                <th className="text-right px-5 py-3 font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {filtered.length === 0 && (
+                <tr><td colSpan={6} className="text-center py-8 text-muted-foreground">Aucun étudiant.</td></tr>
+              )}
+              {filtered.map((s, i) => (
+                <tr key={s.id} className="hover:bg-muted/20 transition-colors">
+                  <td className="px-5 py-3 text-muted-foreground">{i + 1}</td>
+                  <td className="px-5 py-3 font-semibold text-foreground flex items-center gap-2">
+                    <span className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-primary">
+                      {s.prenom[0]}{s.nom[0]}
+                    </span>
+                    {s.prenom} {s.nom}
+                  </td>
+                  <td className="px-5 py-3 font-mono text-xs text-muted-foreground">{s.matricule}</td>
+                  <td className="px-5 py-3"><Badge>{s.groupe}</Badge></td>
+                  <td className="px-5 py-3 text-muted-foreground">{s.filiere}</td>
+                  <td className="px-5 py-3 text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <button onClick={() => openEdit(s)} className="p-1.5 rounded hover:bg-secondary transition-colors text-muted-foreground hover:text-primary">
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => handleDelete(s.id)} className="p-1.5 rounded hover:bg-red-50 transition-colors text-muted-foreground hover:text-destructive">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-/* ═══════ Import absences (complet) ═══════ */
-function openImportAbsModal(){
-  var h='<h3>Importer des absences</h3><div class="format-info">Colonnes : <code>Filiere</code>, <code>Semestre</code>, <code>Date</code>, <code>Seance</code>, <code>Etudiant</code>, <code>Module</code>, <code>Observation</code> (optionnelle).<br>Dates : <code>YYYY-MM-DD</code> ou <code>DD/MM/YYYY</code>.</div>';
-  h+='<div class="drop-zone" id="abs-dz" onclick="document.getElementById(\'abs-fi\').click()"><div class="drop-zone-icon">&#128196;</div><div class="drop-zone-text">Cliquez ou glissez un fichier .xlsx / .xls</div><div class="drop-zone-hint">Maximum 5000 lignes</div></div><input type="file" id="abs-fi" accept=".xlsx,.xls" style="display:none" onchange="handleAbsFile(this.files[0])">';
-  h+='<div id="abs-prev"></div><div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Fermer</button></div>';
-  openModal(h,true);
-  var dz=document.getElementById('abs-dz');if(dz){dz.ondragover=function(e){e.preventDefault();dz.classList.add('dragover')};dz.ondragleave=function(){dz.classList.remove('dragover')};dz.ondrop=function(e){e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer.files.length)handleAbsFile(e.dataTransfer.files[0])}}
+// ─── Module List ──────────────────────────────────────────────────────────────
+
+function ModuleList({ modules, setModules }: {
+  modules: Module[];
+  setModules: React.Dispatch<React.SetStateAction<Module[]>>;
+}) {
+  const [showForm, setShowForm] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [form, setForm] = useState<Omit<Module, "id">>({ code: "", intitule: "", enseignant: "", filiere: "" });
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [search, setSearch] = useState("");
+
+  const filtered = modules.filter((m) => {
+    const q = search.toLowerCase();
+    return m.code.toLowerCase().includes(q) || m.intitule.toLowerCase().includes(q) || m.enseignant.toLowerCase().includes(q);
+  });
+
+  const openAdd = () => { setForm({ code: "", intitule: "", enseignant: "", filiere: "" }); setEditId(null); setShowForm(true); };
+  const openEdit = (m: Module) => { setForm({ code: m.code, intitule: m.intitule, enseignant: m.enseignant, filiere: m.filiere }); setEditId(m.id); setShowForm(true); };
+
+  const handleSave = () => {
+    if (!form.code || !form.intitule) return;
+    if (editId) {
+      setModules((prev) => prev.map((m) => m.id === editId ? { ...m, ...form } : m));
+    } else {
+      setModules((prev) => [...prev, { id: uid(), ...form }]);
+    }
+    setShowForm(false);
+  };
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const data = ev.target?.result;
+      const wb = XLSX.read(data, { type: "binary" });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json<Record<string, string>>(ws, { defval: "" });
+      const imported: Module[] = rows.map((r) => ({
+        id: uid(),
+        code: r["Code"] ?? r["code"] ?? "",
+        intitule: r["Intitule"] ?? r["intitule"] ?? r["Intitulé"] ?? "",
+        enseignant: r["Enseignant"] ?? r["enseignant"] ?? "",
+        filiere: r["Filiere"] ?? r["filiere"] ?? r["Filière"] ?? "",
+      })).filter((m) => m.code);
+      setModules((prev) => [...prev, ...imported]);
+    };
+    reader.readAsBinaryString(file);
+    e.target.value = "";
+  };
+
+  const handleExportTemplate = () => {
+    const ws = XLSX.utils.aoa_to_sheet([["Code", "Intitule", "Enseignant", "Filiere"]]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Modules");
+    XLSX.writeFile(wb, "modele_modules.xlsx");
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-card border border-border rounded-xl shadow-sm">
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3">
+            <h3 className="font-bold text-foreground">Liste des Modules</h3>
+            <Badge variant="info">{modules.length}</Badge>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Rechercher..."
+                className="bg-input-background border border-border rounded pl-8 pr-3 py-1.5 text-sm w-44 focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <Btn variant="ghost" size="sm" onClick={handleExportTemplate}><Download className="w-3.5 h-3.5" /> Modèle Excel</Btn>
+            <Btn variant="secondary" size="sm" onClick={() => fileRef.current?.click()}><Upload className="w-3.5 h-3.5" /> Importer Excel</Btn>
+            <Btn variant="primary" size="sm" onClick={openAdd}><Plus className="w-3.5 h-3.5" /> Ajouter</Btn>
+            <input ref={fileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImport} />
+          </div>
+        </div>
+
+        {showForm && (
+          <div className="px-5 py-4 border-b border-border bg-secondary/30">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <Input label="Code" value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} placeholder="INF301" />
+              <Input label="Intitulé" value={form.intitule} onChange={(e) => setForm({ ...form, intitule: e.target.value })} placeholder="Algorithmes Avancés" />
+              <Input label="Enseignant" value={form.enseignant} onChange={(e) => setForm({ ...form, enseignant: e.target.value })} placeholder="Dr. Mansouri" />
+              <Input label="Filière" value={form.filiere} onChange={(e) => setForm({ ...form, filiere: e.target.value })} placeholder="Informatique" />
+            </div>
+            <div className="flex gap-2 mt-3">
+              <Btn variant="primary" size="sm" onClick={handleSave}><Check className="w-3.5 h-3.5" /> {editId ? "Modifier" : "Ajouter"}</Btn>
+              <Btn variant="ghost" size="sm" onClick={() => setShowForm(false)}><X className="w-3.5 h-3.5" /> Annuler</Btn>
+            </div>
+          </div>
+        )}
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-muted/40 text-muted-foreground text-xs uppercase tracking-wide">
+                <th className="text-left px-5 py-3 font-semibold">Code</th>
+                <th className="text-left px-5 py-3 font-semibold">Intitulé</th>
+                <th className="text-left px-5 py-3 font-semibold">Enseignant</th>
+                <th className="text-left px-5 py-3 font-semibold">Filière</th>
+                <th className="text-right px-5 py-3 font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {filtered.length === 0 && (
+                <tr><td colSpan={5} className="text-center py-8 text-muted-foreground">Aucun module.</td></tr>
+              )}
+              {filtered.map((m) => (
+                <tr key={m.id} className="hover:bg-muted/20 transition-colors">
+                  <td className="px-5 py-3 font-mono text-xs font-bold text-primary">{m.code}</td>
+                  <td className="px-5 py-3 font-semibold text-foreground">{m.intitule}</td>
+                  <td className="px-5 py-3 text-muted-foreground">{m.enseignant}</td>
+                  <td className="px-5 py-3"><Badge variant="info">{m.filiere}</Badge></td>
+                  <td className="px-5 py-3 text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <button onClick={() => openEdit(m)} className="p-1.5 rounded hover:bg-secondary transition-colors text-muted-foreground hover:text-primary">
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => setModules((prev) => prev.filter((x) => x.id !== m.id))} className="p-1.5 rounded hover:bg-red-50 transition-colors text-muted-foreground hover:text-destructive">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
 }
-var pendingAbsImport=null;
-function handleAbsFile(file){if(!file)return;loadXlsxLib().then(function(){var reader=new FileReader();reader.onload=function(e){try{var wb=XLSX.read(e.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{defval:''});if(!rows.length){toast('Le fichier est vide.');return}parseAbsImport(rows)}catch(err){toast('Erreur : '+err.message)}};reader.readAsArrayBuffer(file)}).catch(function(err){toast(err.message)})}
-function parseDate(v){if(!v)return null;if(typeof v==='number'){var d=XLSX.SSF.parse_date_code(v);if(d)return d.y+'-'+String(d.m).padStart(2,'0')+'-'+String(d.d).padStart(2,'0')}var s=String(v).trim(),m=s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);if(m)return m[3]+'-'+m[2]+'-'+m[1];m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);if(m)return s;return null}
-function parseAbsImport(rows){var parsed=[],errors=0;rows.slice(0,5000).forEach(function(r){var fil=norm(colVal(r,['Filiere','filiere','Filière','filière']));var sem=norm(colVal(r,['Semestre','semestre']));var dat=parseDate(colVal(r,['Date','date']));var sea=colVal(r,['Seance','séance','Séance','seance']);var stu=colVal(r,['Etudiant','étudiant','Étudiant','etudiant','Nom','nom']);var mod=colVal(r,['Module','module']);var obs=colVal(r,['Observation','observation','Obs','obs'])||null;fil=norm(fil);sem=norm(sem);stu=norm(stu);mod=norm(mod);if(!fil||!sem||!dat||!sea||!stu||!mod){errors++;return}parsed.push({filiere:fil,semestre:sem,date:dat,seance:sea,etudiant:stu,module:mod,observation:obs||null,id:nid()})});if(!parsed.length){toast('Aucune ligne valide.'+(errors?' ('+errors+' erreurs)':''));return}var existing={};st.rec.forEach(function(r){existing[r.filiere+'|'+r.semestre+'|'+r.date+'|'+r.seance+'|'+r.etudiant+'|'+r.module]=1});var dupCount=0,newRows=[];parsed.forEach(function(r){var key=r.filiere+'|'+r.semestre+'|'+r.date+'|'+r.seance+'|'+r.etudiant+'|'+r.module;if(existing[key]){dupCount++}else{newRows.push(r);existing[key]=1}});pendingAbsImport=newRows;var el=document.getElementById('abs-prev');if(!el)return;var h='<div class="import-stats"><span><span class="dot" style="background:var(--good)"></span> Nouveaux : '+newRows.length+'</span>';if(dupCount)h+='<span><span class="dot" style="background:var(--gold)"></span> Doublons : '+dupCount+'</span>';if(errors)h+='<span><span class="dot" style="background:var(--absent)"></span> Erreurs : '+errors+'</span></div>';var preview=newRows.slice(0,8);if(preview.length){h+='<table class="preview-table"><thead><tr><th>Date</th><th>\u00c9tudiant</th><th>Module</th></tr></thead><tbody>';preview.forEach(function(r){h+='<tr class="new"><td>'+fmtDate(r.date)+'</td><td>'+esc(r.etudiant)+'</td><td>'+esc(r.module)+'</td></tr>'});if(newRows.length>8)h+='<tr><td colspan="3" style="text-align:center;color:var(--ink-soft);font-style:italic">... et '+(newRows.length-8)+' autres</td></tr>';h+='</tbody></table>'}if(newRows.length)h+='<div class="modal-actions"><button class="btn ghost" onclick="closeModal()">Annuler</button><button class="btn gold" onclick="doAbsImport()">Importer '+newRows.length+' enregistrement'+(newRows.length>1?'s':'')+'</button></div>';el.innerHTML=h}
-function doAbsImport(){if(!pendingAbsImport||!pendingAbsImport.length)return;pendingAbsImport.forEach(function(r){st.rec.push(r);addModule(r.filiere,r.semestre,r.module);addStudent(r.filiere,r.semestre,r.etudiant)});var count=pendingAbsImport.length;pendingAbsImport=null;ls(LS_REC,st.rec);closeModal();render();toast(count+' absence'+(count>1?'s':'')+' import\u00e9e'+(count>1?'s':'')+'.')}
 
-/* ═══════ Export XLSX ═══════ */
-function exportXlsx(){var all=filtered();if(!all.length){toast('Aucune donn\u00e9e \u00e0 exporter.');return}loadXlsxLib().then(function(){var data=all.map(function(r){return{'Filiere':r.filiere,'Semestre':r.semestre,'Date':r.date,'Seance':r.seance,'Etudiant':r.etudiant,'Module':r.module,'Observation':r.observation||''}});var ws=XLSX.utils.json_to_sheet(data);var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Absences');ws['!cols']=[{wch:8},{wch:10},{wch:12},{wch:16},{wch:28},{wch:40},{wch:20}];XLSX.writeFile(wb,'absences_'+new Date().toISOString().slice(0,10)+'.xlsx');toast('Fichier export\u00e9.')}).catch(function(err){toast(err.message)})}
+// ─── Plages Horaires ──────────────────────────────────────────────────────────
 
-/* ═══════ Raccourcis clavier ═══════ */
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal()});
+function PlagesList({ plages, setPlages }: {
+  plages: PlageHoraire[];
+  setPlages: React.Dispatch<React.SetStateAction<PlageHoraire[]>>;
+}) {
+  const [showForm, setShowForm] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [form, setForm] = useState({ debut: "", fin: "" });
 
-/* ═══════ Initialisation ═══════ */
-function init(){
-  st.rec=ls(LS_REC);
-  if(!st.rec){st.rec=SEED.map(function(r){return{id:r.id||nid(),filiere:norm(r.filiere),semestre:norm(r.semestre),date:r.date,seance:r.seance,etudiant:norm(r.etudiant),module:norm(r.module),observation:r.observation}});ls(LS_REC,st.rec)}
-  else{st.rec=st.rec.map(function(r){return{id:r.id||nid(),filiere:norm(r.filiere),semestre:norm(r.semestre),date:r.date,seance:r.seance,etudiant:norm(r.etudiant),module:norm(r.module),observation:r.observation}});ls(LS_REC,st.rec)}
-  loadMods();loadStus();
-  document.getElementById('loading').style.display='none';
-  document.getElementById('app').style.display='flex';
-  render();
+  const openAdd = () => { setForm({ debut: "", fin: "" }); setEditId(null); setShowForm(true); };
+  const openEdit = (p: PlageHoraire) => { setForm({ debut: p.debut, fin: p.fin }); setEditId(p.id); setShowForm(true); };
+
+  const handleSave = () => {
+    if (!form.debut || !form.fin) return;
+    const label = `${form.debut.replace(":", "h")} – ${form.fin.replace(":", "h")}`;
+    if (editId) {
+      setPlages((prev) => prev.map((p) => p.id === editId ? { ...p, ...form, label } : p));
+    } else {
+      setPlages((prev) => [...prev, { id: uid(), ...form, label }]);
+    }
+    setShowForm(false);
+  };
+
+  return (
+    <div className="bg-card border border-border rounded-xl shadow-sm max-w-xl">
+      <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <h3 className="font-bold text-foreground">Plages Horaires</h3>
+          <Badge variant="info">{plages.length}</Badge>
+        </div>
+        <Btn variant="primary" size="sm" onClick={openAdd}><Plus className="w-3.5 h-3.5" /> Ajouter</Btn>
+      </div>
+
+      {showForm && (
+        <div className="px-5 py-4 border-b border-border bg-secondary/30">
+          <div className="grid grid-cols-2 gap-3">
+            <Input label="Heure Début" type="time" value={form.debut} onChange={(e) => setForm({ ...form, debut: e.target.value })} />
+            <Input label="Heure Fin" type="time" value={form.fin} onChange={(e) => setForm({ ...form, fin: e.target.value })} />
+          </div>
+          <div className="flex gap-2 mt-3">
+            <Btn variant="primary" size="sm" onClick={handleSave}><Check className="w-3.5 h-3.5" /> {editId ? "Modifier" : "Ajouter"}</Btn>
+            <Btn variant="ghost" size="sm" onClick={() => setShowForm(false)}><X className="w-3.5 h-3.5" /> Annuler</Btn>
+          </div>
+        </div>
+      )}
+
+      <div className="divide-y divide-border">
+        {plages.length === 0 && <p className="text-sm text-muted-foreground p-6 text-center">Aucune plage horaire.</p>}
+        {plages.map((p, i) => (
+          <div key={p.id} className="flex items-center justify-between px-5 py-3 hover:bg-muted/20 transition-colors">
+            <div className="flex items-center gap-4">
+              <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">{i + 1}</span>
+              <div>
+                <div className="font-semibold text-foreground">{p.label}</div>
+                <div className="text-xs text-muted-foreground font-mono">{p.debut} → {p.fin}</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <button onClick={() => openEdit(p)} className="p-1.5 rounded hover:bg-secondary transition-colors text-muted-foreground hover:text-primary">
+                <Edit3 className="w-3.5 h-3.5" />
+              </button>
+              <button onClick={() => setPlages((prev) => prev.filter((x) => x.id !== p.id))} className="p-1.5 rounded hover:bg-red-50 transition-colors text-muted-foreground hover:text-destructive">
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
-init();
-</script>
-</body>
-</html>
+
+// ─── Historique Absences ──────────────────────────────────────────────────────
+
+function Historique({ absences, students, modules, plages, onDelete }: {
+  absences: AbsenceRecord[];
+  students: Student[];
+  modules: Module[];
+  plages: PlageHoraire[];
+  onDelete: (id: string) => void;
+}) {
+  const [search, setSearch] = useState("");
+
+  const enriched = absences
+    .map((a) => ({
+      ...a,
+      module: modules.find((m) => m.id === a.moduleId),
+      plage: plages.find((p) => p.id === a.plageId),
+      absentStudents: a.etudiantIds.map((id) => students.find((s) => s.id === id)).filter(Boolean) as Student[],
+    }))
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .filter((a) => {
+      const q = search.toLowerCase();
+      return !q || a.module?.intitule.toLowerCase().includes(q) || a.date.includes(q) || a.absentStudents.some((s) => `${s.prenom} ${s.nom}`.toLowerCase().includes(q));
+    });
+
+  const handleExport = () => {
+    const rows = enriched.flatMap((a) =>
+      a.absentStudents.map((s) => ({
+        Date: a.date,
+        Module: a.module?.intitule ?? "",
+        Code: a.module?.code ?? "",
+        PlageHoraire: a.plage?.label ?? "",
+        Nom: s.nom,
+        Prenom: s.prenom,
+        Matricule: s.matricule,
+        Groupe: s.groupe,
+      }))
+    );
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Absences");
+    XLSX.writeFile(wb, `absences_${today}.xlsx`);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-card border border-border rounded-xl shadow-sm">
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3">
+            <h3 className="font-bold text-foreground">Historique des Absences</h3>
+            <Badge variant="danger">{absences.flatMap((a) => a.etudiantIds).length} absences</Badge>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Rechercher..."
+                className="bg-input-background border border-border rounded pl-8 pr-3 py-1.5 text-sm w-44 focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <Btn variant="secondary" size="sm" onClick={handleExport}><Download className="w-3.5 h-3.5" /> Exporter</Btn>
+          </div>
+        </div>
+
+        <div className="divide-y divide-border">
+          {enriched.length === 0 && <p className="text-sm text-muted-foreground p-6 text-center">Aucun enregistrement.</p>}
+          {enriched.map((a) => (
+            <div key={a.id} className="px-5 py-4 hover:bg-muted/20 transition-colors">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    <span className="font-bold text-foreground">{a.module?.intitule ?? "—"}</span>
+                    <Badge variant="info">{a.module?.code}</Badge>
+                    <span className="text-muted-foreground text-xs">·</span>
+                    <span className="text-xs text-muted-foreground">{a.date}</span>
+                    <span className="text-xs text-muted-foreground">·</span>
+                    <span className="text-xs text-muted-foreground">{a.plage?.label ?? "—"}</span>
+                    <Badge variant="danger">{a.absentStudents.length} absent(s)</Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {a.absentStudents.map((s) => (
+                      <span key={s.id} className="inline-flex items-center gap-1 bg-red-50 border border-red-200 text-red-700 text-xs px-2 py-0.5 rounded-full font-medium">
+                        {s.prenom} {s.nom}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  onClick={() => onDelete(a.id)}
+                  className="p-1.5 rounded hover:bg-red-50 text-muted-foreground hover:text-destructive transition-colors flex-shrink-0"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── App ──────────────────────────────────────────────────────────────────────
+
+type Tab = "dashboard" | "marquer" | "etudiants" | "modules" | "plages" | "historique";
+
+const NAV_ITEMS: { id: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  { id: "dashboard", label: "Tableau de Bord", icon: BarChart3 },
+  { id: "marquer", label: "Marquer Absences", icon: ClipboardCheck },
+  { id: "etudiants", label: "Étudiants", icon: Users },
+  { id: "modules", label: "Modules", icon: BookOpen },
+  { id: "plages", label: "Plages Horaires", icon: Clock },
+  { id: "historique", label: "Historique", icon: Calendar },
+];
+
+export default function App() {
+  const [tab, setTab] = useState<Tab>("dashboard");
+  const [students, setStudents] = useState<Student[]>(seedStudents);
+  const [modules, setModules] = useState<Module[]>(seedModules);
+  const [plages, setPlages] = useState<PlageHoraire[]>(seedPlages);
+  const [absences, setAbsences] = useState<AbsenceRecord[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const handleSaveAbsence = useCallback((record: AbsenceRecord) => {
+    setAbsences((prev) => [...prev, record]);
+  }, []);
+
+  const handleDeleteAbsence = useCallback((id: string) => {
+    setAbsences((prev) => prev.filter((a) => a.id !== id));
+  }, []);
+
+  const activeNav = NAV_ITEMS.find((n) => n.id === tab);
+
+  return (
+    <div className="min-h-screen bg-background flex" style={{ fontFamily: "'Nunito', 'Nunito Sans', sans-serif" }}>
+      {/* Sidebar */}
+      <aside
+        className={cls(
+          "fixed inset-y-0 left-0 z-40 w-64 bg-card border-r border-border flex flex-col transition-transform duration-200 lg:translate-x-0 lg:static lg:z-auto",
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        {/* Logo */}
+        <div className="px-5 py-5 border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
+              <ClipboardCheck className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <div className="font-extrabold text-foreground text-sm leading-tight">AbsenceManager</div>
+              <div className="text-xs text-muted-foreground">Gestion des absences</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Nav */}
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+          {NAV_ITEMS.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => { setTab(id); setSidebarOpen(false); }}
+              className={cls(
+                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors",
+                tab === id
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              <Icon className="w-4 h-4 flex-shrink-0" />
+              {label}
+            </button>
+          ))}
+        </nav>
+
+        {/* Footer */}
+        <div className="px-5 py-4 border-t border-border">
+          <div className="text-xs text-muted-foreground">
+            <div className="font-semibold text-foreground">Année 2024–2025</div>
+            <div>{students.length} étudiants · {modules.length} modules</div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-30 bg-black/30 lg:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      {/* Main */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Topbar */}
+        <header className="sticky top-0 z-20 bg-card border-b border-border px-5 py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2 rounded hover:bg-muted transition-colors"
+            >
+              <ChevronDown className="w-4 h-4 rotate-90" />
+            </button>
+            <div>
+              <h1 className="font-extrabold text-foreground">{activeNav?.label}</h1>
+              <div className="text-xs text-muted-foreground">{today}</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Badge variant="success">● En ligne</Badge>
+          </div>
+        </header>
+
+        {/* Content */}
+        <main className="flex-1 p-5 overflow-y-auto">
+          {tab === "dashboard" && (
+            <Dashboard students={students} modules={modules} absences={absences} plages={plages} />
+          )}
+          {tab === "marquer" && (
+            <MarquerAbsences
+              students={students}
+              modules={modules}
+              plages={plages}
+              absences={absences}
+              onSave={handleSaveAbsence}
+            />
+          )}
+          {tab === "etudiants" && (
+            <EtudiantList students={students} setStudents={setStudents} />
+          )}
+          {tab === "modules" && (
+            <ModuleList modules={modules} setModules={setModules} />
+          )}
+          {tab === "plages" && (
+            <PlagesList plages={plages} setPlages={setPlages} />
+          )}
+          {tab === "historique" && (
+            <Historique
+              absences={absences}
+              students={students}
+              modules={modules}
+              plages={plages}
+              onDelete={handleDeleteAbsence}
+            />
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}
