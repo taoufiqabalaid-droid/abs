@@ -5,260 +5,120 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gestion des Absences — 2025/2026</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-:root {
-  --bg: #0B0F19;
-  --bg2: #111827;
-  --card: #151C2C;
-  --card2: #1A2332;
-  --border: #1E293B;
-  --border2: #2A3A50;
-  --fg: #E2E8F0;
-  --muted: #64748B;
-  --accent: #10B981;
-  --accent2: #059669;
-  --accent-glow: rgba(16,185,129,0.15);
-  --danger: #EF4444;
-  --danger2: #DC2626;
-  --danger-glow: rgba(239,68,68,0.12);
-  --warn: #F59E0B;
-  --warn-glow: rgba(245,158,11,0.12);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--fg); min-height: 100vh; overflow-x: hidden; }
-h1,h2,h3,h4,h5 { font-family: 'Space Grotesk', sans-serif; }
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg2); }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--muted); }
-
-/* Fond animé subtil */
-.bg-glow {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  pointer-events: none; z-index: 0;
-  background:
-    radial-gradient(ellipse 600px 400px at 10% 20%, rgba(16,185,129,0.04), transparent),
-    radial-gradient(ellipse 500px 500px at 90% 80%, rgba(16,185,129,0.03), transparent),
-    radial-gradient(ellipse 300px 300px at 50% 50%, rgba(245,158,11,0.02), transparent);
-}
-
-/* Sidebar */
-.sidebar {
-  position: fixed; left: 0; top: 0; bottom: 0; width: 280px;
-  background: var(--bg2); border-right: 1px solid var(--border);
-  z-index: 50; display: flex; flex-direction: column;
-  transition: transform 0.3s ease;
-}
-.sidebar-logo {
-  padding: 24px 20px; border-bottom: 1px solid var(--border);
-}
-.sidebar-nav { padding: 12px 10px; flex: 1; overflow-y: auto; }
-.nav-item {
-  display: flex; align-items: center; gap: 12px; padding: 11px 14px;
-  border-radius: 10px; cursor: pointer; transition: all 0.2s;
-  color: var(--muted); font-weight: 500; font-size: 14px; margin-bottom: 2px;
-}
-.nav-item:hover { background: var(--card); color: var(--fg); }
-.nav-item.active {
-  background: var(--accent-glow); color: var(--accent);
-  box-shadow: inset 3px 0 0 var(--accent);
-}
-.nav-item i { width: 20px; text-align: center; font-size: 15px; }
-
-/* Groupe selector dans sidebar */
-.group-section { padding: 10px; border-top: 1px solid var(--border); }
-.group-search {
-  width: 100%; padding: 9px 12px 9px 34px; background: var(--card);
-  border: 1px solid var(--border); border-radius: 8px; color: var(--fg);
-  font-size: 13px; outline: none; transition: border-color 0.2s;
-}
-.group-search:focus { border-color: var(--accent); }
-.group-search-wrap { position: relative; }
-.group-search-wrap i {
-  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
-  color: var(--muted); font-size: 13px;
-}
-.group-list { max-height: 260px; overflow-y: auto; margin-top: 8px; }
-.group-item {
-  padding: 8px 12px; border-radius: 7px; cursor: pointer;
-  font-size: 13px; color: var(--muted); transition: all 0.15s;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.group-item:hover { background: var(--card); color: var(--fg); }
-.group-item.active { background: var(--accent-glow); color: var(--accent); font-weight: 600; }
-.group-item .count {
-  background: var(--card2); padding: 2px 8px; border-radius: 10px;
-  font-size: 11px; font-weight: 600;
-}
-.group-item.active .count { background: rgba(16,185,129,0.2); }
-.group-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); padding: 8px 12px 4px; font-weight: 700; }
-
-/* Main */
-.main { margin-left: 280px; padding: 24px 32px; position: relative; z-index: 1; min-height: 100vh; }
-
-/* Cartes stats */
-.stat-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-  padding: 20px 24px; transition: all 0.25s; position: relative; overflow: hidden;
-}
-.stat-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-.stat-card .icon-wrap {
-  width: 44px; height: 44px; border-radius: 10px; display: flex;
-  align-items: center; justify-content: center; font-size: 18px;
-}
-.stat-card .stat-value { font-family: 'Space Grotesk'; font-size: 28px; font-weight: 700; }
-.stat-card .stat-label { font-size: 13px; color: var(--muted); margin-top: 2px; }
-
-/* Tableau */
-.data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-.data-table thead th {
-  background: var(--bg2); padding: 12px 16px; text-align: left;
-  font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
-  color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; z-index: 5;
-}
-.data-table tbody td {
-  padding: 10px 16px; border-bottom: 1px solid var(--border);
-  font-size: 13.5px; transition: background 0.15s;
-}
-.data-table tbody tr:hover td { background: var(--card2); }
-.data-table tbody tr.absent-row td { background: var(--danger-glow); }
-
-/* Checkbox custom */
-.abs-checkbox {
-  appearance: none; width: 20px; height: 20px; border: 2px solid var(--border2);
-  border-radius: 5px; cursor: pointer; transition: all 0.2s; position: relative;
-  flex-shrink: 0;
-}
-.abs-checkbox:hover { border-color: var(--danger); }
-.abs-checkbox:checked {
-  background: var(--danger); border-color: var(--danger);
-}
-.abs-checkbox:checked::after {
-  content: '✓'; position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%); color: white; font-size: 13px; font-weight: 700;
-}
-
-/* Boutons */
-.btn {
-  display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
-  border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;
-  border: none; transition: all 0.2s; font-family: 'DM Sans';
-}
-.btn-primary {
-  background: var(--accent); color: #fff;
-  box-shadow: 0 4px 12px rgba(16,185,129,0.3);
-}
-.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(16,185,129,0.4); }
-.btn-danger { background: var(--danger); color: #fff; box-shadow: 0 4px 12px rgba(239,68,68,0.3); }
-.btn-danger:hover { background: var(--danger2); }
-.btn-ghost {
-  background: transparent; color: var(--muted); border: 1px solid var(--border);
-}
-.btn-ghost:hover { border-color: var(--border2); color: var(--fg); background: var(--card); }
-.btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 7px; }
-
-/* Inputs */
-.form-input {
-  background: var(--card); border: 1px solid var(--border); border-radius: 9px;
-  padding: 10px 14px; color: var(--fg); font-size: 14px; outline: none;
-  transition: border-color 0.2s; font-family: 'DM Sans'; width: 100%;
-}
-.form-input:focus { border-color: var(--accent); }
-.form-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block; }
-select.form-input { cursor: pointer; }
-
-/* Badge */
-.badge {
-  display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px;
-  font-size: 11px; font-weight: 600;
-}
-.badge-danger { background: var(--danger-glow); color: var(--danger); }
-.badge-warn { background: var(--warn-glow); color: var(--warn); }
-.badge-ok { background: var(--accent-glow); color: var(--accent); }
-
-/* Toast */
-.toast-container { position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-.toast {
-  padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 500;
-  display: flex; align-items: center; gap: 10px; min-width: 300px;
-  animation: toastIn 0.3s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-}
-.toast-success { background: #065F46; color: #A7F3D0; border: 1px solid #10B981; }
-.toast-error { background: #7F1D1D; color: #FCA5A5; border: 1px solid #EF4444; }
-.toast-info { background: #1E3A5F; color: #93C5FD; border: 1px solid #3B82F6; }
-.toast-exit { animation: toastOut 0.3s ease forwards; }
-@keyframes toastIn { from { opacity:0; transform:translateX(60px); } to { opacity:1; transform:translateX(0); } }
-@keyframes toastOut { to { opacity:0; transform:translateX(60px); } }
-
-/* Modal */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-  z-index: 100; display: flex; align-items: center; justify-content: center;
-  opacity: 0; pointer-events: none; transition: opacity 0.25s;
-}
-.modal-overlay.show { opacity: 1; pointer-events: auto; }
-.modal-box {
-  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
-  padding: 28px; max-width: 500px; width: 90%;
-  transform: scale(0.95); transition: transform 0.25s;
-}
-.modal-overlay.show .modal-box { transform: scale(1); }
-
-/* Barre de progression */
-.progress-bar {
-  height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
-}
-.progress-fill {
-  height: 100%; border-radius: 3px; transition: width 0.5s ease;
-}
-
-/* Animations */
-@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-.fade-up { animation: fadeUp 0.4s ease both; }
-.fade-up-d1 { animation-delay: 0.05s; }
-.fade-up-d2 { animation-delay: 0.1s; }
-.fade-up-d3 { animation-delay: 0.15s; }
-.fade-up-d4 { animation-delay: 0.2s; }
-
-/* Étiquette absent */
-.absent-tag {
-  display: inline-flex; align-items: center; gap: 4px;
-  background: var(--danger-glow); color: var(--danger);
-  padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;
-}
-
-/* Hamburger mobile */
-.hamburger { display: none; position: fixed; top: 16px; left: 16px; z-index: 60;
-  width: 40px; height: 40px; border-radius: 10px; background: var(--card);
-  border: 1px solid var(--border); cursor: pointer; align-items: center; justify-content: center;
-  color: var(--fg); font-size: 18px;
-}
-@media (max-width: 900px) {
-  .sidebar { transform: translateX(-100%); }
-  .sidebar.open { transform: translateX(0); }
-  .main { margin-left: 0; padding: 16px; padding-top: 64px; }
-  .hamburger { display: flex; }
-}
-
-/* Bar chart simple */
-.bar-chart-bar {
-  transition: width 0.6s ease; border-radius: 0 4px 4px 0; min-width: 2px;
-}
+:root{--bg:#0B0F19;--bg2:#111827;--card:#151C2C;--card2:#1A2332;--border:#1E293B;--border2:#2A3A50;--fg:#E2E8F0;--muted:#64748B;--accent:#10B981;--accent2:#059669;--accent-glow:rgba(16,185,129,0.15);--danger:#EF4444;--danger2:#DC2626;--danger-glow:rgba(239,68,68,0.12);--warn:#F59E0B;--warn-glow:rgba(245,158,11,0.12);--info:#3B82F6;--info-glow:rgba(59,130,246,0.12);--purple:#8B5CF6;--purple-glow:rgba(139,92,246,0.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,h4,h5{font-family:'Space Grotesk',sans-serif}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+.bg-glow{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;background:radial-gradient(ellipse 600px 400px at 10% 20%,rgba(16,185,129,0.04),transparent),radial-gradient(ellipse 500px 500px at 90% 80%,rgba(16,185,129,0.03),transparent),radial-gradient(ellipse 300px 300px at 50% 50%,rgba(245,158,11,0.02),transparent)}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:280px;background:var(--bg2);border-right:1px solid var(--border);z-index:50;display:flex;flex-direction:column;transition:transform .3s ease}
+.sidebar-logo{padding:24px 20px;border-bottom:1px solid var(--border)}
+.sidebar-nav{padding:12px 10px;flex-shrink:0}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;cursor:pointer;transition:all .2s;color:var(--muted);font-weight:500;font-size:14px;margin-bottom:2px}
+.nav-item:hover{background:var(--card);color:var(--fg)}
+.nav-item.active{background:var(--accent-glow);color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.nav-item i{width:20px;text-align:center;font-size:15px}
+.group-section{padding:10px;border-top:1px solid var(--border);flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.group-search{width:100%;padding:9px 12px 9px 34px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--fg);font-size:13px;outline:none;transition:border-color .2s}
+.group-search:focus{border-color:var(--accent)}
+.group-search-wrap{position:relative;flex-shrink:0}
+.group-search-wrap i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px}
+.group-list{max-height:260px;overflow-y:auto;margin-top:8px}
+.group-item{padding:8px 12px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .15s;display:flex;justify-content:space-between;align-items:center}
+.group-item:hover{background:var(--card);color:var(--fg)}
+.group-item.active{background:var(--accent-glow);color:var(--accent);font-weight:600}
+.group-item .count{background:var(--card2);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.group-item.active .count{background:rgba(16,185,129,0.2)}
+.group-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);padding:8px 12px 4px;font-weight:700}
+.main{margin-left:280px;padding:24px 32px;position:relative;z-index:1;min-height:100vh}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;transition:all .25s;position:relative;overflow:hidden}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.stat-card .icon-wrap{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.stat-card .stat-value{font-family:'Space Grotesk';font-size:28px;font-weight:700}
+.stat-card .stat-label{font-size:13px;color:var(--muted);margin-top:2px}
+.data-table{width:100%;border-collapse:separate;border-spacing:0}
+.data-table thead th{background:var(--bg2);padding:12px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5}
+.data-table tbody td{padding:10px 16px;border-bottom:1px solid var(--border);font-size:13.5px;transition:background .15s}
+.data-table tbody tr:hover td{background:var(--card2)}
+.data-table tbody tr.absent-row td{background:var(--danger-glow)}
+.abs-checkbox{appearance:none;width:20px;height:20px;border:2px solid var(--border2);border-radius:5px;cursor:pointer;transition:all .2s;position:relative;flex-shrink:0}
+.abs-checkbox:hover{border-color:var(--danger)}
+.abs-checkbox:checked{background:var(--danger);border-color:var(--danger)}
+.abs-checkbox:checked::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:13px;font-weight:700}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:'DM Sans'}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,0.3)}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 6px 16px rgba(16,185,129,0.4)}
+.btn-danger{background:var(--danger);color:#fff;box-shadow:0 4px 12px rgba(239,68,68,0.3)}
+.btn-danger:hover{background:var(--danger2)}
+.btn-info{background:var(--info);color:#fff;box-shadow:0 4px 12px rgba(59,130,246,0.3)}
+.btn-info:hover{background:#2563EB}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--fg);background:var(--card)}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:7px}
+.btn-xs{padding:4px 10px;font-size:11px;border-radius:6px}
+.form-input{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:10px 14px;color:var(--fg);font-size:14px;outline:none;transition:border-color .2s;font-family:'DM Sans';width:100%}
+.form-input:focus{border-color:var(--accent)}
+.form-label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:block}
+select.form-input{cursor:pointer}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-danger{background:var(--danger-glow);color:var(--danger)}
+.badge-warn{background:var(--warn-glow);color:var(--warn)}
+.badge-ok{background:var(--accent-glow);color:var(--accent)}
+.toast-container{position:fixed;top:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{padding:14px 20px;border-radius:10px;font-size:14px;font-weight:500;display:flex;align-items:center;gap:10px;min-width:300px;animation:toastIn .3s ease;box-shadow:0 8px 24px rgba(0,0,0,0.4)}
+.toast-success{background:#065F46;color:#A7F3D0;border:1px solid #10B981}
+.toast-error{background:#7F1D1D;color:#FCA5A5;border:1px solid #EF4444}
+.toast-info{background:#1E3A5F;color:#93C5FD;border:1px solid #3B82F6}
+.toast-exit{animation:toastOut .3s ease forwards}
+@keyframes toastIn{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(60px)}}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:560px;width:90%;max-height:85vh;overflow-y:auto;transform:scale(.95);transition:transform .25s}
+.modal-overlay.show .modal-box{transform:scale(1)}
+.progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .4s ease both}
+.fade-up-d1{animation-delay:.05s}
+.fade-up-d2{animation-delay:.1s}
+.fade-up-d3{animation-delay:.15s}
+.fade-up-d4{animation-delay:.2s}
+.absent-tag{display:inline-flex;align-items:center;gap:4px;background:var(--danger-glow);color:var(--danger);padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:60;width:40px;height:40px;border-radius:10px;background:var(--card);border:1px solid var(--border);cursor:pointer;align-items:center;justify-content:center;color:var(--fg);font-size:18px}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0;padding:16px;padding-top:64px}.hamburger{display:flex}}
+.sub-tab{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);transition:all .2s;border:1px solid transparent}
+.sub-tab:hover{color:var(--fg);background:var(--card)}
+.sub-tab.active{color:var(--accent);background:var(--accent-glow);border-color:rgba(16,185,129,0.2)}
+.drop-zone{border:2px dashed var(--border2);border-radius:14px;padding:48px 24px;text-align:center;cursor:pointer;transition:all .25s}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:var(--accent-glow)}
+.edit-input{background:var(--bg2);border:1px solid var(--accent);border-radius:6px;padding:4px 8px;color:var(--fg);font-size:13px;outline:none;width:100%;font-family:'DM Sans'}
+.inline-action{cursor:pointer;padding:4px 8px;border-radius:5px;transition:all .15s;font-size:13px}
+.inline-action:hover{background:var(--card2)}
+.preview-table{width:100%;border-collapse:collapse;font-size:12px}
+.preview-table th{background:var(--bg2);padding:8px 10px;text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+.preview-table td{padding:6px 10px;border-bottom:1px solid var(--border);color:var(--fg)}
+.preview-table tr:hover td{background:var(--card2)}
+.step-indicator{display:flex;align-items:center;gap:0}
+.step-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border:2px solid var(--border);color:var(--muted);transition:all .3s}
+.step-dot.active{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
+.step-dot.done{border-color:var(--accent);background:var(--accent);color:#fff}
+.step-line{width:40px;height:2px;background:var(--border);transition:background .3s}
+.step-line.done{background:var(--accent)}
 </style>
 </head>
 <body>
 <div class="bg-glow"></div>
-
-<!-- Toast container -->
 <div class="toast-container" id="toastContainer"></div>
-
-<!-- Hamburger mobile -->
 <button class="hamburger" id="hamburgerBtn" aria-label="Menu"><i class="fas fa-bars"></i></button>
 
-<!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div style="display:flex;align-items:center;gap:10px;">
@@ -271,22 +131,13 @@ select.form-input { cursor: pointer; }
       </div>
     </div>
   </div>
-
   <nav class="sidebar-nav">
-    <div class="nav-item active" data-tab="enregistrement" onclick="switchTab('enregistrement')">
-      <i class="fas fa-pen-to-square"></i> Enregistrement
-    </div>
-    <div class="nav-item" data-tab="historique" onclick="switchTab('historique')">
-      <i class="fas fa-clock-rotate-left"></i> Historique
-    </div>
-    <div class="nav-item" data-tab="statistiques" onclick="switchTab('statistiques')">
-      <i class="fas fa-chart-pie"></i> Statistiques
-    </div>
-    <div class="nav-item" data-tab="etudiants" onclick="switchTab('etudiants')">
-      <i class="fas fa-users"></i> Fiches Etudiants
-    </div>
+    <div class="nav-item active" data-tab="enregistrement" onclick="switchTab('enregistrement')"><i class="fas fa-pen-to-square"></i> Enregistrement</div>
+    <div class="nav-item" data-tab="historique" onclick="switchTab('historique')"><i class="fas fa-clock-rotate-left"></i> Historique</div>
+    <div class="nav-item" data-tab="statistiques" onclick="switchTab('statistiques')"><i class="fas fa-chart-pie"></i> Statistiques</div>
+    <div class="nav-item" data-tab="etudiants" onclick="switchTab('etudiants')"><i class="fas fa-users"></i> Fiches Etudiants</div>
+    <div class="nav-item" data-tab="gestion" onclick="switchTab('gestion')"><i class="fas fa-gear"></i> Gestion des donnees</div>
   </nav>
-
   <div class="group-section">
     <div class="group-search-wrap">
       <i class="fas fa-search"></i>
@@ -296,66 +147,42 @@ select.form-input { cursor: pointer; }
   </div>
 </aside>
 
-<!-- Contenu principal -->
 <div class="main" id="mainContent">
-  <!-- En-tête dynamique -->
   <div id="pageHeader" style="margin-bottom:24px;"></div>
 
-  <!-- Onglet Enregistrement -->
+  <!-- ENREGISTREMENT -->
   <div id="tab-enregistrement" class="tab-content">
-    <!-- Barre de sélection -->
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;" class="fade-up">
-      <div>
-        <label class="form-label">Date</label>
-        <input type="date" class="form-input" id="absDate">
-      </div>
-      <div>
-        <label class="form-label">Creneau horaire</label>
-        <select class="form-input" id="absTime">
-          <option value="">-- Choisir --</option>
-        </select>
-      </div>
-      <div>
-        <label class="form-label">Module</label>
-        <select class="form-input" id="absModule">
-          <option value="">-- Choisir --</option>
-        </select>
-      </div>
+      <div><label class="form-label">Date</label><input type="date" class="form-input" id="absDate"></div>
+      <div><label class="form-label">Creneau horaire</label><select class="form-input" id="absTime"><option value="">-- Choisir --</option></select></div>
+      <div><label class="form-label">Module</label><select class="form-input" id="absModule"><option value="">-- Choisir --</option></select></div>
       <div style="display:flex;align-items:flex-end;gap:8px;">
-        <button class="btn btn-primary" onclick="saveAbsences()" style="white-space:nowrap;">
-          <i class="fas fa-save"></i> Enregistrer
-        </button>
-        <button class="btn btn-ghost" onclick="clearSelection()" style="white-space:nowrap;" title="Tout deselectionner">
-          <i class="fas fa-rotate-left"></i>
-        </button>
+        <button class="btn btn-primary" onclick="saveAbsences()" style="white-space:nowrap;"><i class="fas fa-save"></i> Enregistrer</button>
+        <button class="btn btn-ghost" onclick="clearSelection()" style="white-space:nowrap;" title="Tout deselectionner"><i class="fas fa-rotate-left"></i></button>
       </div>
     </div>
-
-    <!-- Recherche et filtres étudiants -->
     <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;align-items:center;" class="fade-up fade-up-d1">
       <div style="position:relative;flex:1;min-width:200px;">
         <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;"></i>
         <input type="text" class="form-input" style="padding-left:34px;" placeholder="Rechercher un etudiant..." id="studentSearch" oninput="filterStudents()">
       </div>
       <div style="display:flex;gap:6px;">
-        <button class="btn btn-sm btn-ghost" onclick="selectAllVisible()"><i class="fas fa-check-double"></i> Tout cocher</button>
-        <button class="btn btn-sm btn-ghost" onclick="deselectAllVisible()"><i class="fas fa-xmark"></i> Tout decocher</button>
+        <button class="btn btn-xs btn-ghost" onclick="selectAllVisible()"><i class="fas fa-check-double"></i> Tout cocher</button>
+        <button class="btn btn-xs btn-ghost" onclick="deselectAllVisible()"><i class="fas fa-xmark"></i> Tout decocher</button>
       </div>
       <div style="font-size:13px;color:var(--muted);" id="absCountLabel">0 absent(s) selectionne(s)</div>
     </div>
-
-    <!-- Grille etudiants -->
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;" class="fade-up fade-up-d2">
       <div style="max-height:60vh;overflow-y:auto;" id="studentGrid"></div>
     </div>
   </div>
 
-  <!-- Onglet Historique -->
+  <!-- HISTORIQUE -->
   <div id="tab-historique" class="tab-content" style="display:none;">
     <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up">
       <div style="position:relative;flex:1;min-width:200px;">
         <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;"></i>
-        <input type="text" class="form-input" style="padding-left:34px;" placeholder="Rechercher dans l'historique..." id="histSearch" oninput="renderHistory()">
+        <input type="text" class="form-input" style="padding-left:34px;" placeholder="Rechercher..." id="histSearch" oninput="renderHistory()">
       </div>
       <input type="date" class="form-input" style="width:auto;" id="histDateFrom" onchange="renderHistory()">
       <span style="color:var(--muted);font-size:13px;">a</span>
@@ -367,17 +194,17 @@ select.form-input { cursor: pointer; }
     </div>
   </div>
 
-  <!-- Onglet Statistiques -->
+  <!-- STATISTIQUES -->
   <div id="tab-statistiques" class="tab-content" style="display:none;">
     <div id="statsContent"></div>
   </div>
 
-  <!-- Onglet Fiches Etudiants -->
+  <!-- FICHES ETUDIANTS -->
   <div id="tab-etudiants" class="tab-content" style="display:none;">
     <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up">
       <div style="position:relative;flex:1;min-width:200px;">
         <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;"></i>
-        <input type="text" class="form-input" style="padding-left:34px;" placeholder="Rechercher un etudiant..." id="etudSearch" oninput="renderStudentCards()">
+        <input type="text" class="form-input" style="padding-left:34px;" placeholder="Rechercher..." id="etudSearch" oninput="renderStudentCards()">
       </div>
       <select class="form-input" style="width:auto;" id="etudSort" onchange="renderStudentCards()">
         <option value="name">Trier par nom</option>
@@ -387,815 +214,893 @@ select.form-input { cursor: pointer; }
     </div>
     <div id="studentCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;"></div>
   </div>
-</div>
 
-<!-- Modal confirmation -->
-<div class="modal-overlay" id="confirmModal">
-  <div class="modal-box">
-    <h3 style="font-size:18px;margin-bottom:8px;" id="modalTitle">Confirmation</h3>
-    <p style="color:var(--muted);font-size:14px;margin-bottom:20px;" id="modalMsg"></p>
-    <div style="display:flex;gap:10px;justify-content:flex-end;">
-      <button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>
-      <button class="btn btn-danger btn-sm" id="modalConfirmBtn" onclick="closeModal()">Confirmer</button>
+  <!-- GESTION DES DONNEES -->
+  <div id="tab-gestion" class="tab-content" style="display:none;">
+    <!-- Sous-onglets -->
+    <div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;" class="fade-up">
+      <div class="sub-tab active" data-subtab="etudiants-mgmt" onclick="switchSubTab('etudiants-mgmt')"><i class="fas fa-user-pen"></i> Etudiants</div>
+      <div class="sub-tab" data-subtab="modules-mgmt" onclick="switchSubTab('modules-mgmt')"><i class="fas fa-book-pen"></i> Modules</div>
+      <div class="sub-tab" data-subtab="groupes-mgmt" onclick="switchSubTab('groupes-mgmt')"><i class="fas fa-layer-group"></i> Groupes</div>
+      <div class="sub-tab" data-subtab="import" onclick="switchSubTab('import')"><i class="fas fa-file-excel"></i> Import Excel</div>
+    </div>
+
+    <!-- Gestion Etudiants -->
+    <div id="subtab-etudiants-mgmt" class="subtab-content">
+      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up fade-up-d1">
+        <div style="position:relative;flex:1;min-width:200px;">
+          <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;"></i>
+          <input type="text" class="form-input" style="padding-left:34px;" placeholder="Rechercher un etudiant..." id="mgmtStudSearch" oninput="renderMgmtStudents()">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="showAddStudentModal()"><i class="fas fa-plus"></i> Ajouter</button>
+        <button class="btn btn-info btn-sm" onclick="showBulkAddStudentModal()"><i class="fas fa-list"></i> Ajout multiple</button>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;" class="fade-up fade-up-d2">
+        <div style="max-height:55vh;overflow-y:auto;" id="mgmtStudentsTable"></div>
+      </div>
+    </div>
+
+    <!-- Gestion Modules -->
+    <div id="subtab-modules-mgmt" class="subtab-content" style="display:none;">
+      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up fade-up-d1">
+        <span style="font-size:13px;color:var(--muted);" id="modCountLabel"></span>
+        <button class="btn btn-primary btn-sm" onclick="showAddModuleModal()"><i class="fas fa-plus"></i> Ajouter un module</button>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;" class="fade-up fade-up-d2">
+        <div style="max-height:55vh;overflow-y:auto;" id="mgmtModulesTable"></div>
+      </div>
+    </div>
+
+    <!-- Gestion Groupes -->
+    <div id="subtab-groupes-mgmt" class="subtab-content" style="display:none;">
+      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up fade-up-d1">
+        <button class="btn btn-primary btn-sm" onclick="showAddGroupModal()"><i class="fas fa-plus"></i> Creer un groupe</button>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;" class="fade-up fade-up-d2">
+        <div style="max-height:55vh;overflow-y:auto;" id="mgmtGroupsTable"></div>
+      </div>
+    </div>
+
+    <!-- Import Excel -->
+    <div id="subtab-import" class="subtab-content" style="display:none;">
+      <!-- Etapes -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:28px;" class="fade-up">
+        <div class="step-dot active" id="step1dot">1</div>
+        <div class="step-line" id="step1line"></div>
+        <div class="step-dot" id="step2dot">2</div>
+        <div class="step-line" id="step2line"></div>
+        <div class="step-dot" id="step3dot">3</div>
+        <div class="step-line" id="step3line"></div>
+        <div class="step-dot" id="step4dot">4</div>
+      </div>
+
+      <!-- Step 1: Upload -->
+      <div id="importStep1" class="fade-up fade-up-d1">
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()"
+             ondragover="event.preventDefault();this.classList.add('dragover')"
+             ondragleave="this.classList.remove('dragover')"
+             ondrop="event.preventDefault();this.classList.remove('dragover');handleFileDrop(event.dataTransfer.files[0])">
+          <i class="fas fa-cloud-arrow-up" style="font-size:40px;color:var(--accent);display:block;margin-bottom:12px;"></i>
+          <div style="font-size:16px;font-weight:600;margin-bottom:4px;">Deposez votre fichier Excel ici</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">ou cliquez pour parcourir</div>
+          <div style="font-size:11px;color:var(--muted);">Formats supportes : .xlsx, .xls, .csv</div>
+        </div>
+        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleFileSelect(this.files[0])">
+        <div id="fileInfo" style="display:none;margin-top:16px;padding:14px 18px;background:var(--card);border:1px solid var(--border);border-radius:10px;"></div>
+      </div>
+
+      <!-- Step 2: Configuration -->
+      <div id="importStep2" style="display:none;" class="fade-up">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;">
+          <h3 style="font-size:16px;font-weight:600;margin-bottom:16px;">Configuration de l'import</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div>
+              <label class="form-label">Feuille a importer</label>
+              <select class="form-input" id="importSheet" onchange="onSheetChange()"></select>
+            </div>
+            <div>
+              <label class="form-label">Type de donnees</label>
+              <select class="form-input" id="importType">
+                <option value="etudiants">Liste d'etudiants</option>
+                <option value="modules">Liste de modules</option>
+                <option value="absences">Enregistrement d'absences</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Groupe cible</label>
+              <select class="form-input" id="importGroup"></select>
+            </div>
+            <div>
+              <label class="form-label">Mode d'import</label>
+              <select class="form-input" id="importMode">
+                <option value="append">Ajouter a la liste existante</option>
+                <option value="replace">Remplacer la liste existante</option>
+              </select>
+            </div>
+          </div>
+          <!-- Mapping colonnes pour etudiants -->
+          <div id="colMappingStudents" style="margin-top:20px;">
+            <label class="form-label">Colonne contenant les noms</label>
+            <select class="form-input" id="importNameCol" style="max-width:300px;"></select>
+          </div>
+          <!-- Mapping colonnes pour modules -->
+          <div id="colMappingModules" style="margin-top:20px;display:none;">
+            <label class="form-label">Colonne contenant les noms de modules</label>
+            <select class="form-input" id="importModCol" style="max-width:300px;"></select>
+          </div>
+          <!-- Mapping colonnes pour absences -->
+          <div id="colMappingAbsences" style="margin-top:20px;display:none;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div><label class="form-label">Colonne noms etudiants</label><select class="form-input" id="importAbsNameCol"></select></div>
+              <div><label class="form-label">Colonne date</label><select class="form-input" id="importAbsDateCol"></select></div>
+              <div><label class="form-label">Colonne creneau</label><select class="form-input" id="importAbsTimeCol"></select></div>
+              <div><label class="form-label">Colonne module</label><select class="form-input" id="importAbsModCol"></select></div>
+              <div><label class="form-label">Colonne justification (optionnel)</label><select class="form-input" id="importAbsJustCol"></select></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:24px;">
+            <button class="btn btn-ghost btn-sm" onclick="goToImportStep(1)"><i class="fas fa-arrow-left"></i> Retour</button>
+            <button class="btn btn-primary btn-sm" onclick="goToImportStep(3)"><i class="fas fa-arrow-right"></i> Previsualiser</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Preview -->
+      <div id="importStep3" style="display:none;" class="fade-up">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h3 style="font-size:16px;font-weight:600;">Apercu des donnees</h3>
+            <span class="badge badge-ok" id="previewCount"></span>
+          </div>
+          <div style="max-height:350px;overflow:auto;border:1px solid var(--border);border-radius:10px;" id="previewTableWrap"></div>
+          <div style="display:flex;gap:10px;margin-top:24px;">
+            <button class="btn btn-ghost btn-sm" onclick="goToImportStep(2)"><i class="fas fa-arrow-left"></i> Retour</button>
+            <button class="btn btn-primary" onclick="executeImport()"><i class="fas fa-file-import"></i> Confirmer l'import</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Result -->
+      <div id="importStep4" style="display:none;" class="fade-up">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:48px;text-align:center;">
+          <div style="width:64px;height:64px;border-radius:50%;background:var(--accent-glow);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+            <i class="fas fa-check" style="font-size:28px;color:var(--accent);"></i>
+          </div>
+          <h3 style="font-size:20px;font-weight:700;margin-bottom:8px;">Import termine avec succes</h3>
+          <p style="color:var(--muted);font-size:14px;margin-bottom:24px;" id="importResultMsg"></p>
+          <button class="btn btn-primary" onclick="resetImport()"><i class="fas fa-rotate"></i> Nouvel import</button>
+        </div>
+      </div>
     </div>
   </div>
+</div>
+
+<!-- Modal generique -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box" id="modalBox"></div>
 </div>
 
 <script>
 // ============================================
-// DONNEES — Groupes, etudiants, modules
+// DONNEES
 // ============================================
-const TIME_SLOTS = [
-  '08H30 - 10H30','10H30 - 12H30','08H30 - 12H30',
-  '14H00 - 16H00','16H00 - 18H00','14H00 - 18H00','15H00 - 18H00'
-];
+const TIME_SLOTS=['08H30 - 10H30','10H30 - 12H30','08H30 - 12H30','14H00 - 16H00','16H00 - 18H00','14H00 - 18H00','15H00 - 18H00'];
+function P(s){return s?s.split('|').filter(x=>x.trim()):[];}
 
-// Format compact: noms separes par |
-function P(s){ return s?s.split('|').filter(x=>x.trim()):[]; }
-
-const GROUPS = {
-  'ISUSI S3': {
-    students: P('ACHLIKH AICHA|AGOUZOUL MOUNA|ARROUY IKRAM|AZIZ AMINA|BANI NAJMA|BENCHAMA MOHAMED ALI|BOUIDA KATRE-ENNADA|BOURISSA HAMZA|DENDOUN ISLAM|EBOUR KHAOULA|El ABDELLAOUI FATIMA-EZZAHRA|EL HARRARI OUSSAMA|EL HOR HAJAR|EL JAOUHARI MALAK|El MIKH SALMA|ELMOUDAFFAR WISSAL|ENNAJIH RIHAM|ET.TAGHELATY HANANE|FASSINI CHAIMAA|HANGOUR HAFSA|IMAZZANE MAROUA|LABBIHI KAOUTAR|LAFHAL BADER|NAJEH RADWA|NAOUAR MBARKA|OUARHOU AMINE|OUILKI JIHAD|OUIS MOHAMED|OUJAA IMANE|OUKOUZAMT HAYATE|OUNASSER ISRAA|RAIS ANAS|SAADI IMANE|SAADOUNI DOUAA|TOUIL KELTOUM|ZAKAR CHAIMA'),
-    modules: ["Pathologie medico-chirurgicale d'urgence","Puériculture et maladies transmissibles","Organisation des urgences et semiologie telephonique","Soins infirmiers en medecine et chirurgie d'urgence","Stage 1 service d'urgences","Stage 2 Dechoquage"]
-  },
-  'ISUSI S5': {
-    students: P('AMARIR MOHAMMED|ARIF KHADIJA|BELLAGCHAIRI HIBA|BERRAMY HIBA|CHAIBI AYA|CHAKHCH YASSMINE|CHAOUKI FATIMA EZZAHRAA|DAHI ILYAS|EL ACHKAR BOUTAINA|EL HADAR HAJAR|EL MOUDDEN OUISAL|ESSAKHI HASNAE|GAZGAZ SALOUA|HOUSSAYNI IMANE|HOUSSNI ZAKARIA|IBRQI IMANE|IDSASSI ZINEB|KDAIRE NOUHAILA|KERROUM KHADIJA|KHORCHID MARIA|LAAZIZ KHADIJA|LACH-HEB MERIEM|LAKOUIS IMANE|MABROUR ABDELLAH|MACHKOUR SALMA|MIMOUNE WISSALE|MIMOUNI ANAS|M\'KIOUASS SALMA|SBOUITA IBTISSAM|TADILI FATIMA-EZZAHRA|CHOUCRI HICHAM'),
-    modules: ["Pharmacologie de l'urgence","Materiel et appareillage des soins de sante des urgences et secourisme","Reanimation","Methodologie de recherche","Stage 3 Reanimation medicochirurgicale","Stage 4 Bloc Operatoire"]
-  },
-  'LABO S3': {
-    students: P('AAA IBTIHAL|AIT BOURHIM IMANE|BADI ZINEB|BELFASSI FATIMA-EZZAHERAE|BOUCHRIHA MARYEM|BOUDLIH ILIAS|BOUSALHI NADA|CHARDAOUI OUISSAL|CHERKAOUI ABDERRAHMANE|DAU LAM ACHUIL LAM|DAYAB AMAL|EDDARKAOUI AMINA|EL HADI BADER|EL MALKI OUARDA|EL MANYANI CHAIMAA|ELAMOUD SARA|ELBAZ MOHAMED AMINE|ELMAKKAOUI SALAH EDDINE|ESSAADI ILYASS|ESSAADI ZOUHAYR|ESSADEK YOUSSEF|HASSANI MBECHEZI ELARIF|JEBBAD YASMINE|MQAINTAR SAMI|MULENGA MERCY CHIBESA|NOUGHOU AYA|RAGHIB ANAS|RAHEL GHIZLANE|SEKOURI MARYEM|SILOMBA TEPWANJI|TOYBA IBRAHIM|ZEROUALI MARYAM'),
-    modules: ["Biochimie clinique","Hematologie & Hemobiologie","Immunologie generale/ Immuno-Analyse","Biochimie clinique analytique TP","Stage d'Hematologie & d'Immuno-hematologie","Stage de biochimie"]
-  },
-  'LABO S5': {
-    students: P('ABILI MALIKA|ADDARAL OUMAIMA|AIT EL HAJ HIBA|AIT ZAOUIT FATIMA-ZAHRA|ANEJJAR NOUHAILA|BITALJANE OMAIMA|BOUCHIHA HAJAR|BOUJA AYAT|CHTIOUI MARYEM|ECH-CHTOUKI ABDELLAH|EL ABADILA CHEIKH MAALAININE|EL BAZ KHADIJA|EL KHOUMANI MARWA|ETTAOUSSI SANAE|FAKHRANE WIAME|FRINDO MUSTAPHA|GUOUN SAFIA|HABBA HAFSA|HAMIMADI ROMAISSA|HAMZAOUI ZOUHAIR|JABELKHAYR ANAS|KHIARE HIBA|LAHLIMI OUMAIMA|MAHIR MOHAMED|OUAJIB NOUHAILA|RADI JAMILA|ROUGHAL AYMAN|SI KHOUNA HAFSA|SIKLANE HAJAR|TEFNOUTI MALAK|TOUIR AYOUB|ZIDANE OUMAIMA'),
-    modules: ["Bacteriologie medicale TP","Bacteriologie medicale & Virologie","Parasitologie & Mycologie","Biostatistique & Epidemiologie & Demographie","Stage de Bacteriologie medicale","Stage de Parasitologie & Mycologie"]
-  },
-  'IAR S3': {
-    students: P('AACHCHAKI RANYA|AGJIJE HAJAR|AIT LAHCINE HIBA|AIT SOUNNA NESSAIBA|AITALEB CHAIMAA|ARAGROUG AYA|ARIBA KHADIJA|AZZAFE RIHAM|BELAAMRY HIBA|BEN TALE FATIMA EZZAHRAE|BOUNAJAH MARIAM|BOUSTTA ASSIA|EL BAKKAL KHADIJA|EL HAJRI SARA|El HAMOUNI MOHAMED|ELBOUKARY ANAS|ELFARNANE CHAIMA|ENNDA HASSNA|HMOUDOU AYA|IDRISSI OUMNIYA|IQIQ YOUSSEF|LABDAOUI MERYEM|LABIAD DOUAA|MAHRAR MOURAD|MOSAID SAAD|RASSOU BAHIJA|SAADI OUMAIMA|SBAYBI NOUR EL IMANE|TAIB ASMAA|TIBBA KHADIJA'),
-    modules: ["Deroulement d'anesthesie et anesthesie ambulatoire","Pathologies medicales et maladies transmissibles","Pathologies chirurgicales","Pharmacologie Anesthesique","Stage 2 Anesthesie en Chirurgie generale 1","Stage 3 Anesthesie en chirurgie pediatrique 1"]
-  },
-  'IAR S5': {
-    students: P('AIT FDIL SALMA|AKMAKH MEHDI|AMADRAR FATIMA|BAQOUS MARYAM|BENKHALEQ SALMA|CHNINIF YOUSSEF|DENAIZI NGUENENDJI CHANCELVIE FLORE|EGOUMASSINE OUMAIMA|EL GHADOUINI HIBA|EL GUARAOUI ZAHRA|EL KARAFLI KHADIJA|EL MANOUZI HAJAR|EL QADIMI CHAIMAA|EZITOUNI FATIMAEZZAHRA|FADLY CHAIMAA|GRARI ANAS|HACHAMI ZAINAB|KABLAOUI MARWA|KRIFA RIHAB|LAKHAL SIHAM|LAMQISS SAFA|LARAJ SALMA|LAHDAR YASSIR|LAKOUIS IMANE|MIMOUNI ANAS|NAIM MOHAMED|OUMALLOUL FATIMA-EZZAHRA|RAHMOUN OMAR|RHAFIRI HIBA|SBILA NOURELHOUDA|SOUNIB AYA'),
-    modules: ["Anesthesie selon la chirurgie specialisee","Reanimation chirurgicale et soins intensifs","Urgences en anesthesie","Stage 5 Anesthesie en chirurgie specialisee","Stage 6 Reanimation","Memoire de fin d'etudes"]
-  },
-  'INP S4': {
-    students: P('ABOULKHALEF NOUHA|AHRAYOU SOUKAINA|AIT ELKEBIR NASSIMA|ANZALI ZINEB|BAHAKKI AYA|BAHYA OMAIMA|BASSLI IBTISSAME|BENAJI AMINA|BOUANANI CHAIMA|BOUHAFA HAYAT|BOULGHOM IMANE|BOUSSAK HOUDA|CHARKAOUI HALIMA|CHIHEB FATIMA-EZZAHRAE|EL-ARBAOUI MERYEME|ELMARHRAOUI HAJAR|ENASSIRI RIM|GHINE HASSNA|HSSIKI HIDAYA|KACHA HODA|KAHLAN NOUHAILA|LAHMAIM SAFIA|LAMIRI HIBA|MEFTAHI HIBA|MOUNIR SOUMIA|OUARCHAN KHAOULA|OUBELLA ASMA|OUALLA RACHIDA|RAHILI SAIDA|RAOUNI SALMA|REHOUNI MANAL|SAMSAH MANAR|ZEMRAOU ATIK|WAKIBI OUMAIMA'),
-    modules: ["Pathologie neonatales et soins infirmiers 1","Pathologie neonatales et soins infirmiers 2","Pathologies pediatriques et soins infirmiers 1","Pathologies pediatriques soins infirmiers 2","Stage en pediatrie et neonatologie 1","Stage en pediatrie et neonatologie 2"]
-  },
-  'INP S5': {
-    students: P('AIT ALI OUAKRIM ILHAM|AIT MBARK HAYAT|AIT STIMAH IMANE|AKHAL LAYOUN RIM|AOURIK HASNA|AZNAG LAYLA|BEN CHAIEB NOUHAILA|ELMAJDOUB LEILA|FAROUK SOUKAINA|NAHED ZAHIRA|NAJIM WIAM|OUAZZI SALMA|ZIRRI IKRAM'),
-    modules: ["Pathologies pediatriques avancees","Soins infirmiers pediatriques specialises","Stage specialise pediatrie","Stage specialise neonatologie","Memoire de fin d'etudes"]
-  },
-  'IBO S3': {
-    students: P('AIT ALI NOUHAILA|AIT BELLA HIBA|AIT GHROURI LATIFA|AIT OUAKRIM MOHAMED|AIT MODDAN DOUNIA|BOULOUGHBAR ZAHRA|BOUCHRIT IKRAM|BOUDAKH FATIMA EZZAHRA|BOUHADOU HIBA|BOURZIK FERDAOUS|DOUDLI SARA|EL ALAOUI ISMAILI DRISS|EL BHALLA HAFSA|EL HASNAOUI HIBA|EL IDRISSI KASSIMI ASMA|ELAANNOURI HAFSA|ELMENTOURY ANAS|ELHIK FATIMA EZZAHRA|ELGHAZOUANI HIBA|ELMENTOURY ANAS|ER-RAFIAI FATIM EZZAHRAE|FAIK HAMID|GHLIOUCHATE HIBA|ILBOUDO IBRAHIM|JALLALI AYA|KADOUARI KHADIJA|LAFKIRI MOHAMED AMINE|OUALA ASSIA|RGUIBI YASSINE|TAOUFIK JAWAD|YAKHOU DOUAA|EL FATIHI HIBA|ZERHOUNI MARWA|EL MALKI YOUSSEF|MOUSTAID REDA'),
-    modules: ["Introduction au bloc operatoire","Pathologies medicales et maladies transmissibles","Pathologies chirurgicales","Prevention du risque infectieux en BO","Dispositifs du bloc operatoire","Stage 2 sterilisation et hygiene hospitaliere"]
-  },
-  'IBO S5': {
-    students: P('AABDOUN DOUAA|ABIADOU AYA|AIT ELKADI NAOUAL|AQDIM YAHYA|BABRAIM HASNA|BENBADRYEF HIBA|BOUBAKRI SARA|BOUBKISSE HAJAR|EL KARAFLI GHIZLANE|EL KAHFI ANAS|FARIKH OUISSAL|HADDIOUI HAJAR|IMAGHRAK HANANE|KAMAL HAYATE|LAGRAA KAOUTAR|LAADRAOUI MERIEM|MAHFOUD IKRAME|MAKHLOUFI HANANE|NASYR NISSRINE|NATTIDJA ALI|RAHMOUN SOUMIA|SAFRAOUI FATIMA ZAHRA|TAHIRI FATIMA-EZZAHRAE|TAMIRI ATIKA|YAHYA AYOUB|ZAOUIZI AHLAM'),
-    modules: ["Prise en charge de l'opere selon l'acte chirurgical 1","Prise en charge de l'opere selon l'acte chirurgical 2","Techniques d'assistance chirurgicale 1","Techniques d'assistance chirurgicale 2","Stage 3 stage de circulant","Stage 4 IBO instrumentiste"]
-  },
-  'SF S3': {
-    students: P('AIT BENSGHIR NAJAT|BOUJOU ASSIA|BOULATA YASSIR|EL AAFIFI SAFA|ALLA IMAN|BENBAPA WISSAL|AMOUZOUN RACHID|EL AOUSSE AMINA|EL ASMAR NADIA|AMZIL NAWAL|BENDAOU MOUNIA|EL BIYAD MERIEM|EDDABALI MAJDA|DAKAMA HAFSSA|EL MAHFOUDI MARYEM|EL GHADOUINI AYA|ELHARRAZ AMALE|EL HAFIAN BASSMA|BENFAIDA FATIMA-EZZAHRAE|BELGHANDOUR CHAIMAA|BOURHILAT WAFA|ENNAJI HAJAR|ELHOUIDEG YOUSSEF|ERROUHY ZAKIA|EZ-ZAYTOUNY YOUSSEF|FARIKH OUISSAL|GOURIR ISSMAIL|HARRAK SIF EDDINE|HOUTAT NOHAILA|IMZILEN SALMA|JALAL YASSINE|LALAOUI IMRAN|EL MALI SARA|EL KAHFI ANAS|MAADANE MARIYA|OUDEMNATI OSSAMA'),
-    modules: ["Pathologie medicale et soins infirmiers","Pathologie chirurgicale et soins infirmiers","Anatomie du systeme nerveux et semiologie neurologique","Affections neurologiques et soins infirmiers en neurologie","Stage en medecine","Stage en chirurgie"]
-  },
-  'SF S5': {
-    students: P('AATIF FATIMA-EZZAHRAE|ABIDALLAH FATIMA EZZAHRAA|ADROUNE HOUDA|AGOURRAME KARIMA|AIT HAMOU BASMA|AHDA YAHYA|AIT QAJOU TOURIA|AHTTACH IMANE|ABOULFATH HANANE|AGOURRAM YOUSSEF|AQOULAM NOUHAILA|AMDJAR HASNA|AIT MOBARAK JAMILA|ABDELBAKI MERYEM|AIT ALI ASMAA|ARAHAL KHADIJA|BADDAZ TOURIA|BENKHALTI NADA|AYANI RIMA|AITBENMOUSSA SALMA|ABBOU IMANE|AAZRI OUMAIMA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|BOUGALLA ILYAS|CHAYL ZAKARIA|EL- HOSSINI HAMZA|EL AAMMARI ASSIYA|ELMOUDEN SAFA|GHAOUCH ANAS|KOUB MARIAM|MOUGHIT HAMZA|NASSARI DOHA|NASSIB AMINA|OUSSAMA MUSTAPHA|RAMDANE FATIMA|MOURABIT MARWA|LOUAR NADA|TAYOUR AYA|MESAD ELAYAM SALMA|LIQALI MARIA|TAIB-LILLAH FATIMA|OUMADI ILHAM'),
-    modules: ["Semiologie psychiatrique et psychopharmacologie","Les troubles psychiatriques et soins infirmiers en psychiatrie","Urgences et Secours","Les urgences psychiatriques et soins infirmiers en psychiatrie","Stage en neurologie","Stage en psychiatrie"]
-  },
-  'SM S3': {
-    students: P('ACHOUIH OUMAIMA|ABOURHIM ASMA|AIT AHMED HIBA|ABOULAHIA SAAD|AANIBA ANASS|AITAYAD NADA|ABBOU IMANE|AAZRI OUMAIMA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|AYANI RIMA|ABARAGH MERYEM|AFOULOUS ASMAE|AMAZOUZ WASSIM|ABOUHANI MAROUA|BELAKZIZ AYA|ABRARAY KHADIJA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|BOURADOUAN MAHDI|AIT BARHICH SAAD'),
-    modules: ["Sante et environnement et Maladies transmissibles","Pathologies et soins infirmiers (medecine, Chirurgie)","Pediatrie et soins infirmiers, PCIE","Stage en pediatrie","Stage en medecine"]
-  },
-  'SM S5': {
-    students: P('AIT MATRAN OUMAIMA|AIT ASSOU SALMA|ASKOUR SALMA|AIT YOUSS AHLAM|ELFAKIR FADWA|ERGUIG HAYATE|EL BARAKA ABIRE|El OUALI KARIMA|EL BHALLA OMAR|BOUTGAYOUT OUIAM|BOUTIGHATNE AABLA|CHOUKHMANI DOUAE|DARIF ILYAS|EL RHOUL KAOUTAR|EL ALAOUY SALMA|ELKHIRAOUI ZAKIA|ELKHIRAOUI ZAKIA|BOUGUIN SIHAM|DIANI AYMANE|DIOUANE ESSAADIA|El MORSLI SOAD|EL OUARDY HANAN|ED-DAFIRI WISSAL|EL KHEIR DOUAA|ICHBAD SALMA|IDAISA FATIMA ZAHRA|KHALIF HIND|IFADIR RIDA|LAMDIRA MERIEM|MALLASSE HAJAR|LAAMARI HANA|NEDDAOUI BASMA|OUMANSOUR RAJA|RAFIQ AICHA|RAZZOUQUI HANANE|LAANANI DOUA|RCHID FATIMA EZZAHRA|MIFTAH KHADIJA|RHASSINE SANA|TOUIMI SAMIA|ZAYOD HAJAR|SAADOUNI IMRANE|TOUILI FATIMA EZZAHRA|TOUIRI IMANE|ZANTANE MARYAM'),
-    modules: ["Programmes d'activites sanitaires","Sante et population : Santé familiale, Santé au travail","Concept et principes de SSPP, Sociologie de la famille","Stage au centre de sante urbain 1","Stage au centre de sante rural 1"]
-  },
-  'ISFSC S3': {
-    students: P('ABIDALLAH FATIMA EZZAHRAA|AIT ELKADI NAOUAL|EL BANNY KHADIJA|EL MAHLAOUI IMANE|EL MESSJAI OUMAIMA|EL OUGKDY HIBA|EL MAGUANA KHAWLA|EZZOUHRI RADIA|ESSASSI KAOUTAR|GAZMATE HAFSA|HAKIMI WIDIAN|KOURRATI FATIMA-EZZAHRAE|EZRAIDI FATIMA ZAHRA|EZRAIDI FATIMA ZAHRA|IGUIG BAYANE|HANYN SABAH|MELIANA FATIMA-ZAHRA|MIMOUNI ANAS|NINI SOUAD|ZARDANI FARAH|ZINEDDINE FATIMA EZZAHRA|EL HADRI MERIAM|FAILATI BINTI ILIASSA|LIBADA IBTISSAM|SANOUSSI ALI|ZAHIR ASSIA|ZDOUDOU HIBA|BOUIY HAFSA|ELAKHDAR WISSAL|RGHIOUI RIHAB|ZAKARIA BAHAMMOU|ZAKARIA BAHAMMOU|AKHRIF SALMA'),
-    modules: ["Pathologies chirurgicales 40h / SI 10h","Approche medicale et biologique du vieillissement","Approche sociale et psychologique du vieillissement","Pathologie, syndromes geriatriques et soins infirmiers 1","Stage d'initiation I : SRES","Stage d'initiation II : BCH"]
-  },
-  'ISFSC S5': {
-    students: P('AHBABOU WIAME|AIT BEN SALAH CHAIMA|AMAZOUZ FIRDAOUSS|BELLEMRABET HASNAE|BELLEMRABET IHSSAN|BOUGRINE HALIMA|BOUNOUAR SAMIA|BENLAHMER MALAK|BENLAKTIB LATIFA|BAKIR FATIMA-ZAHRA|BASSAM IMRANE|BENNASSER AYA|CHAOUKI RIHAB|BENZAHRA FATIMA-EZZAHRAE|EERIFI ANOUAR|EDDOUKALY IMANE|EL AAMMARI ASSIYA|EL KACHANI AYA|HAIDA AYA|EL KHAZZAR ANAS|EL KADOURI LOUBNA|IBRAHIMI HAFIDA|IGHEBELET FATIM_EZZAHRA|ELMEJRADY HALIMA|JAMIL SARA|KARAFLI CHAYMAE|KORSAN SALMA|KHEIAR FATIMA ZAHRA|LAMDIRA MERIEM|MANSOURI MARYAM|MOUKAFIH JAMILA|NEDDAOUI BASMA|OUHADDOU ILHAM|OUMANSOUR RAJA|RAFIQ AICHA|TAOUSSI RABHA|LAANANI DOUA|MOHTADI FATIMA EZZAHRA|ELMAKKAOUY OUMAIMA|OUDAHA CHAIMA|OUIRDY SAFAE|LACHKHAM DOHA|STITI NAJWA|ZAOUIA FATIMA-EZZAHRA|TOUILI FATIMA EZZAHRA|ZEGRAOUI SARA|YOUSSOUFI ZINEB'),
-    modules: ["Ethique et deontologie appliquee a la profession","Pathologies, syndromes geriatriques et soins infirmiers 2","Communication et relation en geratrie","Nutrition et dietetique du sujet age","Evaluation geriatrique","Stage de professionnalisation 1"]
-  },
-  'IG S4': {
-    students: P('AANIBA ANASS|AITAYAD NADA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ARAHAL KHADIJA|BADDAZ TOURIA|BENKHALTI NADA|AITBENMOUSSA SALMA|ABBOU IMANE|AAZRI OUMAIMA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|AYANI RIMA|ABARAGH MERYEM|AFOULOUS ASMAE|AMAZOUZ WASSIM|ABOUHANI MAROUA|BELAKZIZ AYA|ABRARAY KHADIJA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|BOURADOUAN MAHDI|AIT BARHICH SAAD'),
-    modules: ["Genie civil II : Hygiene de l'habitat et urbanisme","Genie sanitaire IV : Gestion des dechets liquides","Biochimie alimentaire/ Technologie des industries alimentaires","Hygiene Hospitaliere","Stage de specialisation I : HOPITAL","Stage de specialisation II : INH"]
-  },
-  'IG S5': {
-    students: P('AITAYAD NADA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ARAHAL KHADIJA|BADDAZ TOURIA|BENKHALTI NADA|ABBOU IMANE|AAZRI OUMAIMA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|AYANI RIMA|ABARAGH MERYEM|AFOULOUS ASMAE|AMAZOUZ WASSIM|ABOUHANI MAROUA|BELAKZIZ AYA|ABRARAY KHADIJA'),
-    modules: ["Genie sanitaire avance","Gestion des dechets dangereux","Stage de specialisation avance","Memoire de fin d'etudes"]
-  },
-  'IG S1': {
-    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
-    modules: ["Anatomie physiologie 50 Majeur","Droit humain/ ethique","Sociologie/psychologie","Systeme de l'offre de soins/ Economie de sante","Demographie/Epidemiologie/statistique descriptive","Anatomie et Physiologie humaine"]
-  },
-  'IG S2': {
-    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
-    modules: ["Pharmacologie generale","Genie civil I : Dessins et Plans/Materiaux de construction","Malacologie et lutte contre les mollusques","Biologie murine et lutte contre les rongeurs","Genie sanitaire I : Gestion des dechets solides","Hygiene des denrees alimentaires"]
-  },
-  'SE S1': {
-    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
-    modules: ["Langues/ communication/informatique","Programmes d'activites sanitaires et semiologie medicale","Notions de droits de l'Homme libertes publiques","Introduction aux sciences humaines","Introduction a l'etude de droit","Systeme de sante et economie de sante"]
-  },
-  'SE S2': {
-    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
-    modules: ["Chimie generale/chimie organique","Psychologie sociale et psychopedagogie","Notions de secourisme","Relation soignant soigne et diversite culturelle","Sante et population et sante mentale","Communication / TIC 2"]
-  },
-  'IAR S1': {
-    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
-    modules: ["Anatomie et physiologie","Anatomie et physiologie","Microbiologie, parasitologie et examens de laboratoire","Soins infirmiers de base 1","Langues Communication et informatique","Psycho - sociologie"]
-  },
-  'IAR S2': {
-    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
-    modules: ["Pharmacologie generale","Soins infirmiers de base 2","Pensee infirmiere et planification des soins infirmiers","Systeme national de sante et economie de sante","Nutrition et regimes alimentaires","Epidemiologie et notions de statistiques"]
-  },
-  'IBO S1': {
-    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
-    modules: ["Anatomie physiologie","Microbiologie, parasitologie et examens de laboratoire","Soins infirmiers de base 1","Langue, communication et informatique","Psychologie, sociologie","Droit et deontologie professionnelle"]
-  },
-  'IBO S2': {
-    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
-    modules: ["Pharmacologie generale","Soins infirmiers de base 2","Pensee infirmiere et planification des soins infirmiers","Systeme national de sante et economie de sante","Nutrition et regimes alimentaires","Epidemiologie et notions de statistiques"]
-  },
-  'SF S1': {
-    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
-    modules: ["Langues, communication et informatique","Profession de la Sage-femme, Ethique et deontologie professionnelle","Sciences biologiques","Anatomie generale","Pathologies medico-chirurgicales et Pharmacologie generale","Prestations de base en sante sexuelle et reproductive"]
-  },
-  'SF S2': {
-    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
-    modules: ["Psycho-socio-anthropologie","Sante publique","Anatomie gyneco-obstetricale et physiologie de la grossesse","Diagnostic et surveillance de la grossesse normale","Les trois stades de l'accouchement normal","Programmes de la sante maternelle et infantile"]
-  },
-  'ISUSI S1': {
-    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
-    modules: ["Anatomie et physiologie","Microbiologie/ parasitologie et Examens de laboratoire","Soins infirmiers de Base (SIB) 1","Langues Communication et informatique","Psycho - sociologie","Droit et Deontologie"]
-  },
-  'ISUSI S2': {
-    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
-    modules: ["Pharmacologie generale","Soins infirmiers de base 2","Pensee infirmiere et planification des soins infirmiers","Systeme national de sante et economie de sante","Nutrition et regimes alimentaires","Epidemiologie et notions de statistiques"]
-  },
-  'LABO S1': {
-    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
-    modules: ["Langue et TIC","Biologie cellulaire, Hematologie & Immunologie","Anatomie & Physiologie","Microbiologie, Parasitologie & Mycologie","Chimie generale & organique","Biochimie structurale & Nutrition"]
-  },
-  'LABO S2': {
-    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
-    modules: ["SIB/ Semio-Pathologie","Biochimie metabolique","Biophysique","Chimie analytique","Examens de laboratoire & Biosecurite","Pharmacologie & toxicologie"]
-  },
-  'ISFSC S1': {
-    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
-    modules: ["Anatomie et physiologie","Microbiologie/ parasitologie et Examens de laboratoire","SIB 1 (soins d'hygiene, nursing, surveillance du patient)","Langue, communication et informatique","Psychologie, sociologie","Droit et deontologie professionnelle"]
-  },
-  'ISFSC S2': {
-    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
-    modules: ["Pharmacologie generale","Soins infirmiers de base 2","Pensee infirmiere et planification des soins infirmiers","Systeme national de sante et economie de sante","Nutrition et regimes alimentaires","Epidemiologie et notions de statistiques"]
-  },
-  'INP S1': {
-    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
-    modules: ["Anatomie et physiologie","Microbiologie/ parasitologie et Examens de laboratoire","Soins infirmiers de Base (SIB) 1","Langues Communication et informatique","Psycho - sociologie","Droit et Deontologie"]
-  },
-  'INP S2': {
-    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
-    modules: ["Pharmacologie generale","SIB2 : administration de la therapeutique et sterilisation du materiel","Pensee infirmiere et planification des soins","Systeme national de sante et Economie de Sante","Nutrition et regime alimentaire","Epidemiologie et notion de statistiques"]
-  },
-  'ISM S1': {
-    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
-    modules: ["Anatomie physiologie","Droit et Ethique professionnelle","Sociologie de sante et psychologie","Démographie - Epidémiologie- Statistique","SNS - Economie de sante et Principe de gestion","Anatomie et physiologie"]
-  },
-  'ISM S2': {
-    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
-    modules: ["Sociologie de la famille et de la sante","Psychologie sociale et psychopedagogie","Notions de secourisme","Relation soignant soigne et diversite culturelle","Sante et population et sante mentale","Communication / TIC 2"]
-  },
-  'AS S1': {
-    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
-    modules: ["Langue Communication Informatique (L.C.I)","Droit et Ethique professionnelle","Sociologie de sante et psychologie","Démographie - Epidémiologie- Statistique","SNS - Economie de sante et Principe de gestion","Anatomie et physiologie"]
-  },
-  'AS S2': {
-    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
-    modules: ["Sociologie de la famille et de la sante","Psychologie sociale et psychopedagogie","Notions de secourisme","Relation soignant soigne et diversite culturelle","Sante et population et sante mentale","Communication / TIC 2"]
-  }
+const DEFAULT_GROUPS={
+'ISUSI S3':{students:P('ACHLIKH AICHA|AGOUZOUL MOUNA|ARROUY IKRAM|AZIZ AMINA|BANI NAJMA|BENCHAMA MOHAMED ALI|BOUIDA KATRE-ENNADA|BOURISSA HAMZA|DENDOUN ISLAM|EBOUR KHAOULA|El ABDELLAOUI FATIMA-EZZAHRA|EL HARRARI OUSSAMA|EL HOR HAJAR|EL JAOUHARI MALAK|El MIKH SALMA|ELMOUDAFFAR WISSAL|ENNAJIH RIHAM|ET.TAGHELATY HANANE|FASSINI CHAIMAA|HANGOUR HAFSA|IMAZZANE MAROUA|LABBIHI KAOUTAR|LAFHAL BADER|NAJEH RADWA|NAOUAR MBARKA|OUARHOU AMINE|OUILKI JIHAD|OUIS MOHAMED|OUJAA IMANE|OUKOUZAMT HAYATE|OUNASSER ISRAA|RAIS ANAS|SAADI IMANE|SAADOUNI DOUAA|TOUIL KELTOUM|ZAKAR CHAIMA'),modules:["Pathologie medico-chirurgicale d'urgence","Puericulture et maladies transmissibles","Organisation des urgences et semiologie telephonique","Soins infirmiers en medecine et chirurgie d'urgence","Stage 1 service d'urgences","Stage 2 Dechoquage"]},
+'ISUSI S5':{students:P('AMARIR MOHAMMED|ARIF KHADIJA|BELLAGCHAIRI HIBA|BERRAMY HIBA|CHAIBI AYA|CHAKHCH YASSMINE|CHAOUKI FATIMA EZZAHRAA|DAHI ILYAS|EL ACHKAR BOUTAINA|EL HADAR HAJAR|EL MOUDDEN OUISAL|ESSAKHI HASNAE|GAZGAZ SALOUA|HOUSSAYNI IMANE|HOUSSNI ZAKARIA|IBRQI IMANE|IDSASSI ZINEB|KDAIRE NOUHAILA|KERROUM KHADIJA|KHORCHID MARIA|LAAZIZ KHADIJA|LACH-HEB MERIEM|LAKOUIS IMANE|MABROUR ABDELLAH|MACHKOUR SALMA|MIMOUNE WISSALE|MIMOUNI ANAS|M\'KIOUASS SALMA|SBOUITA IBTISSAM|TADILI FATIMA-EZZAHRA|CHOUCRI HICHAM'),modules:["Pharmacologie de l'urgence","Materiel et appareillage des soins de sante des urgences et secourisme","Reanimation","Methodologie de recherche","Stage 3 Reanimation medicochirurgicale","Stage 4 Bloc Operatoire"]},
+'LABO S3':{students:P('AAA IBTIHAL|AIT BOURHIM IMANE|BADI ZINEB|BELFASSI FATIMA-EZZAHERAE|BOUCHRIHA MARYEM|BOUDLIH ILHAS|BOUSALHI NADA|CHARDAOUI OUISSAL|CHERKAOUI ABDERRAHMANE|DAU LAM ACHUIL LAM|DAYAB AMAL|EDDARKAOUI AMINA|EL HADI BADER|EL MALKI OUARDA|EL MANYANI CHAIMAA|ELAMOUD SARA|ELBAZ MOHAMED AMINE|ELMAKKAOUI SALAH EDDINE|ESSAADI ILYASS|ESSAADI ZOUHAYR|ESSADEK YOUSSEF|HASSANI MBECHEZI ELARIF|JEBBAD YASMINE|MQAINTAR SAMI|MULENGA MERCY CHIBESA|NOUGHOU AYA|RAGHIB ANAS|RAHEL GHIZLANE|SEKOURI MARYEM|SILOMBA TEPWANJI|TOYBA IBRAHIM|ZEROUALI MARYAM'),modules:["Biochimie clinique","Hematologie & Hemobiologie","Immunologie generale/ Immuno-Analyse","Biochimie clinique analytique TP","Stage d'Hematologie & d'Immuno-hematologie","Stage de biochimie"]},
+'LABO S5':{students:P('ABILI MALIKA|ADDARAL OUMAIMA|AIT EL HAJ HIBA|AIT ZAOUIT FATIMA-ZAHRA|ANEJJAR NOUHAILA|BITALJANE OMAIMA|BOUCHIHA HAJAR|BOUJA AYAT|CHTIOUI MARYAM|ECH-CHTOUKI ABDELLAH|EL ABADILA CHEIKH MAALAININE|EL BAZ KHADIJA|EL KHOUMANI MARWA|ETTAOUSSI SANAE|FAKHRANE WIAME|FRINDO MUSTAPHA|GUOUN SAFIA|HABBA HAFSA|HAMIMADI ROMAISSA|HAMZAOUI ZOUHAIR|JABELKHAYR ANAS|KHIARE HIBA|LAHLIMI OUMAIMA|MAHIR MOHAMED|OUAJIB NOUHAILA|RADI JAMILA|ROUGHAL AYMAN|SI KHOUNA HAFSA|SIKLANE HAJAR|TEFNOUTI MALAK|TOUIR AYOUB|ZIDANE OUMAIMA'),modules:["Bacteriologie medicale TP","Bacteriologie medicale & Virologie","Parasitologie & Mycologie","Biostatistique & Epidemiologie & Demographie","Stage de Bacteriologie medicale","Stage de Parasitologie & Mycologie"]},
+'IAR S3':{students:P('AACHCHAKI RANYA|AGJIJE HAJAR|AIT LAHCINE HIBA|AIT SOUNNA NESSAIBA|AITALEB CHAIMAA|ARAGROUG AYA|ARIBA KHADIJA|AZZAFE RIHAM|BELAAMRY HIBA|BEN TALE FATIMA EZZAHRAE|BOUNAJAH MARIAM|BOUSTTA ASSIA|EL BAKKAL KHADIJA|EL HAJRI SARA|El HAMOUNI MOHAMED|ELBOUKARY ANAS|ELFARNANE CHAIMA|ENNDA HASSNA|HMOUDOU AYA|IDRISSI OUMNIYA|IQIQ YOUSSEF|LABDAOUI MERYEM|LABIAD DOUAA|MAHRAR MOURAD|MOSAID SAAD|RASSOU BAHIJA|SAADI OUMAIMA|SBAYBI NOUR EL IMANE|TAIB ASMAA|TIBBA KHADIJA'),modules:["Deroulement d'anesthesie et anesthesie ambulatoire","Pathologies medicales et maladies transmissibles","Pathologies chirurgicales","Pharmacologie Anesthesique","Stage 2 Anesthesie en Chirurgie generale 1","Stage 3 Anesthesie en chirurgie pediatrique 1"]},
+'IAR S5':{students:P('AIT FDIL SALMA|AKMAKH MEHDI|AMADRAR FATIMA|BAQOUS MARYAM|BENKHALEQ SALMA|CHNINIF YOUSSEF|DENAIZI NGUENENDJI CHANCELVIE FLORE|EGOUMASSINE OUMAIMA|EL GHADOUINI HIBA|EL GUARAOUI ZAHRA|EL KARAFLI KHADIJA|EL MANOUZI HAJAR|EL QADIMI CHAIMAA|EZITOUNI FATIMAEZZAHRA|FADLY CHAIMAA|GRARI ANAS|HACHAMI ZAINAB|KABLAOUI MARWA|KRIFA RIHAB|LAKHAL SIHAM|LAMQISS SAFA|LARAJ SALMA|LAHDAR YASSIR|NAIM MOHAMED|OUMALLOUL FATIMA-EZZAHRA|RAHMOUN OMAR|RHAFIRI HIBA|SBILA NOURELHOUDA|SOUNIB AYA'),modules:["Anesthesie selon la chirurgie specialisee","Reanimation chirurgicale et soins intensifs","Urgences en anesthesie","Stage 5 Anesthesie en chirurgie specialisee","Stage 6 Reanimation","Memoire de fin d'etudes"]},
+'INP S4':{students:P('ABOULKHALEF NOUHA|AHRAYOU SOUKAINA|AIT ELKEBIR NASSIMA|ANZALI ZINEB|BAHAKKI AYA|BAHYA OMAIMA|BASSLI IBTISSAME|BENAJI AMINA|BOUANANI CHAIMA|BOUHAFA HAYAT|BOULGHOM IMANE|BOUSSAK HOUDA|CHARKAOUI HALIMA|CHIHEB FATIMA-EZZAHRAE|EL-ARBAOUI MERYEME|ELMARHRAOUI HAJAR|ENASSIRI RIM|GHINE HASSNA|HSSIKI HIDAYA|KACHA HODA|KAHLAN NOUHAILA|LAHMAIM SAFIA|LAMIRI HIBA|MEFTAHI HIBA|MOUNIR SOUMIA|OUARCHAN KHAOULA|OUBELLA ASMA|OUALLA RACHIDA|RAHILI SAIDA|RAOUNI SALMA|REHOUNI MANAL|SAMSAH MANAR|ZEMRAOU ATIK|WAKIBI OUMAIMA'),modules:["Pathologie neonatales et soins infirmiers 1","Pathologie neonatales et soins infirmiers 2","Pathologies pediatriques et soins infirmiers 1","Pathologies pediatriques soins infirmiers 2","Stage en pediatrie et neonatologie 1","Stage en pediatrie et neonatologie 2"]},
+'INP S5':{students:P('AIT ALI OUAKRIM ILHAM|AIT MBARK HAYAT|AIT STIMAH IMANE|AKHAL LAYOUN RIM|AOURIK HASNA|AZNAG LAYLA|BEN CHAIEB NOUHAILA|ELMAJDOUB LEILA|FAROUK SOUKAINA|NAHED ZAHIRA|NAJIM WIAM|OUAZZI SALMA|ZIRRI IKRAM'),modules:["Pathologies pediatriques avancees","Soins infirmiers pediatriques specialises","Stage specialise pediatrie","Stage specialise neonatologie","Memoire de fin d'etudes"]},
+'IBO S3':{students:P('AIT ALI NOUHAILA|AIT BELLA HIBA|AIT GHROURI LATIFA|AIT OUAKRIM MOHAMED|AIT MODDAN DOUNIA|BOULOUGHBAR ZAHRA|BOUCHRIT IKRAM|BOUDAKH FATIMA EZZAHRA|BOUHADOU HIBA|BOURZIK FERDAOUS|DOUDLI SARA|EL ALAOUI ISMAILI DRISS|EL BHALLA HAFSA|EL HASNAOUI HIBA|EL IDRISSI KASSIMI ASMA|ELAANNOURI HAFSA|ELMENTOURY ANAS|ELHIK FATIMA EZZAHRA|ELGHAZOUANI HIBA|ER-RAFIAI FATIM EZZAHRAE|FAIK HAMID|GHLIOUCHATE HIBA|ILBOUDO IBRAHIM|JALLALI AYA|KADOUARI KHADIJA|LAFKIRI MOHAMED AMINE|OUALA ASSIA|RGUIBI YASSINE|TAOUFIK JAWAD|YAKHOU DOUAA|EL FATIHI HIBA|ZERHOUNI MARWA|EL MALKI YOUSSEF|MOUSTAID REDA'),modules:["Introduction au bloc operatoire","Pathologies medicales et maladies transmissibles","Pathologies chirurgicales","Prevention du risque infectieux en BO","Dispositifs du bloc operatoire","Stage 2 sterilisation et hygiene hospitaliere"]},
+'IBO S5':{students:P('AABDOUN DOUAA|ABIADOU AYA|AIT ELKADI NAOUAL|AQDIM YAHYA|BABRAIM HASNA|BENBADRYEF HIBA|BOUBAKRI SARA|BOUBKISSE HAJAR|EL KARAFLI GHIZLANE|FARIKH OUISSAL|HADDIOUI HAJAR|IMAGHRAK HANANE|KAMAL HAYATE|LAGRAA KAOUTAR|LAADRAOUI MERIEM|MAHFOUD IKRAME|MAKHLOUFI HANANE|NASYR NISSRINE|NATTIDJA ALI|RAHMOUN SOUMIA|SAFRAOUI FATIMA ZAHRA|TAHIRI FATIMA-EZZAHRAE|TAMIRI ATIKA|YAHYA AYOUB|ZAOUIZI AHLAM'),modules:["Prise en charge de l'opere selon l'acte chirurgical 1","Prise en charge de l'opere selon l'acte chirurgical 2","Techniques d'assistance chirurgicale 1","Techniques d'assistance chirurgicale 2","Stage 3 stage de circulant","Stage 4 IBO instrumentiste"]},
+'SF S3':{students:P('AIT BENSGHIR NAJAT|BOUJOU ASSIA|BOULATA YASSIR|EL AAFIFI SAFA|ALLA IMAN|BENBAPA WISSAL|AMOUZOUN RACHID|EL AOUSSE AMINA|EL ASMAR NADIA|AMZIL NAWAL|BENDAOU MOUNIA|EL BIYAD MERIEM|EDDABALI MAJDA|DAKAMA HAFSSA|EL MAHFOUDI MARYEM|EL GHADOUINI AYA|ELHARRAZ AMALE|EL HAFIAN BASSMA|BENFAIDA FATIMA-EZZAHRAE|BELGHANDOUR CHAIMAA|BOURHILAT WAFA|ENNAJI HAJAR|ELHOUIDEG YOUSSEF|ERROUHY ZAKIA|EZ-ZAYTOUNY YOUSSEF|FARIKH OUISSAL|GOURIR ISSMAIL|HARRAK SIF EDDINE|HOUTAT NOHAILA|IMZILEN SALMA|JALAL YASSINE|LALAOUI IMRAN|EL MALI SARA|EL KAHFI ANAS|MAADANE MARIYA|OUDEMNATI OSSAMA'),modules:["Pathologie medicale et soins infirmiers","Pathologie chirurgicale et soins infirmiers","Anatomie du systeme nerveux et semiologie neurologique","Affections neurologiques et soins infirmiers en neurologie","Stage en medecine","Stage en chirurgie"]},
+'SF S5':{students:P('AATIF FATIMA-EZZAHRAE|ABIDALLAH FATIMA EZZAHRAA|ADROUNE HOUDA|AGOURRAME KARIMA|AIT HAMOU BASMA|AHDA YAHYA|AIT QAJOU TOURIA|AHTTACH IMANE|ABOULFATH HANANE|AGOURRAM YOUSSEF|AQOULAM NOUHAILA|AMDJAR HASNA|AIT MOBARAK JAMILA|ABDELBAKI MERYEM|AIT ALI ASMAA|ARAHAL KHADIJA|BADDAZ TOURIA|BENKHALTI NADA|AYANI RIMA|AITBENMOUSSA SALMA|ABBOU IMANE|AAZRI OUMAIMA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|BOUGALLA ILYAS|CHAYL ZAKARIA|EL- HOSSINI HAMZA|EL AAMMARI ASSIYA|ELMOUDEN SAFA|GHAOUCH ANAS|KOUB MARIAM|MOUGHIT HAMZA|NASSARI DOHA|NASSIB AMINA|OUSSAMA MUSTAPHA|RAMDANE FATIMA|MOURABIT MARWA|LOUAR NADA|TAYOUR AYA|MESAD ELAYAM SALMA|LIQALI MARIA|TAIB-LILLAH FATIMA|OUMADI ILHAM'),modules:["Semiologie psychiatrique et psychopharmacologie","Les troubles psychiatriques et soins infirmiers","Urgences et Secours","Les urgences psychiatriques","Stage en neurologie","Stage en psychiatrie"]},
+'SM S3':{students:P('ACHOUIH OUMAIMA|ABOURHIM ASMA|AIT AHMED HIBA|ABOULAHIA SAAD|AANIBA ANASS|AITAYAD NADA|ABBOU IMANE|AAZRI OUMAIMA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|AYANI RIMA|ABARAGH MERYEM|AFOULOUS ASMAE|AMAZOUZ WASSIM|ABOUHANI MAROUA|BELAKZIZ AYA|ABRARAY KHADIJA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|BOURADOUAN MAHDI|AIT BARHICH SAAD'),modules:["Sante et environnement et Maladies transmissibles","Pathologies et soins infirmiers","Pediatrie et soins infirmiers","Stage en pediatrie","Stage en medecine"]},
+'SM S5':{students:P('AIT MATRAN OUMAIMA|AIT ASSOU SALMA|ASKOUR SALMA|AIT YOUSS AHLAM|ELFAKIR FADWA|ERGUIG HAYATE|EL BARAKA ABIRE|El OUALI KARIMA|EL BHALLA OMAR|BOUTGAYOUT OUIAM|BOUTIGHATNE AABLA|CHOUKHMANI DOUAE|DARIF ILYAS|EL RHOUL KAOUTAR|EL ALAOUY SALMA|ELKHIRAOUI ZAKIA|BOUGUIN SIHAM|DIANI AYMANE|DIOUANE ESSAADIA|El MORSLI SOAD|EL OUARDY HANAN|ED-DAFIRI WISSAL|EL KHEIR DOUAA|ICHBAD SALMA|IDAISA FATIMA ZAHRA|KHALIF HIND|IFADIR RIDA|LAMDIRA MERIEM|MALLASSE HAJAR|LAAMARI HANA|NEDDAOUI BASMA|OUMANSOUR RAJA|RAFIQ AICHA|RAZZOUQUI HANANE|LAANANI DOUA|RCHID FATIMA EZZAHRA|MIFTAH KHADIJA|RHASSINE SANA|TOUIMI SAMIA|ZAYOD HAJAR|SAADOUNI IMRANE|TOUILI FATIMA EZZAHRA|TOUIRI IMANE|ZANTANE MARYAM'),modules:["Programmes d'activites sanitaires","Sante et population","Concept et principes de SSPP","Stage au centre de sante urbain 1","Stage au centre de sante rural 1"]},
+'ISFSC S3':{students:P('ABIDALLAH FATIMA EZZAHRAA|AIT ELKADI NAOUAL|EL BANNY KHADIJA|EL MAHLAOUI IMANE|EL MESSJAI OUMAIMA|EL OUGKDY HIBA|EL MAGUANA KHAWLA|EZZOUHRI RADIA|ESSASSI KAOUTAR|GAZMATE HAFSA|HAKIMI WIDIAN|KOURRATI FATIMA-EZZAHRAE|EZRAIDI FATIMA ZAHRA|IGUIG BAYANE|HANYN SABAH|MELIANA FATIMA-ZAHRA|MIMOUNI ANAS|NINI SOUAD|ZARDANI FARAH|ZINEDDINE FATIMA EZZAHRA|EL HADRI MERIAM|FAILATI BINTI ILIASSA|LIBADA IBTISSAM|SANOUSSI ALI|ZAHIR ASSIA|ZDOUDOU HIBA|BOUIY HAFSA|ELAKHDAR WISSAL|RGHIOUI RIHAB|ZAKARIA BAHAMMOU|AKHRIF SALMA'),modules:["Pathologies chirurgicales 40h / SI 10h","Approche medicale du vieillissement","Approche sociale et psychologique du vieillissement","Pathologie, syndromes geriatriques 1","Stage d'initiation I : SRES","Stage d'initiation II : BCH"]},
+'ISFSC S5':{students:P('AHBABOU WIAME|AIT BEN SALAH CHAIMA|AMAZOUZ FIRDAOUSS|BELLEMRABET HASNAE|BELLEMRABET IHSSAN|BOUGRINE HALIMA|BENLAHMER MALAK|BENLAKTIB LATIFA|BAKIR FATIMA-ZAHRA|BASSAM IMRANE|BENNASSER AYA|CHAOUKI RIHAB|BENZAHRA FATIMA-EZZAHRAE|EERIFI ANOUAR|EDDOUKALY IMANE|EL AAMMARI ASSIYA|EL KACHANI AYA|HAIDA AYA|EL KHAZZAR ANAS|EL KADOURI LOUBNA|IBRAHIMI HAFIDA|IGHEBELET FATIM_EZZAHRA|ELMEJRADY HALIMA|JAMIL SARA|KARAFLI CHAYMAE|KORSAN SALMA|KHEIAR FATIMA ZAHRA|LAMDIRA MERIEM|MANSOURI MARYAM|MOUKAFIH JAMILA|OUMANSOUR RAJA|RAFIQ AICHA|MOHTADI FATIMA EZZAHRA|ELMAKKAOUY OUMAIMA|OUDAHA CHAIMA|OUIRDY SAFE|LACHKHAM DOHA|STITI NAJWA|ZAOUIA FATIMA-EZZAHRA|TOUILI FATIMA EZZAHRA|ZEGRAOUI SARA|YOUSSOUFI ZINEB'),modules:["Ethique et deontologie appliquee","Pathologies geriatriques et soins infirmiers 2","Communication et relation en geriatrie","Nutrition et dietetique du sujet age","Evaluation geriatrique","Stage de professionnalisation 1"]},
+'IG S4':{students:P('AANIBA ANASS|AITAYAD NADA|ABDELBAKI MERYEM|ARAHAL KHADIJA|BADDAZ TOURIA|BENKHALTI NADA|ABBOU IMANE|AAZRI OUMAIMA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|AYANI RIMA|ABARAGH MERYEM|AFOULOUS ASMAE|AMAZOUZ WASSIM|ABOUHANI MAROUA|BELAKZIZ AYA|ABRARAY KHADIJA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|BOURADOUAN MAHDI|AIT BARHICH SAAD'),modules:["Genie civil II","Genie sanitaire IV","Biochimie alimentaire","Hygiene Hospitaliere","Stage de specialisation I","Stage de specialisation II"]},
+'IG S5':{students:P('AITAYAD NADA|ABDELBAKI MERYEM|ARAHAL KHADIJA|BADDAZ TOURIA|BENKHALTI NADA|ABBOU IMANE|AAZRI OUMAIMA|AGOUJJIF HAFSA|ALAHMOUM MOHAMED|AYANI RIMA|ABARAGH MERYEM|AFOULOUS ASMAE|AMAZOUZ WASSIM|ABOUHANI MAROUA|BELAKZIZ AYA|ABRARAY KHADIJA'),modules:["Genie sanitaire avance","Gestion des dechets dangereux","Stage de specialisation avance","Memoire de fin d'etudes"]}
 };
 
 // ============================================
-// ETAT DE L'APPLICATION
+// ETAT
 // ============================================
+let GROUPS = {};
 let currentGroup = 'ISUSI S3';
 let currentTab = 'enregistrement';
-let absences = []; // Toutes les absences enregistrees
+let currentSubTab = 'etudiants-mgmt';
+let absences = [];
+let importWorkbook = null;
+let importSheetData = null;
+let importPreviewData = [];
 
-// Charger depuis localStorage
-function loadData() {
-  try {
-    const saved = localStorage.getItem('absenceTrack_data');
-    if (saved) absences = JSON.parse(saved);
-  } catch(e) { absences = []; }
+function loadData(){
+  try{
+    const g = localStorage.getItem('at_groups');
+    GROUPS = g ? JSON.parse(g) : JSON.parse(JSON.stringify(DEFAULT_GROUPS));
+    const a = localStorage.getItem('at_absences');
+    if(a) absences = JSON.parse(a);
+  }catch(e){GROUPS=JSON.parse(JSON.stringify(DEFAULT_GROUPS));absences=[];}
 }
-function saveData() {
-  localStorage.setItem('absenceTrack_data', JSON.stringify(absences));
+function saveData(){
+  localStorage.setItem('at_groups', JSON.stringify(GROUPS));
+  localStorage.setItem('at_absences', JSON.stringify(absences));
+}
+function resetAllData(){
+  GROUPS=JSON.parse(JSON.stringify(DEFAULT_GROUPS));
+  absences=[];
+  saveData();
 }
 
 // ============================================
-// INITIALISATION
+// INIT
 // ============================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded',()=>{
   loadData();
-  // Date du jour par defaut
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('absDate').value = today;
-  // Remplir les creneaux horaires
-  const timeSel = document.getElementById('absTime');
-  TIME_SLOTS.forEach(t => {
-    const opt = document.createElement('option');
-    opt.value = t; opt.textContent = t;
-    timeSel.appendChild(opt);
-  });
-  // Render groupe list
-  renderGroupList();
-  // Selectionner le premier groupe
-  selectGroup('ISUSI S3');
-  // Hamburger
-  document.getElementById('hamburgerBtn').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.toggle('open');
-  });
-  // Fermer sidebar au clic hors zone (mobile)
-  document.getElementById('mainContent').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('absDate').value=new Date().toISOString().split('T')[0];
+  const ts=document.getElementById('absTime');
+  TIME_SLOTS.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;ts.appendChild(o);});
+  // Si aucun groupe dans les donnees, initialiser
+  if(Object.keys(GROUPS).length===0){GROUPS=JSON.parse(JSON.stringify(DEFAULT_GROUPS));saveData();}
+  if(!GROUPS[currentGroup])currentGroup=Object.keys(GROUPS)[0];
+  renderGroupList();selectGroup(currentGroup);
+  document.getElementById('hamburgerBtn').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('open');});
+  document.getElementById('mainContent').addEventListener('click',()=>{document.getElementById('sidebar').classList.remove('open');});
+  document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+  // Ecouter changements de date/creneau/module
+  ['absDate','absTime','absModule'].forEach(id=>{
+    document.getElementById(id).addEventListener('change',()=>{if(currentTab==='enregistrement')renderStudentGrid();});
   });
 });
 
 // ============================================
-// NAVIGATION / GROUPES
+// NAVIGATION
 // ============================================
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-  document.getElementById('tab-' + tab).style.display = 'block';
-  document.querySelectorAll('.nav-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.tab === tab);
-  });
+function switchTab(tab){
+  currentTab=tab;
+  document.querySelectorAll('.tab-content').forEach(el=>el.style.display='none');
+  document.getElementById('tab-'+tab).style.display='block';
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.tab===tab));
   document.getElementById('sidebar').classList.remove('open');
+  if(tab==='gestion')switchSubTab(currentSubTab);
   renderCurrentTab();
 }
-
-function renderGroupList() {
-  const container = document.getElementById('groupList');
-  const search = (document.getElementById('groupSearch').value || '').toLowerCase();
-  // Regrouper par filiere
-  const filieres = {};
-  Object.keys(GROUPS).forEach(g => {
-    if (search && !g.toLowerCase().includes(search)) return;
-    const parts = g.split(' ');
-    const filiere = parts.slice(0, -1).join(' ');
-    if (!filiere[filiere]) filieres[filiere] = [];
-    filieres[filiere].push(g);
+function switchSubTab(sub){
+  currentSubTab=sub;
+  document.querySelectorAll('.sub-tab').forEach(el=>el.classList.toggle('active',el.dataset.subtab===sub));
+  document.querySelectorAll('.subtab-content').forEach(el=>el.style.display='none');
+  const target=document.getElementById('subtab-'+sub);if(target)target.style.display='block';
+  if(sub==='etudiants-mgmt')renderMgmtStudents();
+  if(sub==='modules-mgmt')renderMgmtModules();
+  if(sub==='groupes-mgmt')renderMgmtGroups();
+}
+function renderGroupList(){
+  const c=document.getElementById('groupList');
+  const s=(document.getElementById('groupSearch').value||'').toLowerCase();
+  const fm={};
+  Object.keys(GROUPS).forEach(g=>{
+    if(s&&!g.toLowerCase().includes(s))return;
+    const m=g.match(/^(.+?)\s+S(\d+)$/);if(!m)return;
+    const f=m[1];if(!fm[f])fm[f]=[];fm[f].push(g);
   });
-  // Corriger
-  const filMap = {};
-  Object.keys(GROUPS).forEach(g => {
-    if (search && !g.toLowerCase().includes(search)) return;
-    const match = g.match(/^(.+?)\s+S\d+$/);
-    const fil = match ? match[1] : g;
-    if (!filMap[fil]) filMap[fil] = [];
-    filMap[fil].push(g);
-  });
-  let html = '';
-  // Trier les filieres, puis les semestres
-  Object.keys(filMap).sort().forEach(fil => {
-    html += `<div class="group-label">${fil}</div>`;
-    filMap[fil].sort((a,b) => {
-      const sa = parseInt(a.match(/S(\d+)$/)[1]);
-      const sb = parseInt(b.match(/S(\d+)$/)[1]);
-      return sa - sb;
-    }).forEach(g => {
-      const count = GROUPS[g].students.length;
-      const active = g === currentGroup ? 'active' : '';
-      html += `<div class="group-item ${active}" onclick="selectGroup('${g}')">${g}<span class="count">${count}</span></div>`;
+  let h='';
+  Object.keys(fm).sort().forEach(f=>{
+    h+=`<div class="group-label">${f}</div>`;
+    fm[f].sort((a,b)=>{const sa=parseInt(a.match(/S(\d+)$/)[1]),sb=parseInt(b.match(/S(\d+)$/)[1]);return sa-sb;}).forEach(g=>{
+      const cnt=GROUPS[g]?GROUPS[g].students.length:0;
+      h+=`<div class="group-item ${g===currentGroup?'active':''}" onclick="selectGroup('${g.replace(/'/g,"\\'")}')">${g}<span class="count">${cnt}</span></div>`;
     });
   });
-  container.innerHTML = html;
+  c.innerHTML=h;
 }
-
-function filterGroups() { renderGroupList(); }
-
-function selectGroup(group) {
-  currentGroup = group;
-  renderGroupList();
-  updateModuleSelect();
-  renderCurrentTab();
+function filterGroups(){renderGroupList();}
+function selectGroup(g){
+  currentGroup=g;renderGroupList();updateModuleSelect();renderCurrentTab();
   document.getElementById('sidebar').classList.remove('open');
 }
-
-function updateModuleSelect() {
-  const sel = document.getElementById('absModule');
-  sel.innerHTML = '<option value="">-- Choisir --</option>';
-  (GROUPS[currentGroup]?.modules || []).forEach(m => {
-    const opt = document.createElement('option');
-    opt.value = m; opt.textContent = m;
-    sel.appendChild(opt);
-  });
+function updateModuleSelect(){
+  const sel=document.getElementById('absModule');sel.innerHTML='<option value="">-- Choisir --</option>';
+  (GROUPS[currentGroup]?.modules||[]).forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o);});
 }
-
-function renderCurrentTab() {
-  switch(currentTab) {
-    case 'enregistrement': renderStudentGrid(); break;
-    case 'historique': renderHistory(); break;
-    case 'statistiques': renderStats(); break;
-    case 'etudiants': renderStudentCards(); break;
+function renderCurrentTab(){
+  switch(currentTab){
+    case'enregistrement':renderStudentGrid();break;
+    case'historique':renderHistory();break;
+    case'statistiques':renderStats();break;
+    case'etudiants':renderStudentCards();break;
+    case'gestion':switchSubTab(currentSubTab);break;
   }
   renderPageHeader();
 }
-
-function renderPageHeader() {
-  const students = GROUPS[currentGroup]?.students || [];
-  const tabNames = { enregistrement: 'Enregistrement des absences', historique: 'Historique des absences', statistiques: 'Statistiques', etudiants: 'Fiches etudiants' };
-  const tabIcons = { enregistrement: 'fa-pen-to-square', historique: 'fa-clock-rotate-left', statistiques: 'fa-chart-pie', etudiants: 'fa-users' };
-  document.getElementById('pageHeader').innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-      <div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-          <span style="background:var(--accent-glow);color:var(--accent);padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;">${currentGroup}</span>
-          <span style="color:var(--muted);font-size:13px;">${students.length} etudiants</span>
-        </div>
-        <h2 style="font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px;">
-          <i class="fas ${tabIcons[currentTab]}" style="color:var(--accent);font-size:20px;"></i>
-          ${tabNames[currentTab]}
-        </h2>
-      </div>
-      <div style="display:flex;gap:8px;">
-        ${currentTab === 'historique' ? `<button class="btn btn-ghost btn-sm" onclick="exportCSV()"><i class="fas fa-download"></i> Exporter CSV</button>` : ''}
-        ${currentTab === 'statistiques' ? `<button class="btn btn-ghost btn-sm" onclick="exportCSV()"><i class="fas fa-download"></i> Exporter CSV</button>` : ''}
-      </div>
-    </div>
-  `;
+function renderPageHeader(){
+  const students=GROUPS[currentGroup]?.students||[];
+  const tn={enregistrement:'Enregistrement des absences',historique:'Historique des absences',statistiques:'Statistiques',etudiants:'Fiches etudiants',gestion:'Gestion des donnees'};
+  const ti={enregistrement:'fa-pen-to-square',historique:'fa-clock-rotate-left',statistiques:'fa-chart-pie',etudiants:'fa-users',gestion:'fa-gear'};
+  document.getElementById('pageHeader').innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div><div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <span style="background:var(--accent-glow);color:var(--accent);padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;">${currentGroup}</span>
+      <span style="color:var(--muted);font-size:13px;">${students.length} etudiants</span></div>
+      <h2 style="font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px;">
+      <i class="fas ${ti[currentTab]}" style="color:var(--accent);font-size:20px;"></i>${tn[currentTab]}</h2></div></div>`;
 }
 
 // ============================================
-// ONGLET ENREGISTREMENT
+// ENREGISTREMENT
 // ============================================
-function renderStudentGrid() {
-  const students = GROUPS[currentGroup]?.students || [];
-  const search = (document.getElementById('studentSearch')?.value || '').toLowerCase();
-  const filtered = students.filter(s => s.toLowerCase().includes(search));
-
-  // Obtenir les absences deja enregistrees pour ce groupe/date/creneau/module
-  const date = document.getElementById('absDate').value;
-  const time = document.getElementById('absTime').value;
-  const mod = document.getElementById('absModule').value;
-  const existing = getAbsencesFor(currentGroup, date, time, mod);
-
-  let html = `<table class="data-table">
-    <thead><tr>
-      <th style="width:50px;"><input type="checkbox" class="abs-checkbox" id="checkAll" onchange="toggleAll(this.checked)" title="Tout cocher/decocher"></th>
-      <th style="width:60px;">N</th>
-      <th>Nom complet</th>
-      <th style="width:120px;">Statut</th>
-      <th style="width:200px;">Justification</th>
-    </tr></thead><tbody>`;
-
-  filtered.forEach((name, i) => {
-    const abs = existing.find(a => a.student === name);
-    const checked = abs ? 'checked' : '';
-    const rowClass = abs ? 'absent-row' : '';
-    const origIdx = students.indexOf(name) + 1;
-    const statusHtml = abs
-      ? `<span class="absent-tag"><i class="fas fa-xmark"></i> Absent</span>`
-      : `<span style="color:var(--accent);font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Present</span>`;
-    const justVal = abs?.justification || '';
-    html += `<tr class="${rowClass}" data-student="${name}">
-      <td><input type="checkbox" class="abs-checkbox student-cb" data-name="${name}" ${checked} onchange="updateAbsCount()"></td>
-      <td style="color:var(--muted);font-size:13px;">${origIdx}</td>
-      <td style="font-weight:500;">${name}</td>
-      <td>${statusHtml}</td>
-      <td><input type="text" class="form-input" style="padding:6px 10px;font-size:12px;" placeholder="Justification..." data-just="${name}" value="${justVal}"></td>
-    </tr>`;
+function renderStudentGrid(){
+  const students=GROUPS[currentGroup]?.students||[];
+  const search=(document.getElementById('studentSearch')?.value||'').toLowerCase();
+  const filtered=students.filter(s=>s.toLowerCase().includes(search));
+  const date=document.getElementById('absDate').value;
+  const time=document.getElementById('absTime').value;
+  const mod=document.getElementById('absModule').value;
+  const existing=absences.filter(a=>a.group===currentGroup&&a.date===date&&a.time===time&&a.module===mod);
+  let h=`<table class="data-table"><thead><tr>
+    <th style="width:50px;"><input type="checkbox" class="abs-checkbox" id="checkAll" onchange="toggleAll(this.checked)"></th>
+    <th style="width:60px;">N</th><th>Nom complet</th><th style="width:120px;">Statut</th><th style="width:200px;">Justification</th>
+  </tr></thead><tbody>`;
+  filtered.forEach((name,i)=>{
+    const abs=existing.find(a=>a.student===name);
+    const checked=abs?'checked':'';
+    const rc=abs?'absent-row':'';
+    const oi=students.indexOf(name)+1;
+    const st=abs?`<span class="absent-tag"><i class="fas fa-xmark"></i> Absent</span>`:`<span style="color:var(--accent);font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Present</span>`;
+    h+=`<tr class="${rc}" data-student="${name}">
+      <td><input type="checkbox" class="abs-checkbox student-cb" data-name="${name}" ${checked} onchange="onStudentCbChange(this)"></td>
+      <td style="color:var(--muted);font-size:13px;">${oi}</td>
+      <td style="font-weight:500;">${name}</td><td>${st}</td>
+      <td><input type="text" class="form-input" style="padding:6px 10px;font-size:12px;" placeholder="Justification..." data-just="${name}" value="${abs?.justification||''}"></td></tr>`;
   });
-
-  if (filtered.length === 0) {
-    html += `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Aucun etudiant trouve</td></tr>`;
-  }
-  html += '</tbody></table>';
-  document.getElementById('studentGrid').innerHTML = html;
+  if(!filtered.length)h+=`<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Aucun etudiant</td></tr>`;
+  h+='</tbody></table>';
+  document.getElementById('studentGrid').innerHTML=h;updateAbsCount();
+}
+function filterStudents(){renderStudentGrid();}
+function onStudentCbChange(cb){
+  const tr=cb.closest('tr');tr.classList.toggle('absent-row',cb.checked);
+  tr.children[3].innerHTML=cb.checked?`<span class="absent-tag"><i class="fas fa-xmark"></i> Absent</span>`:`<span style="color:var(--accent);font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Present</span>`;
   updateAbsCount();
 }
-
-function filterStudents() { renderStudentGrid(); }
-
-function toggleAll(checked) {
-  document.querySelectorAll('.student-cb').forEach(cb => {
-    cb.checked = checked;
-    cb.closest('tr').classList.toggle('absent-row', checked);
-    // Mettre a jour le statut visuel
-    const statusTd = cb.closest('tr').children[3];
-    statusTd.innerHTML = checked
-      ? `<span class="absent-tag"><i class="fas fa-xmark"></i> Absent</span>`
-      : `<span style="color:var(--accent);font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Present</span>`;
+function toggleAll(checked){
+  document.querySelectorAll('.student-cb').forEach(cb=>{cb.checked=checked;onStudentCbChange(cb);});
+  document.getElementById('checkAll').checked=checked;
+}
+function selectAllVisible(){toggleAll(true);}
+function deselectAllVisible(){toggleAll(false);}
+function updateAbsCount(){
+  const c=document.querySelectorAll('.student-cb:checked').length;
+  const el=document.getElementById('absCountLabel');el.textContent=`${c} absent(s) selectionne(s)`;el.style.color=c>0?'var(--danger)':'var(--muted)';
+}
+function clearSelection(){deselectAllVisible();document.querySelectorAll('[data-just]').forEach(i=>i.value='');}
+function saveAbsences(){
+  const date=document.getElementById('absDate').value,time=document.getElementById('absTime').value,mod=document.getElementById('absModule').value;
+  if(!date){showToast('Selectionnez une date','error');return;}
+  if(!time){showToast('Selectionnez un creneau','error');return;}
+  if(!mod){showToast('Selectionnez un module','error');return;}
+  absences=absences.filter(a=>!(a.group===currentGroup&&a.date===date&&a.time===time&&a.module===mod));
+  const checked=document.querySelectorAll('.student-cb:checked');
+  if(!checked.length){showToast('Aucune absence a enregistrer','info');saveData();renderStudentGrid();return;}
+  checked.forEach(cb=>{
+    const name=cb.dataset.name;const ji=document.querySelector(`[data-just="${name}"]`);
+    absences.push({id:Date.now()+Math.random(),group:currentGroup,student:name,date,time,module:mod,justification:ji?ji.value.trim():'',timestamp:new Date().toISOString()});
   });
-  updateAbsCount();
-}
-
-function selectAllVisible() { toggleAll(true); document.getElementById('checkAll').checked = true; }
-function deselectAllVisible() { toggleAll(false); document.getElementById('checkAll').checked = false; }
-
-function updateAbsCount() {
-  const count = document.querySelectorAll('.student-cb:checked').length;
-  document.getElementById('absCountLabel').textContent = `${count} absent(s) selectionne(s)`;
-  document.getElementById('absCountLabel').style.color = count > 0 ? 'var(--danger)' : 'var(--muted)';
-}
-
-function clearSelection() {
-  deselectAllVisible();
-  document.querySelectorAll('[data-just]').forEach(inp => inp.value = '');
-}
-
-// Ecouter les changements de date/creneau/module pour rafraichir
-document.addEventListener('change', e => {
-  if (['absDate','absTime','absModule'].includes(e.target.id)) {
-    renderStudentGrid();
-  }
-});
-
-function getAbsencesFor(group, date, time, mod) {
-  return absences.filter(a =>
-    a.group === group && a.date === date && a.time === time && a.module === mod
-  );
-}
-
-function saveAbsences() {
-  const date = document.getElementById('absDate').value;
-  const time = document.getElementById('absTime').value;
-  const mod = document.getElementById('absModule').value;
-
-  if (!date) { showToast('Veuillez selectionner une date', 'error'); return; }
-  if (!time) { showToast('Veuillez selectionner un creneau horaire', 'error'); return; }
-  if (!mod) { showToast('Veuillez selectionner un module', 'error'); return; }
-
-  // Supprimer les anciennes absences pour cette session
-  absences = absences.filter(a =>
-    !(a.group === currentGroup && a.date === date && a.time === time && a.module === mod)
-  );
-
-  // Ajouter les nouvelles
-  const checked = document.querySelectorAll('.student-cb:checked');
-  if (checked.length === 0) {
-    showToast('Aucune absence a enregistrer', 'info');
-    saveData();
-    renderStudentGrid();
-    return;
-  }
-
-  checked.forEach(cb => {
-    const name = cb.dataset.name;
-    const justInput = document.querySelector(`[data-just="${name}"]`);
-    absences.push({
-      id: Date.now() + Math.random(),
-      group: currentGroup,
-      student: name,
-      date, time, module: mod,
-      justification: justInput ? justInput.value.trim() : '',
-      timestamp: new Date().toISOString()
-    });
-  });
-
-  saveData();
-  showToast(`${checked.length} absence(s) enregistree(s) avec succes`, 'success');
-  renderStudentGrid();
+  saveData();showToast(`${checked.length} absence(s) enregistree(s)`,'success');renderStudentGrid();
 }
 
 // ============================================
-// ONGLET HISTORIQUE
+// HISTORIQUE
 // ============================================
-function renderHistory() {
-  const search = (document.getElementById('histSearch')?.value || '').toLowerCase();
-  const dateFrom = document.getElementById('histDateFrom')?.value || '';
-  const dateTo = document.getElementById('histDateTo')?.value || '';
-
-  let filtered = absences.filter(a => a.group === currentGroup);
-  if (search) filtered = filtered.filter(a => a.student.toLowerCase().includes(search) || (a.module||'').toLowerCase().includes(search) || (a.justification||'').toLowerCase().includes(search));
-  if (dateFrom) filtered = filtered.filter(a => a.date >= dateFrom);
-  if (dateTo) filtered = filtered.filter(a => a.date <= dateTo);
-
-  // Trier par date decroissante puis nom
-  filtered.sort((a,b) => b.date.localeCompare(a.date) || a.student.localeCompare(b.student));
-
-  let html = `<table class="data-table">
-    <thead><tr>
-      <th>Date</th><th>Creneau</th><th>Module</th><th>Etudiant</th><th>Justification</th><th style="width:60px;">Action</th>
-    </tr></thead><tbody>`;
-
-  if (filtered.length === 0) {
-    html += `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">
-      <i class="fas fa-inbox" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.3;"></i>
-      Aucun enregistrement d'absence pour ce groupe
-    </td></tr>`;
-  } else {
-    let lastDate = '';
-    filtered.forEach(a => {
-      const dateSep = a.date !== lastDate;
-      lastDate = a.date;
-      const dateFormatted = formatDate(a.date);
-      html += `<tr>
-        <td style="font-weight:${dateSep?'600':'400'};font-size:${dateSep?'13px':'12px'};color:${dateSep?'var(--fg)':'var(--muted)'};">${dateSep ? dateFormatted : ''}</td>
-        <td style="font-size:12px;">${a.time || '-'}</td>
-        <td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.module||''}">${a.module || '-'}</td>
-        <td style="font-weight:500;">${a.student}</td>
-        <td style="font-size:12px;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.justification||''}">${a.justification || '-'}</td>
-        <td><button class="btn btn-sm btn-ghost" style="padding:4px 8px;color:var(--danger);" onclick="deleteAbsence(${a.id})" title="Supprimer"><i class="fas fa-trash-can"></i></button></td>
-      </tr>`;
-    });
-  }
-
-  html += '</tbody></table>';
-  document.getElementById('historyTable').innerHTML = html;
+function renderHistory(){
+  const search=(document.getElementById('histSearch')?.value||'').toLowerCase();
+  const df=document.getElementById('histDateFrom')?.value||'',dt=document.getElementById('histDateTo')?.value||'';
+  let f=absences.filter(a=>a.group===currentGroup);
+  if(search)f=f.filter(a=>a.student.toLowerCase().includes(search)||(a.module||'').toLowerCase().includes(search)||(a.justification||'').toLowerCase().includes(search));
+  if(df)f=f.filter(a=>a.date>=df);if(dt)f=f.filter(a=>a.date<=dt);
+  f.sort((a,b)=>b.date.localeCompare(a.date)||a.student.localeCompare(b.student));
+  let h=`<table class="data-table"><thead><tr><th>Date</th><th>Creneau</th><th>Module</th><th>Etudiant</th><th>Justification</th><th style="width:60px;"></th></tr></thead><tbody>`;
+  if(!f.length)h+=`<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);"><i class="fas fa-inbox" style="font-size:32px;display:block;margin-bottom:12px;opacity:.3;"></i>Aucun enregistrement</td></tr>`;
+  else{let ld='';f.forEach(a=>{
+    const ds=a.date!==ld;ld=a.date;
+    h+=`<tr><td style="font-weight:${ds?'600':'400'};font-size:${ds?'13':'12'}px;color:${ds?'var(--fg)':'var(--muted)'};">${ds?formatDate(a.date):''}</td>
+    <td style="font-size:12px;">${a.time||'-'}</td>
+    <td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.module||''}">${a.module||'-'}</td>
+    <td style="font-weight:500;">${a.student}</td>
+    <td style="font-size:12px;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.justification||''}">${a.justification||'-'}</td>
+    <td><button class="btn btn-xs btn-ghost" style="color:var(--danger);padding:4px 8px;" onclick="deleteAbsence(${a.id})"><i class="fas fa-trash-can"></i></button></td></tr>`;
+  });}
+  h+='</tbody></table>';document.getElementById('historyTable').innerHTML=h;
 }
-
-function deleteAbsence(id) {
-  showModal('Supprimer cette absence', 'Cette action est irreversible. Voulez-vous vraiment supprimer cet enregistrement ?', () => {
-    absences = absences.filter(a => a.id !== id);
-    saveData();
-    renderHistory();
-    showToast('Absence supprimee', 'success');
-  });
-}
+function deleteAbsence(id){showModal('Supprimer','Supprimer cette absence ?',()=>{absences=absences.filter(a=>a.id!==id);saveData();renderHistory();showToast('Supprime','success');});}
 
 // ============================================
-// ONGLET STATISTIQUES
+// STATISTIQUES
 // ============================================
-function renderStats() {
-  const groupAbs = absences.filter(a => a.group === currentGroup);
-  const students = GROUPS[currentGroup]?.students || [];
-  const totalSessions = [...new Set(groupAbs.map(a => `${a.date}_${a.time}_${a.module}`))].length;
-
-  // Stats par etudiant
-  const studentStats = {};
-  students.forEach(s => { studentStats[s] = 0; });
-  groupAbs.forEach(a => { if (studentStats[a.student] !== undefined) studentStats[a.student]++; });
-
-  const totalAbsences = groupAbs.length;
-  const avgAbs = students.length ? (totalAbsences / students.length).toFixed(1) : 0;
-  const maxAbs = Math.max(...Object.values(studentStats), 0);
-  const studentsWithAbs = Object.values(studentStats).filter(v => v > 0).length;
-
-  // Top absents
-  const sorted = Object.entries(studentStats).sort((a,b) => b[1] - a[1]);
-  const topAbs = sorted.filter(([,v]) => v > 0).slice(0, 10);
-
-  // Stats par module
-  const moduleStats = {};
-  groupAbs.forEach(a => {
-    const m = a.module || 'Non defini';
-    moduleStats[m] = (moduleStats[m] || 0) + 1;
-  });
-  const sortedModules = Object.entries(moduleStats).sort((a,b) => b[1] - a[1]);
-
-  // Stats par date
-  const dateStats = {};
-  groupAbs.forEach(a => {
-    dateStats[a.date] = (dateStats[a.date] || 0) + 1;
-  });
-  const sortedDates = Object.entries(dateStats).sort((a,b) => a[0].localeCompare(b[0]));
-
-  let html = `
-  <!-- Cartes resume -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;" class="fade-up">
-    <div class="stat-card">
-      <div style="display:flex;align-items:center;gap:14px;">
-        <div class="icon-wrap" style="background:var(--danger-glow);color:var(--danger);"><i class="fas fa-user-xmark"></i></div>
-        <div>
-          <div class="stat-value" style="color:var(--danger);">${totalAbsences}</div>
-          <div class="stat-label">Total absences</div>
-        </div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div style="display:flex;align-items:center;gap:14px;">
-        <div class="icon-wrap" style="background:var(--warn-glow);color:var(--warn);"><i class="fas fa-chart-line"></i></div>
-        <div>
-          <div class="stat-value" style="color:var(--warn);">${avgAbs}</div>
-          <div class="stat-label">Moyenne / etudiant</div>
-        </div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div style="display:flex;align-items:center;gap:14px;">
-        <div class="icon-wrap" style="background:var(--accent-glow);color:var(--accent);"><i class="fas fa-calendar-check"></i></div>
-        <div>
-          <div class="stat-value" style="color:var(--accent);">${totalSessions}</div>
-          <div class="stat-label">Seances enregistrees</div>
-        </div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div style="display:flex;align-items:center;gap:14px;">
-        <div class="icon-wrap" style="background:rgba(139,92,246,0.12);color:#8B5CF6;"><i class="fas fa-users"></i></div>
-        <div>
-          <div class="stat-value" style="color:#8B5CF6;">${studentsWithAbs}/${students.length}</div>
-          <div class="stat-label">Etudiants concernes</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
+function renderStats(){
+  const ga=absences.filter(a=>a.group===currentGroup);
+  const students=GROUPS[currentGroup]?.students||[];
+  const ts=[...new Set(ga.map(a=>`${a.date}_${a.time}_${a.module}`))].length;
+  const ss={};students.forEach(s=>ss[s]=0);ga.forEach(a=>{if(ss[a.student]!==undefined)ss[a.student]++;});
+  const ta=ga.length,avg=students.length?(ta/students.length).toFixed(1):0;
+  const mx=Math.max(...Object.values(ss),0),swa=Object.values(ss).filter(v=>v>0).length;
+  const sorted=Object.entries(ss).sort((a,b)=>b[1]-a[1]).filter(([,v])=>v>0).slice(0,10);
+  const ms={};ga.forEach(a=>{const m=a.module||'Non defini';ms[m]=(ms[m]||0)+1;});
+  const sm=Object.entries(ms).sort((a,b)=>b[1]-a[1]);
+  const ds={};ga.forEach(a=>ds[a.date]=(ds[a.date]||0)+1);
+  const sd=Object.entries(ds).sort((a,b)=>a[0].localeCompare(b[0]));
+  let h=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;" class="fade-up">
+    <div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--danger-glow);color:var(--danger);"><i class="fas fa-user-xmark"></i></div><div><div class="stat-value" style="color:var(--danger);">${ta}</div><div class="stat-label">Total absences</div></div></div></div>
+    <div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--warn-glow);color:var(--warn);"><i class="fas fa-chart-line"></i></div><div><div class="stat-value" style="color:var(--warn);">${avg}</div><div class="stat-label">Moyenne / etudiant</div></div></div></div>
+    <div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--accent-glow);color:var(--accent);"><i class="fas fa-calendar-check"></i></div><div><div class="stat-value" style="color:var(--accent);">${ts}</div><div class="stat-label">Seances enregistrees</div></div></div></div>
+    <div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--purple-glow);color:var(--purple);"><i class="fas fa-users"></i></div><div><div class="stat-value" style="color:var(--purple);">${swa}/${students.length}</div><div class="stat-label">Etudiants concernes</div></div></div></div></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-    <!-- Top absents -->
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;" class="fade-up fade-up-d1">
-      <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
-        <i class="fas fa-ranking-star" style="color:var(--danger);"></i> Etudiants les plus absents
-      </h3>`;
-
-  if (topAbs.length === 0) {
-    html += `<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune donnee</div>`;
-  } else {
-    topAbs.forEach(([name, count], i) => {
-      const pct = maxAbs > 0 ? (count / maxAbs * 100) : 0;
-      const barColor = count >= 5 ? 'var(--danger)' : count >= 3 ? 'var(--warn)' : 'var(--accent)';
-      html += `<div style="margin-bottom:12px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-          <span style="font-size:12.5px;font-weight:500;display:flex;align-items:center;gap:6px;">
-            <span style="color:var(--muted);font-size:11px;width:18px;">${i+1}.</span> ${name}
-          </span>
-          <span class="badge ${count >= 5 ? 'badge-danger' : count >= 3 ? 'badge-warn' : 'badge-ok'}">${count}</span>
-        </div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${barColor};"></div></div>
-      </div>`;
-    });
-  }
-
-  html += `</div>
-    <!-- Par module -->
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;" class="fade-up fade-up-d2">
-      <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
-        <i class="fas fa-book" style="color:var(--accent);"></i> Absences par module
-      </h3>`;
-
-  if (sortedModules.length === 0) {
-    html += `<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune donnee</div>`;
-  } else {
-    const maxMod = sortedModules[0][1];
-    sortedModules.forEach(([mod, count]) => {
-      const pct = maxMod > 0 ? (count / maxMod * 100) : 0;
-      html += `<div style="margin-bottom:12px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-          <span style="font-size:12px;font-weight:500;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${mod}">${mod}</span>
-          <span style="font-size:12px;color:var(--muted);font-weight:600;">${count}</span>
-        </div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--accent);"></div></div>
-      </div>`;
-    });
-  }
-
-  html += `</div></div>
-
-  <!-- Evolution temporelle -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;" class="fade-up fade-up-d1">
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;"><i class="fas fa-ranking-star" style="color:var(--danger);"></i> Etudiants les plus absents</h3>`;
+  if(!sorted.length)h+=`<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune donnee</div>`;
+  else sorted.forEach(([n,c],i)=>{const p=mx>0?c/mx*100:0;const bc=c>=5?'var(--danger)':c>=3?'var(--warn)':'var(--accent)';
+    h+=`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+    <span style="font-size:12.5px;font-weight:500;"><span style="color:var(--muted);font-size:11px;width:18px;display:inline-block;">${i+1}.</span> ${n}</span>
+    <span class="badge ${c>=5?'badge-danger':c>=3?'badge-warn':'badge-ok'}">${c}</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${p}%;background:${bc};"></div></div></div>`;});
+  h+=`</div><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;" class="fade-up fade-up-d2">
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;"><i class="fas fa-book" style="color:var(--accent);"></i> Par module</h3>`;
+  if(!sm.length)h+=`<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune donnee</div>`;
+  else{const mm=sm[0][1];sm.forEach(([m,c])=>{const p=mm>0?c/mm*100:0;
+    h+=`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+    <span style="font-size:12px;font-weight:500;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${m}">${m}</span>
+    <span style="font-size:12px;color:var(--muted);font-weight:600;">${c}</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${p}%;background:var(--accent);"></div></div></div>`;});}
+  h+=`</div></div>
   <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:20px;" class="fade-up fade-up-d3">
-    <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
-      <i class="fas fa-chart-bar" style="color:var(--warn);"></i> Evolution des absences par date
-    </h3>`;
-
-  if (sortedDates.length === 0) {
-    html += `<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune donnee</div>`;
-  } else {
-    const maxDate = Math.max(...sortedDates.map(([,v]) => v));
-    html += `<div style="display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:10px;">`;
-    sortedDates.forEach(([date, count]) => {
-      const pct = maxDate > 0 ? (count / maxDate * 100) : 0;
-      const barColor = count >= maxDate * 0.7 ? 'var(--danger)' : count >= maxDate * 0.4 ? 'var(--warn)' : 'var(--accent)';
-      html += `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
-        <span style="font-size:11px;font-weight:600;color:${barColor};">${count}</span>
-        <div style="width:100%;height:${Math.max(pct, 4)}%;background:${barColor};border-radius:4px 4px 0 0;min-height:4px;transition:height 0.5s;"></div>
-        <span style="font-size:9px;color:var(--muted);transform:rotate(-45deg);white-space:nowrap;">${date.slice(5)}</span>
-      </div>`;
-    });
-    html += '</div>';
-  }
-
-  html += '</div>';
-  document.getElementById('statsContent').innerHTML = html;
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;"><i class="fas fa-chart-bar" style="color:var(--warn);"></i> Evolution par date</h3>`;
+  if(!sd.length)h+=`<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune donnee</div>`;
+  else{const md=Math.max(...sd.map(([,v])=>v));
+    h+=`<div style="display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:10px;">`;
+    sd.forEach(([d,c])=>{const p=md>0?c/md*100:0;const bc=c>=md*.7?'var(--danger)':c>=md*.4?'var(--warn)':'var(--accent)';
+      h+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <span style="font-size:11px;font-weight:600;color:${bc};">${c}</span>
+      <div style="width:100%;height:${Math.max(p,4)}%;background:${bc};border-radius:4px 4px 0 0;min-height:4px;"></div>
+      <span style="font-size:9px;color:var(--muted);transform:rotate(-45deg);white-space:nowrap;">${d.slice(5)}</span></div>`;});
+    h+='</div>';}h+='</div>';
+  document.getElementById('statsContent').innerHTML=h;
 }
 
 // ============================================
-// ONGLET FICHES ETUDIANTS
+// FICHES ETUDIANTS
 // ============================================
-function renderStudentCards() {
-  const students = GROUPS[currentGroup]?.students || [];
-  const search = (document.getElementById('etudSearch')?.value || '').toLowerCase();
-  const sort = document.getElementById('etudSort')?.value || 'name';
+function renderStudentCards(){
+  const students=GROUPS[currentGroup]?.students||[];
+  const search=(document.getElementById('etudSearch')?.value||'').toLowerCase();
+  const sort=document.getElementById('etudSort')?.value||'name';
+  const ga=absences.filter(a=>a.group===currentGroup);
+  const sd=students.map(name=>{const al=ga.filter(a=>a.student===name);return{name,count:al.length,modules:[...new Set(al.map(a=>a.module).filter(Boolean))],lastAbs:al.length?al[al.length-1].date:null};});
+  let f=sd;if(search)f=f.filter(s=>s.name.toLowerCase().includes(search));
+  if(sort==='abs-desc')f.sort((a,b)=>b.count-a.count);else if(sort==='abs-asc')f.sort((a,b)=>a.count-b.count);else f.sort((a,b)=>a.name.localeCompare(b.name));
+  let h='';
+  f.forEach(s=>{const sc=s.count>=5?'badge-danger':s.count>=3?'badge-warn':s.count>0?'badge-ok':'';
+    const bc=s.count>=5?'var(--danger)':s.count>=3?'var(--warn)':'var(--border)';
+    h+=`<div style="background:var(--card);border:1px solid ${bc};border-radius:12px;padding:16px;transition:all .2s;" class="fade-up"
+    onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,.3)'"
+    onmouseleave="this.style.transform='';this.style.boxShadow=''">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+    <div><div style="font-weight:600;font-size:14px;margin-bottom:2px;">${s.name}</div><div style="font-size:11px;color:var(--muted);">${currentGroup}</div></div>
+    ${sc?`<span class="badge ${sc}">${s.count} abs.</span>`:`<span style="font-size:11px;color:var(--accent);font-weight:600;"><i class="fas fa-check-circle"></i> Aucune absence</span>`}</div>
+    ${s.modules.length?`<div style="font-size:11px;color:var(--muted);margin-bottom:6px;"><i class="fas fa-book" style="margin-right:4px;"></i> ${s.modules.slice(0,3).join(', ')}${s.modules.length>3?' +'+(s.modules.length-3):''}</div>`:''}
+    ${s.lastAbs?`<div style="font-size:11px;color:var(--muted);"><i class="fas fa-calendar" style="margin-right:4px;"></i> Derniere: ${formatDate(s.lastAbs)}</div>`:''}</div>`;});
+  if(!f.length)h=`<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted);"><i class="fas fa-search" style="font-size:32px;display:block;margin-bottom:12px;opacity:.3;"></i>Aucun etudiant</div>`;
+  document.getElementById('studentCards').innerHTML=h;
+}
 
-  // Calculer les stats par etudiant
-  const groupAbs = absences.filter(a => a.group === currentGroup);
-  const studentData = students.map(name => {
-    const absList = groupAbs.filter(a => a.student === name);
-    const modules = [...new Set(absList.map(a => a.module).filter(Boolean))];
-    return { name, count: absList.length, modules, lastAbs: absList.length ? absList[absList.length-1].date : null };
+// ============================================
+// GESTION ETUDIANTS
+// ============================================
+function renderMgmtStudents(){
+  const students=GROUPS[currentGroup]?.students||[];
+  const search=(document.getElementById('mgmtStudSearch')?.value||'').toLowerCase();
+  const filtered=students.filter(s=>s.toLowerCase().includes(search));
+  let h=`<table class="data-table"><thead><tr><th style="width:60px;">N</th><th>Nom complet</th><th style="width:140px;">Actions</th></tr></thead><tbody>`;
+  filtered.forEach((name,i)=>{
+    const oi=students.indexOf(name)+1;
+    h+=`<tr id="stud-row-${i}"><td style="color:var(--muted);font-size:13px;">${oi}</td>
+    <td style="font-weight:500;" id="stud-name-${i}">${name}</td>
+    <td><div style="display:flex;gap:4px;">
+      <button class="btn btn-xs btn-ghost" onclick="editStudentInline(${i},'${name.replace(/'/g,"\\'")}')" title="Modifier"><i class="fas fa-pen" style="color:var(--info);"></i></button>
+      <button class="btn btn-xs btn-ghost" onclick="deleteStudent('${name.replace(/'/g,"\\'")}')" title="Supprimer"><i class="fas fa-trash-can" style="color:var(--danger);"></i></button>
+    </div></td></tr>`;
   });
-
-  let filtered = studentData;
-  if (search) filtered = filtered.filter(s => s.name.toLowerCase().includes(search));
-
-  if (sort === 'abs-desc') filtered.sort((a,b) => b.count - a.count);
-  else if (sort === 'abs-asc') filtered.sort((a,b) => a.count - b.count);
-  else filtered.sort((a,b) => a.name.localeCompare(b.name));
-
-  let html = '';
-  filtered.forEach(s => {
-    const statusClass = s.count >= 5 ? 'badge-danger' : s.count >= 3 ? 'badge-warn' : s.count > 0 ? 'badge-ok' : '';
-    const borderColor = s.count >= 5 ? 'var(--danger)' : s.count >= 3 ? 'var(--warn)' : 'var(--border)';
-    html += `<div style="background:var(--card);border:1px solid ${borderColor};border-radius:12px;padding:16px;transition:all 0.2s;" class="fade-up"
-      onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.3)'"
-      onmouseleave="this.style.transform='';this.style.boxShadow=''">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-        <div>
-          <div style="font-weight:600;font-size:14px;margin-bottom:2px;">${s.name}</div>
-          <div style="font-size:11px;color:var(--muted);">${currentGroup}</div>
-        </div>
-        ${statusClass ? `<span class="badge ${statusClass}">${s.count} abs.</span>` : `<span style="font-size:11px;color:var(--accent);font-weight:600;"><i class="fas fa-check-circle"></i> Aucune absence</span>`}
-      </div>
-      ${s.modules.length > 0 ? `<div style="font-size:11px;color:var(--muted);margin-bottom:6px;"><i class="fas fa-book" style="margin-right:4px;"></i> Modules: ${s.modules.slice(0,3).join(', ')}${s.modules.length > 3 ? ` +${s.modules.length-3}` : ''}</div>` : ''}
-      ${s.lastAbs ? `<div style="font-size:11px;color:var(--muted);"><i class="fas fa-calendar" style="margin-right:4px;"></i> Derniere: ${formatDate(s.lastAbs)}</div>` : ''}
-    </div>`;
+  if(!filtered.length)h+=`<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);">Aucun etudiant</td></tr>`;
+  h+='</tbody></table>';document.getElementById('mgmtStudentsTable').innerHTML=h;
+}
+function editStudentInline(idx,oldName){
+  const nameEl=document.getElementById('stud-name-'+idx);
+  nameEl.innerHTML=`<input type="text" class="edit-input" id="stud-edit-${idx}" value="${oldName}" onkeydown="if(event.key==='Enter')saveStudentEdit(${idx},'${oldName.replace(/'/g,"\\'")}');if(event.key==='Escape')renderMgmtStudents();">`;
+  document.getElementById('stud-edit-'+idx).focus();document.getElementById('stud-edit-'+idx).select();
+}
+function saveStudentEdit(idx,oldName){
+  const inp=document.getElementById('stud-edit-'+idx);if(!inp)return;
+  const newName=inp.value.trim();
+  if(!newName){showToast('Le nom ne peut pas etre vide','error');return;}
+  if(newName!==oldName&&GROUPS[currentGroup].students.includes(newName)){showToast('Cet etudiant existe deja','error');return;}
+  // Mettre a jour dans le groupe
+  const si=GROUPS[currentGroup].students.indexOf(oldName);
+  if(si>-1)GROUPS[currentGroup].students[si]=newName;
+  // Mettre a jour dans les absences
+  absences.forEach(a=>{if(a.group===currentGroup&&a.student===oldName)a.student=newName;});
+  saveData();showToast('Etudiant modifie','success');renderMgmtStudents();
+}
+function deleteStudent(name){
+  showModal('Supprimer etudiant',`Supprimer ${name} de ${currentGroup} ? Ses absences seront conservees.`,()=>{
+    GROUPS[currentGroup].students=GROUPS[currentGroup].students.filter(s=>s!==name);
+    saveData();showToast('Etudiant supprime','success');renderMgmtStudents();
   });
+}
+function showAddStudentModal(){
+  openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Ajouter un etudiant</h3>
+    <div style="margin-bottom:16px;"><label class="form-label">Nom complet</label><input type="text" class="form-input" id="newStudentName" placeholder="NOM PRENOM" onkeydown="if(event.key==='Enter')addStudent()"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+    <button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>
+    <button class="btn btn-primary btn-sm" onclick="addStudent()"><i class="fas fa-plus"></i> Ajouter</button></div>`);
+  setTimeout(()=>{const i=document.getElementById('newStudentName');if(i)i.focus();},100);
+}
+function addStudent(){
+  const name=(document.getElementById('newStudentName')?.value||'').trim().toUpperCase();
+  if(!name){showToast('Saisissez un nom','error');return;}
+  if(GROUPS[currentGroup].students.includes(name)){showToast('Cet etudiant existe deja','error');return;}
+  GROUPS[currentGroup].students.push(name);saveData();closeModal();showToast('Etudiant ajoute','success');renderMgmtStudents();
+}
+function showBulkAddStudentModal(){
+  openModal(`<h3 style="font-size:18px;margin-bottom:8px;">Ajout multiple d'etudiants</h3>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">Un nom par ligne. Les noms seront convertis en majuscules automatiquement.</p>
+    <div style="margin-bottom:16px;"><label class="form-label">Liste des etudiants</label>
+    <textarea class="form-input" id="bulkStudentNames" rows="10" placeholder="NOM PRENOM 1&#10;NOM PRENOM 2&#10;NOM PRENOM 3&#10;..." style="resize:vertical;"></textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+    <button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>
+    <button class="btn btn-primary btn-sm" onclick="addBulkStudents()"><i class="fas fa-list"></i> Ajouter tous</button></div>`);
+  setTimeout(()=>{const i=document.getElementById('bulkStudentNames');if(i)i.focus();},100);
+}
+function addBulkStudents(){
+  const text=(document.getElementById('bulkStudentNames')?.value||'').trim();
+  if(!text){showToast('Saisissez au moins un nom','error');return;}
+  const names=text.split('\n').map(s=>s.trim().toUpperCase()).filter(s=>s);
+  let added=0,dup=0;
+  names.forEach(n=>{if(GROUPS[currentGroup].students.includes(n))dup++;else{GROUPS[currentGroup].students.push(n);added++;}});
+  saveData();closeModal();
+  let msg=`${added} etudiant(s) ajoute(s)`;if(dup)msg+=`, ${dup} doublon(s) ignore(s)`;
+  showToast(msg,added>0?'success':'info');renderMgmtStudents();
+}
 
-  if (filtered.length === 0) {
-    html = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted);">
-      <i class="fas fa-search" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.3;"></i>
-      Aucun etudiant trouve
-    </div>`;
+// ============================================
+// GESTION MODULES
+// ============================================
+function renderMgmtModules(){
+  const mods=GROUPS[currentGroup]?.modules||[];
+  document.getElementById('modCountLabel').textContent=`${mods.length} module(s) dans ${currentGroup}`;
+  let h=`<table class="data-table"><thead><tr><th style="width:60px;">N</th><th>Nom du module</th><th style="width:140px;">Actions</th></tr></thead><tbody>`;
+  mods.forEach((m,i)=>{
+    h+=`<tr id="mod-row-${i}"><td style="color:var(--muted);font-size:13px;">${i+1}</td>
+    <td style="font-weight:500;" id="mod-name-${i}">${m}</td>
+    <td><div style="display:flex;gap:4px;">
+      <button class="btn btn-xs btn-ghost" onclick="editModuleInline(${i})" title="Modifier"><i class="fas fa-pen" style="color:var(--info);"></i></button>
+      <button class="btn btn-xs btn-ghost" onclick="deleteModule(${i})" title="Supprimer"><i class="fas fa-trash-can" style="color:var(--danger);"></i></button>
+    </div></td></tr>`;
+  });
+  if(!mods.length)h+=`<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);">Aucun module</td></tr>`;
+  h+='</tbody></table>';document.getElementById('mgmtModulesTable').innerHTML=h;
+}
+function editModuleInline(idx){
+  const el=document.getElementById('mod-name-'+idx);
+  const old=GROUPS[currentGroup].modules[idx];
+  el.innerHTML=`<input type="text" class="edit-input" id="mod-edit-${idx}" value="${old}" onkeydown="if(event.key==='Enter')saveModuleEdit(${idx});if(event.key==='Escape')renderMgmtModules();">`;
+  document.getElementById('mod-edit-'+idx).focus();document.getElementById('mod-edit-'+idx).select();
+}
+function saveModuleEdit(idx){
+  const inp=document.getElementById('mod-edit-'+idx);if(!inp)return;
+  const v=inp.value.trim();if(!v){showToast('Le nom ne peut pas etre vide','error');return;}
+  const old=GROUPS[currentGroup].modules[idx];
+  GROUPS[currentGroup].modules[idx]=v;
+  absences.forEach(a=>{if(a.group===currentGroup&&a.module===old)a.module=v;});
+  saveData();showToast('Module modifie','success');renderMgmtModules();
+}
+function deleteModule(idx){
+  const m=GROUPS[currentGroup].modules[idx];
+  showModal('Supprimer module',`Supprimer "${m}" ? Les absences liees seront conservees.`,()=>{
+    GROUPS[currentGroup].modules.splice(idx,1);saveData();showToast('Module supprime','success');renderMgmtModules();
+  });
+}
+function showAddModuleModal(){
+  openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Ajouter un module</h3>
+    <div style="margin-bottom:16px;"><label class="form-label">Nom du module</label><input type="text" class="form-input" id="newModuleName" onkeydown="if(event.key==='Enter')addModule()"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+    <button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>
+    <button class="btn btn-primary btn-sm" onclick="addModule()"><i class="fas fa-plus"></i> Ajouter</button></div>`);
+  setTimeout(()=>{const i=document.getElementById('newModuleName');if(i)i.focus();},100);
+}
+function addModule(){
+  const name=(document.getElementById('newModuleName')?.value||'').trim();
+  if(!name){showToast('Saisissez un nom','error');return;}
+  GROUPS[currentGroup].modules.push(name);saveData();closeModal();showToast('Module ajoute','success');renderMgmtModules();
+}
+
+// ============================================
+// GESTION GROUPES
+// ============================================
+function renderMgmtGroups(){
+  const fMap={};Object.keys(GROUPS).forEach(g=>{const m=g.match(/^(.+?)\s+S(\d+)$/);if(!m)return;const f=m[1];if(!fMap[f])fMap[f]=[];fMap[f].push(g);});
+  let h=`<table class="data-table"><thead><tr><th>Groupe</th><th style="width:100px;">Etudiants</th><th style="width:100px;">Modules</th><th style="width:140px;">Actions</th></tr></thead><tbody>`;
+  Object.keys(fMap).sort().forEach(f=>{
+    fMap[f].sort((a,b)=>{return parseInt(a.match(/S(\d+)$/)[1])-parseInt(b.match(/S(\d+)$/)[1]);}).forEach(g=>{
+      const s=GROUPS[g]?.students.length||0,m=GROUPS[g]?.modules.length||0;
+      const isCur=g===currentGroup;
+      h+=`<tr style="${isCur?'background:var(--accent-glow);':''}"><td style="font-weight:${isCur?'700':'500'};">${g} ${isCur?'<span style="font-size:10px;color:var(--accent);">(actif)</span>':''}</td>
+      <td style="color:var(--muted);">${s}</td><td style="color:var(--muted);">${m}</td>
+      <td><div style="display:flex;gap:4px;">
+        <button class="btn btn-xs btn-ghost" onclick="renameGroup('${g.replace(/'/g,"\\'")}')" title="Renommer"><i class="fas fa-pen" style="color:var(--info);"></i></button>
+        <button class="btn btn-xs btn-ghost" onclick="duplicateGroup('${g.replace(/'/g,"\\'")}')" title="Dupliquer"><i class="fas fa-copy" style="color:var(--warn);"></i></button>
+        <button class="btn btn-xs btn-ghost" onclick="deleteGroup('${g.replace(/'/g,"\\'")}')" title="Supprimer"><i class="fas fa-trash-can" style="color:var(--danger);"></i></button>
+      </div></td></tr>`;
+    });
+  });
+  h+='</tbody></table>';document.getElementById('mgmtGroupsTable').innerHTML=h;
+}
+function showAddGroupModal(){
+  const fMap={};Object.keys(GROUPS).forEach(g=>{const m=g.match(/^(.+?)\s+S(\d+)$/);if(m)fMap[m[1]]=true;});
+  let opts='';Object.keys(fMap).sort().forEach(f=>{opts+=`<option value="${f}">${f}</option>`;});
+  openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Creer un groupe</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+    <div><label class="form-label">Filiere</label>
+    <input type="text" class="form-input" id="newGroupFiliere" list="filiereList" placeholder="Ex: ISUSI">
+    <datalist id="filiereList">${opts.split('</option>').map(o=>`<option value="${o.replace('<option value="','').replace('"','')}">`).join('')}</datalist></div>
+    <div><label class="form-label">Semestre</label>
+    <select class="form-input" id="newGroupSem"><option value="S1">S1</option><option value="S2">S2</option><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select></div></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+    <button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>
+    <button class="btn btn-primary btn-sm" onclick="addGroup()"><i class="fas fa-plus"></i> Creer</button></div>`);
+  setTimeout(()=>document.getElementById('newGroupFiliere').focus(),100);
+}
+function addGroup(){
+  const f=(document.getElementById('newGroupFiliere')?.value||'').trim().toUpperCase();
+  const s=document.getElementById('newGroupSem')?.value||'S1';
+  if(!f){showToast('Saisissez une filiere','error');return;}
+  const name=`${f} ${s}`;
+  if(GROUPS[name]){showToast('Ce groupe existe deja','error');return;}
+  GROUPS[name]={students:[],modules:[]};saveData();closeModal();
+  showToast(`Groupe ${name} cree`,'success');renderMgmtGroups();renderGroupList();
+}
+function renameGroup(oldName){
+  openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Renommer le groupe</h3>
+    <div style="margin-bottom:16px;"><label class="form-label">Nouveau nom</label><input type="text" class="form-input" id="renameGroupInput" value="${oldName}" onkeydown="if(event.key==='Enter')confirmRenameGroup('${oldName.replace(/'/g,"\\'")}')"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+    <button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>
+    <button class="btn btn-primary btn-sm" onclick="confirmRenameGroup('${oldName.replace(/'/g,"\\'")}')">Renommer</button></div>`);
+  setTimeout(()=>{const i=document.getElementById('renameGroupInput');if(i){i.focus();i.select();}},100);
+}
+function confirmRenameGroup(oldName){
+  const newName=(document.getElementById('renameGroupInput')?.value||'').trim();
+  if(!newName||newName===oldName){closeModal();return;}
+  if(GROUPS[newName]){showToast('Ce nom est deja utilise','error');return;}
+  GROUPS[newName]=GROUPS[oldName];delete GROUPS[oldName];
+  absences.forEach(a=>{if(a.group===oldName)a.group=newName;});
+  if(currentGroup===oldName)currentGroup=newName;
+  saveData();closeModal();showToast('Groupe renomme','success');renderMgmtGroups();renderGroupList();
+}
+function duplicateGroup(name){
+  const base=name.replace(/S\d+$/,'');
+  let num=2;while(GROUPS[`${base}S${num}`])num++;
+  const newName=`${base}S${num}`;
+  GROUPS[newName]=JSON.parse(JSON.stringify(GROUPS[name]));
+  GROUPS[newName].students=[];// Vide la liste, garde les modules
+  saveData();showToast(`Groupe ${newName} cree (modules copies, liste vide)`,'success');renderMgmtGroups();renderGroupList();
+}
+function deleteGroup(name){
+  const sc=GROUPS[name]?.students.length||0;
+  const ac=absences.filter(a=>a.group===name).length;
+  showModal('Supprimer le groupe',`Supprimer ${name} ? ${sc} etudiants et ${ac} absences seront supprimes.`,()=>{
+    delete GROUPS[name];absences=absences.filter(a=>a.group!==name);
+    if(currentGroup===name)currentGroup=Object.keys(GROUPS)[0]||'';
+    saveData();showToast('Groupe supprime','success');renderMgmtGroups();renderGroupList();updateModuleSelect();renderCurrentTab();
+  });
+}
+
+// ============================================
+// IMPORT EXCEL
+// ============================================
+function handleFileSelect(file){if(file)processFile(file);}
+function handleFileDrop(file){if(file)processFile(file);}
+function processFile(file){
+  const validExts=['.xlsx','.xls','.csv'];
+  const ext=file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+  if(!validExts.includes(ext)){showToast('Format non supporte. Utilisez .xlsx, .xls ou .csv','error');return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      importWorkbook=XLSX.read(e.target.result,{type:'array',cellDates:true});
+      const info=document.getElementById('fileInfo');info.style.display='block';
+      info.innerHTML=`<div style="display:flex;align-items:center;gap:12px;">
+        <i class="fas fa-file-excel" style="font-size:28px;color:var(--accent);"></i>
+        <div><div style="font-weight:600;font-size:14px;">${file.name}</div>
+        <div style="font-size:12px;color:var(--muted);">${(file.size/1024).toFixed(1)} Ko — ${importWorkbook.SheetNames.length} feuille(s)</div></div></div>`;
+      // Remplir selecteur de feuilles
+      const sheetSel=document.getElementById('importSheet');sheetSel.innerHTML='';
+      importWorkbook.SheetNames.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sheetSel.appendChild(o);});
+      // Remplir selecteur de groupe
+      const grpSel=document.getElementById('importGroup');grpSel.innerHTML='';
+      Object.keys(GROUPS).sort().forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;grpSel.appendChild(o);});
+      grpSel.value=currentGroup;
+      goToImportStep(2);onSheetChange();
+    }catch(err){showToast('Erreur de lecture du fichier: '+err.message,'error');}
+  };
+  reader.readAsArrayBuffer(file);
+}
+function onSheetChange(){
+  const sheetName=document.getElementById('importSheet').value;
+  if(!importWorkbook||!sheetName)return;
+  const ws=importWorkbook.Sheets[sheetName];
+  importSheetData=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+  // Remplir les selects de colonnes
+  const headers=importSheetData[0]||[];
+  ['importNameCol','importModCol','importAbsNameCol','importAbsDateCol','importAbsTimeCol','importAbsModCol','importAbsJustCol'].forEach(id=>{
+    const sel=document.getElementById(id);if(!sel)return;sel.innerHTML='';
+    headers.forEach((h,i)=>{const o=document.createElement('option');o.value=i;
+      o.textContent=`Colonne ${i+1}${h?': '+String(h).substring(0,40):''}`;sel.appendChild(o);});
+  });
+  // Auto-detect: nom si contient "nom" ou "etudiant" ou "prenom"
+  autoDetectColumn('importNameCol',headers,['nom','etudiant','prenom','name','student']);
+  autoDetectColumn('importModCol',headers,['module','matiere','subject']);
+  autoDetectColumn('importAbsNameCol',headers,['nom','etudiant','prenom','name']);
+  autoDetectColumn('importAbsDateCol',headers,['date','jour','day']);
+  autoDetectColumn('importAbsTimeCol',headers,['creneau','heure','horaire','time','slot']);
+  autoDetectColumn('importAbsModCol',headers,['module','matiere','subject']);
+  autoDetectColumn('importAbsJustCol',headers,['justif','raison','motif','justification','reason']);
+}
+function autoDetectColumn(selId,headers,keywords){
+  const sel=document.getElementById(selId);if(!sel)return;
+  for(let i=0;i<headers.length;i++){
+    const h=String(headers[i]).toLowerCase();
+    if(keywords.some(k=>h.includes(k))){sel.value=i;return;}
   }
-
-  document.getElementById('studentCards').innerHTML = html;
+}
+function goToImportStep(step){
+  for(let i=1;i<=4;i++){
+    document.getElementById('importStep'+i).style.display=i===step?'block':'none';
+    const dot=document.getElementById('step'+i+'dot');
+    dot.className='step-dot'+(i<step?' done':i===step?' active':'');
+    if(i<4){const line=document.getElementById('step'+i+'line');line.className='step-line'+(i<step?' done':'');}
+  }
+  if(step===3)generatePreview();
+}
+function generatePreview(){
+  if(!importSheetData)return;
+  const type=document.getElementById('importType').value;
+  const mode=document.getElementById('importMode').value;
+  importPreviewData=[];
+  if(type==='etudiants'){
+    const ci=parseInt(document.getElementById('importNameCol').value)||0;
+    importSheetData.forEach((row,i)=>{if(i===0)return;const v=String(row[ci]||'').trim();if(v)importPreviewData.push({name:v.toUpperCase()});});
+  }else if(type==='modules'){
+    const ci=parseInt(document.getElementById('importModCol').value)||0;
+    importSheetData.forEach((row,i)=>{if(i===0)return;const v=String(row[ci]||'').trim();if(v)importPreviewData.push({module:v});});
+  }else{
+    const ni=parseInt(document.getElementById('importAbsNameCol').value)||0;
+    const di=parseInt(document.getElementById('importAbsDateCol').value)||1;
+    const ti=parseInt(document.getElementById('importAbsTimeCol').value)||2;
+    const mi=parseInt(document.getElementById('importAbsModCol').value)||3;
+    const ji=parseInt(document.getElementById('importAbsJustCol').value)||4;
+    importSheetData.forEach((row,i)=>{if(i===0)return;
+      const name=String(row[ni]||'').trim().toUpperCase();
+      if(!name)return;
+      let date=String(row[di]||'');
+      // Gerer les dates Excel (nombre serial)
+      if(typeof row[di]==='number'&&row[di]>40000&&row[di]<60000){
+        const d=new Date((row[di]-25569)*86400000);
+        date=d.toISOString().split('T')[0];
+      }else if(date.includes('/')){const p=date.split('/');if(p.length===3)date=`${p[2].padStart(4,'0')}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;}
+      importPreviewData.push({name,date,time:String(row[ti]||''),module:String(row[mi]||''),justification:String(row[ji]||'')});
+    });
+  }
+  document.getElementById('previewCount').textContent=`${importPreviewData.length} ligne(s)`;
+  let h='<table class="preview-table"><thead><tr>';
+  if(type==='etudiants')h+='<th>N</th><th>Nom de l\'etudiant</th>';
+  else if(type==='modules')h+='<th>N</th><th>Nom du module</th>';
+  else h+='<th>N</th><th>Etudiant</th><th>Date</th><th>Creneau</th><th>Module</th><th>Justification</th>';
+  h+='</tr></thead><tbody>';
+  const maxRows=Math.min(importPreviewData.length,50);
+  for(let i=0;i<maxRows;i++){
+    const d=importPreviewData[i];h+='<tr>';
+    if(type==='etudiants')h+=`<td>${i+1}</td><td>${d.name}</td>`;
+    else if(type==='modules')h+=`<td>${i+1}</td><td>${d.module}</td>`;
+    else h+=`<td>${i+1}</td><td>${d.name}</td><td>${d.date}</td><td>${d.time}</td><td>${d.module}</td><td>${d.justification}</td>`;
+    h+='</tr>';
+  }
+  if(importPreviewData.length>maxRows)h+=`<tr><td colspan="10" style="text-align:center;color:var(--muted);font-style:italic;">... et ${importPreviewData.length-maxRows} autres lignes</td></tr>`;
+  h+='</tbody></table>';document.getElementById('previewTableWrap').innerHTML=h;
+}
+function executeImport(){
+  const type=document.getElementById('importType').value;
+  const mode=document.getElementById('importMode').value;
+  const group=document.getElementById('importGroup').value;
+  if(!GROUPS[group]){showToast('Groupe invalide','error');return;}
+  let count=0;
+  if(type==='etudiants'){
+    if(mode==='replace')GROUPS[group].students=[];
+    importPreviewData.forEach(d=>{
+      if(!GROUPS[group].students.includes(d.name)){GROUPS[group].students.push(d.name);count++;}
+    });
+  }else if(type==='modules'){
+    if(mode==='replace')GROUPS[group].modules=[];
+    importPreviewData.forEach(d=>{
+      if(!GROUPS[group].modules.includes(d.module)){GROUPS[group].modules.push(d.module);count++;}
+    });
+  }else{
+    importPreviewData.forEach(d=>{
+      if(!d.name||!d.date)return;
+      absences.push({id:Date.now()+Math.random(),group,student:d.name,date:d.date,time:d.time,module:d.module,justification:d.justification||'',timestamp:new Date().toISOString()});
+      count++;
+    });
+  }
+  saveData();
+  document.getElementById('importResultMsg').textContent=`${count} element(s) importe(s) dans ${group}`;
+  goToImportStep(4);renderGroupList();if(group===currentGroup)updateModuleSelect();
+}
+function resetImport(){
+  importWorkbook=null;importSheetData=null;importPreviewData=[];
+  document.getElementById('fileInfo').style.display='none';
+  document.getElementById('fileInput').value='';
+  goToImportStep(1);
 }
 
 // ============================================
 // EXPORT CSV
 // ============================================
-function exportCSV() {
-  const groupAbs = absences.filter(a => a.group === currentGroup);
-  if (groupAbs.length === 0) {
-    showToast('Aucune donnee a exporter', 'info');
-    return;
-  }
-  groupAbs.sort((a,b) => a.date.localeCompare(b.date) || a.student.localeCompare(b.student));
-
-  let csv = '\uFEFF'; // BOM pour Excel
-  csv += 'Date,Creneau,Module,Etudiant,Justification\n';
-  groupAbs.forEach(a => {
-    csv += `${a.date},"${a.time}","${a.module}","${a.student}","${a.justification || ''}"\n`;
-  });
-
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `absences_${currentGroup.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('Fichier CSV exporte avec succes', 'success');
+function exportCSV(){
+  const ga=absences.filter(a=>a.group===currentGroup);
+  if(!ga.length){showToast('Aucune donnee','info');return;}
+  ga.sort((a,b)=>a.date.localeCompare(b.date)||a.student.localeCompare(b.student));
+  let csv='\uFEFFDate,Creneau,Module,Etudiant,Justification\n';
+  ga.forEach(a=>csv+=`${a.date},"${a.time}","${a.module}","${a.student}","${a.justification||''}"\n`);
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;
+  a.download=`absences_${currentGroup.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();URL.revokeObjectURL(url);showToast('CSV exporte','success');
 }
 
 // ============================================
 // UTILITAIRES
 // ============================================
-function formatDate(dateStr) {
-  if (!dateStr) return '-';
-  const parts = dateStr.split('-');
-  const months = ['Jan','Fev','Mar','Avr','Mai','Jun','Jul','Aou','Sep','Oct','Nov','Dec'];
-  return `${parseInt(parts[2])} ${months[parseInt(parts[1])-1]} ${parts[0]}`;
+function formatDate(d){if(!d)return'-';const p=d.split('-');const m=['Jan','Fev','Mar','Avr','Mai','Jun','Jul','Aou','Sep','Oct','Nov','Dec'];return `${parseInt(p[2])} ${m[parseInt(p[1])-1]} ${p[0]}`;}
+function showToast(msg,type='info'){
+  const c=document.getElementById('toastContainer');const t=document.createElement('div');
+  t.className=`toast toast-${type}`;const icons={success:'fa-check-circle',error:'fa-exclamation-circle',info:'fa-info-circle'};
+  t.innerHTML=`<i class="fas ${icons[type]||icons.info}"></i> ${msg}`;c.appendChild(t);
+  setTimeout(()=>{t.classList.add('toast-exit');setTimeout(()=>t.remove(),300);},3500);
+}
+let modalCb=null;
+function openModal(html){document.getElementById('modalBox').innerHTML=html;document.getElementById('modalOverlay').classList.add('show');}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('show');modalCb=null;}
+function showModal(title,msg,cb){
+  openModal(`<h3 style="font-size:18px;margin-bottom:8px;">${title}</h3>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:20px;">${msg}</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+    <button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>
+    <button class="btn btn-danger btn-sm" onclick="closeModal();(${cb.toString()})()">Confirmer</button></div>`);
+  // Rebind pour eviter le scope
+  const btn=document.querySelector('#modalBox .btn-danger');
+  if(btn)btn.onclick=()=>{closeModal();cb();};
 }
 
-function showToast(msg, type='info') {
-  const container = document.getElementById('toastContainer');
-  const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
-  toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i> ${msg}`;
-  container.appendChild(toast);
-  setTimeout(() => {
-    toast.classList.add('toast-exit');
-    setTimeout(() => toast.remove(), 300);
-  }, 3500);
-}
-
-let modalCallback = null;
-function showModal(title, msg, onConfirm) {
-  document.getElementById('modalTitle').textContent = title;
-  document.getElementById('modalMsg').textContent = msg;
-  modalCallback = onConfirm;
-  document.getElementById('modalConfirmBtn').onclick = () => {
-    closeModal();
-    if (modalCallback) modalCallback();
-  };
-  document.getElementById('confirmModal').classList.add('show');
-}
-function closeModal() {
-  document.getElementById('confirmModal').classList.remove('show');
-  modalCallback = null;
-}
-// Fermer modal au clic hors zone
-document.getElementById('confirmModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeModal();
+// Type d'import change -> montrer/cacher les mappings
+document.addEventListener('change',e=>{
+  if(e.target.id==='importType'){
+    const t=e.target.value;
+    document.getElementById('colMappingStudents').style.display=t==='etudiants'?'block':'none';
+    document.getElementById('colMappingModules').style.display=t==='modules'?'block':'none';
+    document.getElementById('colMappingAbsences').style.display=t==='absences'?'block':'none';
+  }
 });
-
-// Responsive grille stats
-const statsGrid = document.querySelector('#tab-statistiques .fade-up');
 </script>
 </body>
 </html>
