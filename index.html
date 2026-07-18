@@ -1,1054 +1,1201 @@
-import { useState, useRef, useCallback } from "react";
-import * as XLSX from "xlsx";
-import {
-  Users,
-  BookOpen,
-  Clock,
-  ClipboardCheck,
-  BarChart3,
-  Upload,
-  Plus,
-  Trash2,
-  Edit3,
-  Check,
-  X,
-  Search,
-  Download,
-  ChevronDown,
-  AlertTriangle,
-  CheckSquare,
-  Square,
-  Calendar,
-} from "lucide-react";
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestion des Absences — 2025/2026</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --bg: #0B0F19;
+  --bg2: #111827;
+  --card: #151C2C;
+  --card2: #1A2332;
+  --border: #1E293B;
+  --border2: #2A3A50;
+  --fg: #E2E8F0;
+  --muted: #64748B;
+  --accent: #10B981;
+  --accent2: #059669;
+  --accent-glow: rgba(16,185,129,0.15);
+  --danger: #EF4444;
+  --danger2: #DC2626;
+  --danger-glow: rgba(239,68,68,0.12);
+  --warn: #F59E0B;
+  --warn-glow: rgba(245,158,11,0.12);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--fg); min-height: 100vh; overflow-x: hidden; }
+h1,h2,h3,h4,h5 { font-family: 'Space Grotesk', sans-serif; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
-// ─── Types ──────────────────────────────────────────────────────────────────
-
-interface Student {
-  id: string;
-  nom: string;
-  prenom: string;
-  matricule: string;
-  groupe: string;
-  filiere: string;
+/* Fond animé subtil */
+.bg-glow {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 600px 400px at 10% 20%, rgba(16,185,129,0.04), transparent),
+    radial-gradient(ellipse 500px 500px at 90% 80%, rgba(16,185,129,0.03), transparent),
+    radial-gradient(ellipse 300px 300px at 50% 50%, rgba(245,158,11,0.02), transparent);
 }
 
-interface Module {
-  id: string;
-  code: string;
-  intitule: string;
-  enseignant: string;
-  filiere: string;
+/* Sidebar */
+.sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 280px;
+  background: var(--bg2); border-right: 1px solid var(--border);
+  z-index: 50; display: flex; flex-direction: column;
+  transition: transform 0.3s ease;
+}
+.sidebar-logo {
+  padding: 24px 20px; border-bottom: 1px solid var(--border);
+}
+.sidebar-nav { padding: 12px 10px; flex: 1; overflow-y: auto; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+  border-radius: 10px; cursor: pointer; transition: all 0.2s;
+  color: var(--muted); font-weight: 500; font-size: 14px; margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--card); color: var(--fg); }
+.nav-item.active {
+  background: var(--accent-glow); color: var(--accent);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.nav-item i { width: 20px; text-align: center; font-size: 15px; }
+
+/* Groupe selector dans sidebar */
+.group-section { padding: 10px; border-top: 1px solid var(--border); }
+.group-search {
+  width: 100%; padding: 9px 12px 9px 34px; background: var(--card);
+  border: 1px solid var(--border); border-radius: 8px; color: var(--fg);
+  font-size: 13px; outline: none; transition: border-color 0.2s;
+}
+.group-search:focus { border-color: var(--accent); }
+.group-search-wrap { position: relative; }
+.group-search-wrap i {
+  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--muted); font-size: 13px;
+}
+.group-list { max-height: 260px; overflow-y: auto; margin-top: 8px; }
+.group-item {
+  padding: 8px 12px; border-radius: 7px; cursor: pointer;
+  font-size: 13px; color: var(--muted); transition: all 0.15s;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.group-item:hover { background: var(--card); color: var(--fg); }
+.group-item.active { background: var(--accent-glow); color: var(--accent); font-weight: 600; }
+.group-item .count {
+  background: var(--card2); padding: 2px 8px; border-radius: 10px;
+  font-size: 11px; font-weight: 600;
+}
+.group-item.active .count { background: rgba(16,185,129,0.2); }
+.group-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); padding: 8px 12px 4px; font-weight: 700; }
+
+/* Main */
+.main { margin-left: 280px; padding: 24px 32px; position: relative; z-index: 1; min-height: 100vh; }
+
+/* Cartes stats */
+.stat-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 20px 24px; transition: all 0.25s; position: relative; overflow: hidden;
+}
+.stat-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+.stat-card .icon-wrap {
+  width: 44px; height: 44px; border-radius: 10px; display: flex;
+  align-items: center; justify-content: center; font-size: 18px;
+}
+.stat-card .stat-value { font-family: 'Space Grotesk'; font-size: 28px; font-weight: 700; }
+.stat-card .stat-label { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+/* Tableau */
+.data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.data-table thead th {
+  background: var(--bg2); padding: 12px 16px; text-align: left;
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 5;
+}
+.data-table tbody td {
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+  font-size: 13.5px; transition: background 0.15s;
+}
+.data-table tbody tr:hover td { background: var(--card2); }
+.data-table tbody tr.absent-row td { background: var(--danger-glow); }
+
+/* Checkbox custom */
+.abs-checkbox {
+  appearance: none; width: 20px; height: 20px; border: 2px solid var(--border2);
+  border-radius: 5px; cursor: pointer; transition: all 0.2s; position: relative;
+  flex-shrink: 0;
+}
+.abs-checkbox:hover { border-color: var(--danger); }
+.abs-checkbox:checked {
+  background: var(--danger); border-color: var(--danger);
+}
+.abs-checkbox:checked::after {
+  content: '✓'; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%); color: white; font-size: 13px; font-weight: 700;
 }
 
-interface PlageHoraire {
-  id: string;
-  debut: string;
-  fin: string;
-  label: string;
+/* Boutons */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
+  border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;
+  border: none; transition: all 0.2s; font-family: 'DM Sans';
+}
+.btn-primary {
+  background: var(--accent); color: #fff;
+  box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+}
+.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(16,185,129,0.4); }
+.btn-danger { background: var(--danger); color: #fff; box-shadow: 0 4px 12px rgba(239,68,68,0.3); }
+.btn-danger:hover { background: var(--danger2); }
+.btn-ghost {
+  background: transparent; color: var(--muted); border: 1px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--border2); color: var(--fg); background: var(--card); }
+.btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 7px; }
+
+/* Inputs */
+.form-input {
+  background: var(--card); border: 1px solid var(--border); border-radius: 9px;
+  padding: 10px 14px; color: var(--fg); font-size: 14px; outline: none;
+  transition: border-color 0.2s; font-family: 'DM Sans'; width: 100%;
+}
+.form-input:focus { border-color: var(--accent); }
+.form-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block; }
+select.form-input { cursor: pointer; }
+
+/* Badge */
+.badge {
+  display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600;
+}
+.badge-danger { background: var(--danger-glow); color: var(--danger); }
+.badge-warn { background: var(--warn-glow); color: var(--warn); }
+.badge-ok { background: var(--accent-glow); color: var(--accent); }
+
+/* Toast */
+.toast-container { position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 500;
+  display: flex; align-items: center; gap: 10px; min-width: 300px;
+  animation: toastIn 0.3s ease; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.toast-success { background: #065F46; color: #A7F3D0; border: 1px solid #10B981; }
+.toast-error { background: #7F1D1D; color: #FCA5A5; border: 1px solid #EF4444; }
+.toast-info { background: #1E3A5F; color: #93C5FD; border: 1px solid #3B82F6; }
+.toast-exit { animation: toastOut 0.3s ease forwards; }
+@keyframes toastIn { from { opacity:0; transform:translateX(60px); } to { opacity:1; transform:translateX(0); } }
+@keyframes toastOut { to { opacity:0; transform:translateX(60px); } }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+  z-index: 100; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 28px; max-width: 500px; width: 90%;
+  transform: scale(0.95); transition: transform 0.25s;
+}
+.modal-overlay.show .modal-box { transform: scale(1); }
+
+/* Barre de progression */
+.progress-bar {
+  height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; border-radius: 3px; transition: width 0.5s ease;
 }
 
-interface AbsenceRecord {
-  id: string;
-  date: string;
-  moduleId: string;
-  plageId: string;
-  etudiantIds: string[];
+/* Animations */
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+.fade-up { animation: fadeUp 0.4s ease both; }
+.fade-up-d1 { animation-delay: 0.05s; }
+.fade-up-d2 { animation-delay: 0.1s; }
+.fade-up-d3 { animation-delay: 0.15s; }
+.fade-up-d4 { animation-delay: 0.2s; }
+
+/* Étiquette absent */
+.absent-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--danger-glow); color: var(--danger);
+  padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;
 }
 
-// ─── Seed data ───────────────────────────────────────────────────────────────
-
-const seedStudents: Student[] = [
-  { id: "s1", nom: "Benali", prenom: "Ahmed", matricule: "20231001", groupe: "G1", filiere: "Informatique" },
-  { id: "s2", nom: "Hadj", prenom: "Fatima", matricule: "20231002", groupe: "G1", filiere: "Informatique" },
-  { id: "s3", nom: "Meziani", prenom: "Karim", matricule: "20231003", groupe: "G1", filiere: "Informatique" },
-  { id: "s4", nom: "Bouzid", prenom: "Sara", matricule: "20231004", groupe: "G2", filiere: "Informatique" },
-  { id: "s5", nom: "Ouali", prenom: "Youcef", matricule: "20231005", groupe: "G2", filiere: "Informatique" },
-  { id: "s6", nom: "Cherif", prenom: "Amina", matricule: "20231006", groupe: "G2", filiere: "Mathématiques" },
-  { id: "s7", nom: "Rahmani", prenom: "Bilal", matricule: "20231007", groupe: "G3", filiere: "Mathématiques" },
-  { id: "s8", nom: "Khelil", prenom: "Nadia", matricule: "20231008", groupe: "G3", filiere: "Mathématiques" },
-];
-
-const seedModules: Module[] = [
-  { id: "m1", code: "INF301", intitule: "Algorithmes Avancés", enseignant: "Dr. Mansouri", filiere: "Informatique" },
-  { id: "m2", code: "INF302", intitule: "Base de Données", enseignant: "Dr. Benaissa", filiere: "Informatique" },
-  { id: "m3", code: "INF303", intitule: "Réseaux Informatiques", enseignant: "Dr. Hamidi", filiere: "Informatique" },
-  { id: "m4", code: "MAT301", intitule: "Analyse Numérique", enseignant: "Dr. Aouadi", filiere: "Mathématiques" },
-  { id: "m5", code: "MAT302", intitule: "Algèbre Linéaire", enseignant: "Dr. Sellami", filiere: "Mathématiques" },
-];
-
-const seedPlages: PlageHoraire[] = [
-  { id: "p1", debut: "08:00", fin: "09:30", label: "08h00 – 09h30" },
-  { id: "p2", debut: "09:45", fin: "11:15", label: "09h45 – 11h15" },
-  { id: "p3", debut: "11:30", fin: "13:00", label: "11h30 – 13h00" },
-  { id: "p4", debut: "13:30", fin: "15:00", label: "13h30 – 15h00" },
-  { id: "p5", debut: "15:15", fin: "16:45", label: "15h15 – 16h45" },
-];
-
-const today = new Date().toISOString().slice(0, 10);
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function uid() {
-  return Math.random().toString(36).slice(2, 10);
+/* Hamburger mobile */
+.hamburger { display: none; position: fixed; top: 16px; left: 16px; z-index: 60;
+  width: 40px; height: 40px; border-radius: 10px; background: var(--card);
+  border: 1px solid var(--border); cursor: pointer; align-items: center; justify-content: center;
+  color: var(--fg); font-size: 18px;
+}
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; padding: 16px; padding-top: 64px; }
+  .hamburger { display: flex; }
 }
 
-function cls(...args: (string | false | undefined | null)[]) {
-  return args.filter(Boolean).join(" ");
+/* Bar chart simple */
+.bar-chart-bar {
+  transition: width 0.6s ease; border-radius: 0 4px 4px 0; min-width: 2px;
 }
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
 
-function Badge({ children, variant = "default" }: { children: React.ReactNode; variant?: "default" | "success" | "warn" | "danger" | "info" }) {
-  const map = {
-    default: "bg-muted text-muted-foreground",
-    success: "bg-emerald-100 text-emerald-700",
-    warn: "bg-amber-100 text-amber-700",
-    danger: "bg-red-100 text-red-700",
-    info: "bg-blue-100 text-blue-700",
-  };
-  return (
-    <span className={cls("inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold", map[variant])}>
-      {children}
-    </span>
-  );
-}
+<!-- Hamburger mobile -->
+<button class="hamburger" id="hamburgerBtn" aria-label="Menu"><i class="fas fa-bars"></i></button>
 
-function Btn({
-  children,
-  onClick,
-  variant = "primary",
-  size = "md",
-  disabled,
-  className,
-}: {
-  children: React.ReactNode;
-  onClick?: () => void;
-  variant?: "primary" | "secondary" | "ghost" | "danger";
-  size?: "sm" | "md";
-  disabled?: boolean;
-  className?: string;
-}) {
-  const base = "inline-flex items-center gap-1.5 rounded font-semibold transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 disabled:opacity-50 disabled:pointer-events-none";
-  const sizes = { sm: "px-3 py-1.5 text-xs", md: "px-4 py-2 text-sm" };
-  const variants = {
-    primary: "bg-primary text-primary-foreground hover:bg-blue-700 shadow-sm",
-    secondary: "bg-secondary text-secondary-foreground hover:bg-blue-100 border border-blue-200",
-    ghost: "bg-transparent text-foreground hover:bg-muted",
-    danger: "bg-destructive text-destructive-foreground hover:bg-red-700",
-  };
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={cls(base, sizes[size], variants[variant], className)}
-    >
-      {children}
-    </button>
-  );
-}
-
-function Input({ label, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { label?: string }) {
-  return (
-    <div className="flex flex-col gap-1">
-      {label && <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{label}</label>}
-      <input
-        {...props}
-        className="bg-input-background border border-border rounded px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-      />
-    </div>
-  );
-}
-
-// ─── Dashboard ────────────────────────────────────────────────────────────────
-
-function Dashboard({ students, modules, absences, plages }: {
-  students: Student[];
-  modules: Module[];
-  absences: AbsenceRecord[];
-  plages: PlageHoraire[];
-}) {
-  const todayAbsences = absences.filter((a) => a.date === today);
-  const absentToday = new Set(todayAbsences.flatMap((a) => a.etudiantIds)).size;
-
-  const perModule = modules.map((m) => {
-    const count = absences
-      .filter((a) => a.moduleId === m.id)
-      .flatMap((a) => a.etudiantIds).length;
-    return { ...m, count };
-  }).sort((a, b) => b.count - a.count);
-
-  const recentAbsences = [...absences]
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 8);
-
-  return (
-    <div className="space-y-6">
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: "Total Étudiants", value: students.length, icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
-          { label: "Modules", value: modules.length, icon: BookOpen, color: "text-purple-600", bg: "bg-purple-50" },
-          { label: "Absences Aujourd'hui", value: absentToday, icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50" },
-          { label: "Total Absences", value: absences.flatMap((a) => a.etudiantIds).length, icon: ClipboardCheck, color: "text-red-600", bg: "bg-red-50" },
-        ].map(({ label, value, icon: Icon, color, bg }) => (
-          <div key={label} className="bg-card border border-border rounded-xl p-5 flex items-center gap-4 shadow-sm">
-            <div className={cls("w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0", bg)}>
-              <Icon className={cls("w-5 h-5", color)} />
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-foreground">{value}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">{label}</div>
-            </div>
-          </div>
-        ))}
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:36px;height:36px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;">
+        <i class="fas fa-clipboard-check" style="color:#fff;font-size:16px;"></i>
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Top modules */}
-        <div className="bg-card border border-border rounded-xl shadow-sm">
-          <div className="px-5 py-4 border-b border-border">
-            <h3 className="font-bold text-foreground">Absences par Module</h3>
-          </div>
-          <div className="p-5 space-y-3">
-            {perModule.length === 0 && <p className="text-sm text-muted-foreground">Aucune absence enregistrée.</p>}
-            {perModule.map((m) => {
-              const pct = students.length > 0 ? Math.round((m.count / students.length) * 100) : 0;
-              return (
-                <div key={m.id}>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="font-medium text-foreground">{m.intitule}</span>
-                    <span className="text-muted-foreground">{m.count} absences</span>
-                  </div>
-                  <div className="h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-primary rounded-full transition-all duration-500"
-                      style={{ width: `${Math.min(pct, 100)}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Recent absences */}
-        <div className="bg-card border border-border rounded-xl shadow-sm">
-          <div className="px-5 py-4 border-b border-border">
-            <h3 className="font-bold text-foreground">Dernières Séances</h3>
-          </div>
-          <div className="divide-y divide-border">
-            {recentAbsences.length === 0 && (
-              <p className="text-sm text-muted-foreground p-5">Aucun enregistrement.</p>
-            )}
-            {recentAbsences.map((a) => {
-              const mod = modules.find((m) => m.id === a.moduleId);
-              const plage = plages.find((p) => p.id === a.plageId);
-              return (
-                <div key={a.id} className="flex items-center justify-between px-5 py-3">
-                  <div>
-                    <div className="text-sm font-semibold text-foreground">{mod?.intitule ?? "—"}</div>
-                    <div className="text-xs text-muted-foreground">{a.date} · {plage?.label ?? "—"}</div>
-                  </div>
-                  <Badge variant="danger">{a.etudiantIds.length} absent(s)</Badge>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+      <div>
+        <div style="font-family:'Space Grotesk';font-weight:700;font-size:16px;">AbsenceTrack</div>
+        <div style="font-size:11px;color:var(--muted);">2025 — 2026</div>
       </div>
     </div>
-  );
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-item active" data-tab="enregistrement" onclick="switchTab('enregistrement')">
+      <i class="fas fa-pen-to-square"></i> Enregistrement
+    </div>
+    <div class="nav-item" data-tab="historique" onclick="switchTab('historique')">
+      <i class="fas fa-clock-rotate-left"></i> Historique
+    </div>
+    <div class="nav-item" data-tab="statistiques" onclick="switchTab('statistiques')">
+      <i class="fas fa-chart-pie"></i> Statistiques
+    </div>
+    <div class="nav-item" data-tab="etudiants" onclick="switchTab('etudiants')">
+      <i class="fas fa-users"></i> Fiches Etudiants
+    </div>
+  </nav>
+
+  <div class="group-section">
+    <div class="group-search-wrap">
+      <i class="fas fa-search"></i>
+      <input type="text" class="group-search" placeholder="Rechercher un groupe..." id="groupSearch" oninput="filterGroups()">
+    </div>
+    <div class="group-list" id="groupList"></div>
+  </div>
+</aside>
+
+<!-- Contenu principal -->
+<div class="main" id="mainContent">
+  <!-- En-tête dynamique -->
+  <div id="pageHeader" style="margin-bottom:24px;"></div>
+
+  <!-- Onglet Enregistrement -->
+  <div id="tab-enregistrement" class="tab-content">
+    <!-- Barre de sélection -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;" class="fade-up">
+      <div>
+        <label class="form-label">Date</label>
+        <input type="date" class="form-input" id="absDate">
+      </div>
+      <div>
+        <label class="form-label">Creneau horaire</label>
+        <select class="form-input" id="absTime">
+          <option value="">-- Choisir --</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Module</label>
+        <select class="form-input" id="absModule">
+          <option value="">-- Choisir --</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end;gap:8px;">
+        <button class="btn btn-primary" onclick="saveAbsences()" style="white-space:nowrap;">
+          <i class="fas fa-save"></i> Enregistrer
+        </button>
+        <button class="btn btn-ghost" onclick="clearSelection()" style="white-space:nowrap;" title="Tout deselectionner">
+          <i class="fas fa-rotate-left"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Recherche et filtres étudiants -->
+    <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;align-items:center;" class="fade-up fade-up-d1">
+      <div style="position:relative;flex:1;min-width:200px;">
+        <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;"></i>
+        <input type="text" class="form-input" style="padding-left:34px;" placeholder="Rechercher un etudiant..." id="studentSearch" oninput="filterStudents()">
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-sm btn-ghost" onclick="selectAllVisible()"><i class="fas fa-check-double"></i> Tout cocher</button>
+        <button class="btn btn-sm btn-ghost" onclick="deselectAllVisible()"><i class="fas fa-xmark"></i> Tout decocher</button>
+      </div>
+      <div style="font-size:13px;color:var(--muted);" id="absCountLabel">0 absent(s) selectionne(s)</div>
+    </div>
+
+    <!-- Grille etudiants -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;" class="fade-up fade-up-d2">
+      <div style="max-height:60vh;overflow-y:auto;" id="studentGrid"></div>
+    </div>
+  </div>
+
+  <!-- Onglet Historique -->
+  <div id="tab-historique" class="tab-content" style="display:none;">
+    <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up">
+      <div style="position:relative;flex:1;min-width:200px;">
+        <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;"></i>
+        <input type="text" class="form-input" style="padding-left:34px;" placeholder="Rechercher dans l'historique..." id="histSearch" oninput="renderHistory()">
+      </div>
+      <input type="date" class="form-input" style="width:auto;" id="histDateFrom" onchange="renderHistory()">
+      <span style="color:var(--muted);font-size:13px;">a</span>
+      <input type="date" class="form-input" style="width:auto;" id="histDateTo" onchange="renderHistory()">
+      <button class="btn btn-ghost btn-sm" onclick="exportCSV()"><i class="fas fa-download"></i> Exporter CSV</button>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;" class="fade-up fade-up-d1">
+      <div style="max-height:65vh;overflow-y:auto;" id="historyTable"></div>
+    </div>
+  </div>
+
+  <!-- Onglet Statistiques -->
+  <div id="tab-statistiques" class="tab-content" style="display:none;">
+    <div id="statsContent"></div>
+  </div>
+
+  <!-- Onglet Fiches Etudiants -->
+  <div id="tab-etudiants" class="tab-content" style="display:none;">
+    <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up">
+      <div style="position:relative;flex:1;min-width:200px;">
+        <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;"></i>
+        <input type="text" class="form-input" style="padding-left:34px;" placeholder="Rechercher un etudiant..." id="etudSearch" oninput="renderStudentCards()">
+      </div>
+      <select class="form-input" style="width:auto;" id="etudSort" onchange="renderStudentCards()">
+        <option value="name">Trier par nom</option>
+        <option value="abs-desc">Plus d'absences</option>
+        <option value="abs-asc">Moins d'absences</option>
+      </select>
+    </div>
+    <div id="studentCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;"></div>
+  </div>
+</div>
+
+<!-- Modal confirmation -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <h3 style="font-size:18px;margin-bottom:8px;" id="modalTitle">Confirmation</h3>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:20px;" id="modalMsg"></p>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-danger btn-sm" id="modalConfirmBtn" onclick="closeModal()">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// DONNEES — Groupes, etudiants, modules
+// ============================================
+const TIME_SLOTS = [
+  '08H30 - 10H30','10H30 - 12H30','08H30 - 12H30',
+  '14H00 - 16H00','16H00 - 18H00','14H00 - 18H00','15H00 - 18H00'
+];
+
+// Format compact: noms separes par |
+function P(s){ return s?s.split('|').filter(x=>x.trim()):[]; }
+
+const GROUPS = {
+  'ISUSI S3': {
+    students: P('ACHLIKH AICHA|AGOUZOUL MOUNA|ARROUY IKRAM|AZIZ AMINA|BANI NAJMA|BENCHAMA MOHAMED ALI|BOUIDA KATRE-ENNADA|BOURISSA HAMZA|DENDOUN ISLAM|EBOUR KHAOULA|El ABDELLAOUI FATIMA-EZZAHRA|EL HARRARI OUSSAMA|EL HOR HAJAR|EL JAOUHARI MALAK|El MIKH SALMA|ELMOUDAFFAR WISSAL|ENNAJIH RIHAM|ET.TAGHELATY HANANE|FASSINI CHAIMAA|HANGOUR HAFSA|IMAZZANE MAROUA|LABBIHI KAOUTAR|LAFHAL BADER|NAJEH RADWA|NAOUAR MBARKA|OUARHOU AMINE|OUILKI JIHAD|OUIS MOHAMED|OUJAA IMANE|OUKOUZAMT HAYATE|OUNASSER ISRAA|RAIS ANAS|SAADI IMANE|SAADOUNI DOUAA|TOUIL KELTOUM|ZAKAR CHAIMA'),
+    modules: ["Pathologie medico-chirurgicale d'urgence","Puériculture et maladies transmissibles","Organisation des urgences et semiologie telephonique","Soins infirmiers en medecine et chirurgie d'urgence","Stage 1 service d'urgences","Stage 2 Dechoquage"]
+  },
+  'ISUSI S5': {
+    students: P('AMARIR MOHAMMED|ARIF KHADIJA|BELLAGCHAIRI HIBA|BERRAMY HIBA|CHAIBI AYA|CHAKHCH YASSMINE|CHAOUKI FATIMA EZZAHRAA|DAHI ILYAS|EL ACHKAR BOUTAINA|EL HADAR HAJAR|EL MOUDDEN OUISAL|ESSAKHI HASNAE|GAZGAZ SALOUA|HOUSSAYNI IMANE|HOUSSNI ZAKARIA|IBRQI IMANE|IDSASSI ZINEB|KDAIRE NOUHAILA|KERROUM KHADIJA|KHORCHID MARIA|LAAZIZ KHADIJA|LACH-HEB MERIEM|LAKOUIS IMANE|MABROUR ABDELLAH|MACHKOUR SALMA|MIMOUNE WISSALE|MIMOUNI ANAS|M\'KIOUASS SALMA|SBOUITA IBTISSAM|TADILI FATIMA-EZZAHRA|CHOUCRI HICHAM'),
+    modules: ["Pharmacologie de l'urgence","Materiel et appareillage des soins de sante des urgences et secourisme","Reanimation","Methodologie de recherche","Stage 3 Reanimation medicochirurgicale","Stage 4 Bloc Operatoire"]
+  },
+  'LABO S3': {
+    students: P('AAA IBTIHAL|AIT BOURHIM IMANE|BADI ZINEB|BELFASSI FATIMA-EZZAHERAE|BOUCHRIHA MARYEM|BOUDLIH ILIAS|BOUSALHI NADA|CHARDAOUI OUISSAL|CHERKAOUI ABDERRAHMANE|DAU LAM ACHUIL LAM|DAYAB AMAL|EDDARKAOUI AMINA|EL HADI BADER|EL MALKI OUARDA|EL MANYANI CHAIMAA|ELAMOUD SARA|ELBAZ MOHAMED AMINE|ELMAKKAOUI SALAH EDDINE|ESSAADI ILYASS|ESSAADI ZOUHAYR|ESSADEK YOUSSEF|HASSANI MBECHEZI ELARIF|JEBBAD YASMINE|MQAINTAR SAMI|MULENGA MERCY CHIBESA|NOUGHOU AYA|RAGHIB ANAS|RAHEL GHIZLANE|SEKOURI MARYEM|SILOMBA TEPWANJI|TOYBA IBRAHIM|ZEROUALI MARYAM'),
+    modules: ["Biochimie clinique","Hematologie & Hemobiologie","Immunologie generale/ Immuno-Analyse","Biochimie clinique analytique TP","Stage d'Hematologie & d'Immuno-hematologie","Stage de biochimie"]
+  },
+  'LABO S5': {
+    students: P('ABILI MALIKA|ADDARAL OUMAIMA|AIT EL HAJ HIBA|AIT ZAOUIT FATIMA-ZAHRA|ANEJJAR NOUHAILA|BITALJANE OMAIMA|BOUCHIHA HAJAR|BOUJA AYAT|CHTIOUI MARYEM|ECH-CHTOUKI ABDELLAH|EL ABADILA CHEIKH MAALAININE|EL BAZ KHADIJA|EL KHOUMANI MARWA|ETTAOUSSI SANAE|FAKHRANE WIAME|FRINDO MUSTAPHA|GUOUN SAFIA|HABBA HAFSA|HAMIMADI ROMAISSA|HAMZAOUI ZOUHAIR|JABELKHAYR ANAS|KHIARE HIBA|LAHLIMI OUMAIMA|MAHIR MOHAMED|OUAJIB NOUHAILA|RADI JAMILA|ROUGHAL AYMAN|SI KHOUNA HAFSA|SIKLANE HAJAR|TEFNOUTI MALAK|TOUIR AYOUB|ZIDANE OUMAIMA'),
+    modules: ["Bacteriologie medicale TP","Bacteriologie medicale & Virologie","Parasitologie & Mycologie","Biostatistique & Epidemiologie & Demographie","Stage de Bacteriologie medicale","Stage de Parasitologie & Mycologie"]
+  },
+  'IAR S3': {
+    students: P('AACHCHAKI RANYA|AGJIJE HAJAR|AIT LAHCINE HIBA|AIT SOUNNA NESSAIBA|AITALEB CHAIMAA|ARAGROUG AYA|ARIBA KHADIJA|AZZAFE RIHAM|BELAAMRY HIBA|BEN TALE FATIMA EZZAHRAE|BOUNAJAH MARIAM|BOUSTTA ASSIA|EL BAKKAL KHADIJA|EL HAJRI SARA|El HAMOUNI MOHAMED|ELBOUKARY ANAS|ELFARNANE CHAIMA|ENNDA HASSNA|HMOUDOU AYA|IDRISSI OUMNIYA|IQIQ YOUSSEF|LABDAOUI MERYEM|LABIAD DOUAA|MAHRAR MOURAD|MOSAID SAAD|RASSOU BAHIJA|SAADI OUMAIMA|SBAYBI NOUR EL IMANE|TAIB ASMAA|TIBBA KHADIJA'),
+    modules: ["Deroulement d'anesthesie et anesthesie ambulatoire","Pathologies medicales et maladies transmissibles","Pathologies chirurgicales","Pharmacologie Anesthesique","Stage 2 Anesthesie en Chirurgie generale 1","Stage 3 Anesthesie en chirurgie pediatrique 1"]
+  },
+  'IAR S5': {
+    students: P('AIT FDIL SALMA|AKMAKH MEHDI|AMADRAR FATIMA|BAQOUS MARYAM|BENKHALEQ SALMA|CHNINIF YOUSSEF|DENAIZI NGUENENDJI CHANCELVIE FLORE|EGOUMASSINE OUMAIMA|EL GHADOUINI HIBA|EL GUARAOUI ZAHRA|EL KARAFLI KHADIJA|EL MANOUZI HAJAR|EL QADIMI CHAIMAA|EZITOUNI FATIMAEZZAHRA|FADLY CHAIMAA|GRARI ANAS|HACHAMI ZAINAB|KABLAOUI MARWA|KRIFA RIHAB|LAKHAL SIHAM|LAMQISS SAFA|LARAJ SALMA|LAHDAR YASSIR|LAKOUIS IMANE|MIMOUNI ANAS|NAIM MOHAMED|OUMALLOUL FATIMA-EZZAHRA|RAHMOUN OMAR|RHAFIRI HIBA|SBILA NOURELHOUDA|SOUNIB AYA'),
+    modules: ["Anesthesie selon la chirurgie specialisee","Reanimation chirurgicale et soins intensifs","Urgences en anesthesie","Stage 5 Anesthesie en chirurgie specialisee","Stage 6 Reanimation","Memoire de fin d'etudes"]
+  },
+  'INP S4': {
+    students: P('ABOULKHALEF NOUHA|AHRAYOU SOUKAINA|AIT ELKEBIR NASSIMA|ANZALI ZINEB|BAHAKKI AYA|BAHYA OMAIMA|BASSLI IBTISSAME|BENAJI AMINA|BOUANANI CHAIMA|BOUHAFA HAYAT|BOULGHOM IMANE|BOUSSAK HOUDA|CHARKAOUI HALIMA|CHIHEB FATIMA-EZZAHRAE|EL-ARBAOUI MERYEME|ELMARHRAOUI HAJAR|ENASSIRI RIM|GHINE HASSNA|HSSIKI HIDAYA|KACHA HODA|KAHLAN NOUHAILA|LAHMAIM SAFIA|LAMIRI HIBA|MEFTAHI HIBA|MOUNIR SOUMIA|OUARCHAN KHAOULA|OUBELLA ASMA|OUALLA RACHIDA|RAHILI SAIDA|RAOUNI SALMA|REHOUNI MANAL|SAMSAH MANAR|ZEMRAOU ATIK|WAKIBI OUMAIMA'),
+    modules: ["Pathologie neonatales et soins infirmiers 1","Pathologie neonatales et soins infirmiers 2","Pathologies pediatriques et soins infirmiers 1","Pathologies pediatriques soins infirmiers 2","Stage en pediatrie et neonatologie 1","Stage en pediatrie et neonatologie 2"]
+  },
+  'INP S5': {
+    students: P('AIT ALI OUAKRIM ILHAM|AIT MBARK HAYAT|AIT STIMAH IMANE|AKHAL LAYOUN RIM|AOURIK HASNA|AZNAG LAYLA|BEN CHAIEB NOUHAILA|ELMAJDOUB LEILA|FAROUK SOUKAINA|NAHED ZAHIRA|NAJIM WIAM|OUAZZI SALMA|ZIRRI IKRAM'),
+    modules: ["Pathologies pediatriques avancees","Soins infirmiers pediatriques specialises","Stage specialise pediatrie","Stage specialise neonatologie","Memoire de fin d'etudes"]
+  },
+  'IBO S3': {
+    students: P('AIT ALI NOUHAILA|AIT BELLA HIBA|AIT GHROURI LATIFA|AIT OUAKRIM MOHAMED|AIT MODDAN DOUNIA|BOULOUGHBAR ZAHRA|BOUCHRIT IKRAM|BOUDAKH FATIMA EZZAHRA|BOUHADOU HIBA|BOURZIK FERDAOUS|DOUDLI SARA|EL ALAOUI ISMAILI DRISS|EL BHALLA HAFSA|EL HASNAOUI HIBA|EL IDRISSI KASSIMI ASMA|ELAANNOURI HAFSA|ELMENTOURY ANAS|ELHIK FATIMA EZZAHRA|ELGHAZOUANI HIBA|ELMENTOURY ANAS|ER-RAFIAI FATIM EZZAHRAE|FAIK HAMID|GHLIOUCHATE HIBA|ILBOUDO IBRAHIM|JALLALI AYA|KADOUARI KHADIJA|LAFKIRI MOHAMED AMINE|OUALA ASSIA|RGUIBI YASSINE|TAOUFIK JAWAD|YAKHOU DOUAA|EL FATIHI HIBA|ZERHOUNI MARWA|EL MALKI YOUSSEF|MOUSTAID REDA'),
+    modules: ["Introduction au bloc operatoire","Pathologies medicales et maladies transmissibles","Pathologies chirurgicales","Prevention du risque infectieux en BO","Dispositifs du bloc operatoire","Stage 2 sterilisation et hygiene hospitaliere"]
+  },
+  'IBO S5': {
+    students: P('AABDOUN DOUAA|ABIADOU AYA|AIT ELKADI NAOUAL|AQDIM YAHYA|BABRAIM HASNA|BENBADRYEF HIBA|BOUBAKRI SARA|BOUBKISSE HAJAR|EL KARAFLI GHIZLANE|EL KAHFI ANAS|FARIKH OUISSAL|HADDIOUI HAJAR|IMAGHRAK HANANE|KAMAL HAYATE|LAGRAA KAOUTAR|LAADRAOUI MERIEM|MAHFOUD IKRAME|MAKHLOUFI HANANE|NASYR NISSRINE|NATTIDJA ALI|RAHMOUN SOUMIA|SAFRAOUI FATIMA ZAHRA|TAHIRI FATIMA-EZZAHRAE|TAMIRI ATIKA|YAHYA AYOUB|ZAOUIZI AHLAM'),
+    modules: ["Prise en charge de l'opere selon l'acte chirurgical 1","Prise en charge de l'opere selon l'acte chirurgical 2","Techniques d'assistance chirurgicale 1","Techniques d'assistance chirurgicale 2","Stage 3 stage de circulant","Stage 4 IBO instrumentiste"]
+  },
+  'SF S3': {
+    students: P('AIT BENSGHIR NAJAT|BOUJOU ASSIA|BOULATA YASSIR|EL AAFIFI SAFA|ALLA IMAN|BENBAPA WISSAL|AMOUZOUN RACHID|EL AOUSSE AMINA|EL ASMAR NADIA|AMZIL NAWAL|BENDAOU MOUNIA|EL BIYAD MERIEM|EDDABALI MAJDA|DAKAMA HAFSSA|EL MAHFOUDI MARYEM|EL GHADOUINI AYA|ELHARRAZ AMALE|EL HAFIAN BASSMA|BENFAIDA FATIMA-EZZAHRAE|BELGHANDOUR CHAIMAA|BOURHILAT WAFA|ENNAJI HAJAR|ELHOUIDEG YOUSSEF|ERROUHY ZAKIA|EZ-ZAYTOUNY YOUSSEF|FARIKH OUISSAL|GOURIR ISSMAIL|HARRAK SIF EDDINE|HOUTAT NOHAILA|IMZILEN SALMA|JALAL YASSINE|LALAOUI IMRAN|EL MALI SARA|EL KAHFI ANAS|MAADANE MARIYA|OUDEMNATI OSSAMA'),
+    modules: ["Pathologie medicale et soins infirmiers","Pathologie chirurgicale et soins infirmiers","Anatomie du systeme nerveux et semiologie neurologique","Affections neurologiques et soins infirmiers en neurologie","Stage en medecine","Stage en chirurgie"]
+  },
+  'SF S5': {
+    students: P('AATIF FATIMA-EZZAHRAE|ABIDALLAH FATIMA EZZAHRAA|ADROUNE HOUDA|AGOURRAME KARIMA|AIT HAMOU BASMA|AHDA YAHYA|AIT QAJOU TOURIA|AHTTACH IMANE|ABOULFATH HANANE|AGOURRAM YOUSSEF|AQOULAM NOUHAILA|AMDJAR HASNA|AIT MOBARAK JAMILA|ABDELBAKI MERYEM|AIT ALI ASMAA|ARAHAL KHADIJA|BADDAZ TOURIA|BENKHALTI NADA|AYANI RIMA|AITBENMOUSSA SALMA|ABBOU IMANE|AAZRI OUMAIMA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|BOUGALLA ILYAS|CHAYL ZAKARIA|EL- HOSSINI HAMZA|EL AAMMARI ASSIYA|ELMOUDEN SAFA|GHAOUCH ANAS|KOUB MARIAM|MOUGHIT HAMZA|NASSARI DOHA|NASSIB AMINA|OUSSAMA MUSTAPHA|RAMDANE FATIMA|MOURABIT MARWA|LOUAR NADA|TAYOUR AYA|MESAD ELAYAM SALMA|LIQALI MARIA|TAIB-LILLAH FATIMA|OUMADI ILHAM'),
+    modules: ["Semiologie psychiatrique et psychopharmacologie","Les troubles psychiatriques et soins infirmiers en psychiatrie","Urgences et Secours","Les urgences psychiatriques et soins infirmiers en psychiatrie","Stage en neurologie","Stage en psychiatrie"]
+  },
+  'SM S3': {
+    students: P('ACHOUIH OUMAIMA|ABOURHIM ASMA|AIT AHMED HIBA|ABOULAHIA SAAD|AANIBA ANASS|AITAYAD NADA|ABBOU IMANE|AAZRI OUMAIMA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|AYANI RIMA|ABARAGH MERYEM|AFOULOUS ASMAE|AMAZOUZ WASSIM|ABOUHANI MAROUA|BELAKZIZ AYA|ABRARAY KHADIJA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|BOURADOUAN MAHDI|AIT BARHICH SAAD'),
+    modules: ["Sante et environnement et Maladies transmissibles","Pathologies et soins infirmiers (medecine, Chirurgie)","Pediatrie et soins infirmiers, PCIE","Stage en pediatrie","Stage en medecine"]
+  },
+  'SM S5': {
+    students: P('AIT MATRAN OUMAIMA|AIT ASSOU SALMA|ASKOUR SALMA|AIT YOUSS AHLAM|ELFAKIR FADWA|ERGUIG HAYATE|EL BARAKA ABIRE|El OUALI KARIMA|EL BHALLA OMAR|BOUTGAYOUT OUIAM|BOUTIGHATNE AABLA|CHOUKHMANI DOUAE|DARIF ILYAS|EL RHOUL KAOUTAR|EL ALAOUY SALMA|ELKHIRAOUI ZAKIA|ELKHIRAOUI ZAKIA|BOUGUIN SIHAM|DIANI AYMANE|DIOUANE ESSAADIA|El MORSLI SOAD|EL OUARDY HANAN|ED-DAFIRI WISSAL|EL KHEIR DOUAA|ICHBAD SALMA|IDAISA FATIMA ZAHRA|KHALIF HIND|IFADIR RIDA|LAMDIRA MERIEM|MALLASSE HAJAR|LAAMARI HANA|NEDDAOUI BASMA|OUMANSOUR RAJA|RAFIQ AICHA|RAZZOUQUI HANANE|LAANANI DOUA|RCHID FATIMA EZZAHRA|MIFTAH KHADIJA|RHASSINE SANA|TOUIMI SAMIA|ZAYOD HAJAR|SAADOUNI IMRANE|TOUILI FATIMA EZZAHRA|TOUIRI IMANE|ZANTANE MARYAM'),
+    modules: ["Programmes d'activites sanitaires","Sante et population : Santé familiale, Santé au travail","Concept et principes de SSPP, Sociologie de la famille","Stage au centre de sante urbain 1","Stage au centre de sante rural 1"]
+  },
+  'ISFSC S3': {
+    students: P('ABIDALLAH FATIMA EZZAHRAA|AIT ELKADI NAOUAL|EL BANNY KHADIJA|EL MAHLAOUI IMANE|EL MESSJAI OUMAIMA|EL OUGKDY HIBA|EL MAGUANA KHAWLA|EZZOUHRI RADIA|ESSASSI KAOUTAR|GAZMATE HAFSA|HAKIMI WIDIAN|KOURRATI FATIMA-EZZAHRAE|EZRAIDI FATIMA ZAHRA|EZRAIDI FATIMA ZAHRA|IGUIG BAYANE|HANYN SABAH|MELIANA FATIMA-ZAHRA|MIMOUNI ANAS|NINI SOUAD|ZARDANI FARAH|ZINEDDINE FATIMA EZZAHRA|EL HADRI MERIAM|FAILATI BINTI ILIASSA|LIBADA IBTISSAM|SANOUSSI ALI|ZAHIR ASSIA|ZDOUDOU HIBA|BOUIY HAFSA|ELAKHDAR WISSAL|RGHIOUI RIHAB|ZAKARIA BAHAMMOU|ZAKARIA BAHAMMOU|AKHRIF SALMA'),
+    modules: ["Pathologies chirurgicales 40h / SI 10h","Approche medicale et biologique du vieillissement","Approche sociale et psychologique du vieillissement","Pathologie, syndromes geriatriques et soins infirmiers 1","Stage d'initiation I : SRES","Stage d'initiation II : BCH"]
+  },
+  'ISFSC S5': {
+    students: P('AHBABOU WIAME|AIT BEN SALAH CHAIMA|AMAZOUZ FIRDAOUSS|BELLEMRABET HASNAE|BELLEMRABET IHSSAN|BOUGRINE HALIMA|BOUNOUAR SAMIA|BENLAHMER MALAK|BENLAKTIB LATIFA|BAKIR FATIMA-ZAHRA|BASSAM IMRANE|BENNASSER AYA|CHAOUKI RIHAB|BENZAHRA FATIMA-EZZAHRAE|EERIFI ANOUAR|EDDOUKALY IMANE|EL AAMMARI ASSIYA|EL KACHANI AYA|HAIDA AYA|EL KHAZZAR ANAS|EL KADOURI LOUBNA|IBRAHIMI HAFIDA|IGHEBELET FATIM_EZZAHRA|ELMEJRADY HALIMA|JAMIL SARA|KARAFLI CHAYMAE|KORSAN SALMA|KHEIAR FATIMA ZAHRA|LAMDIRA MERIEM|MANSOURI MARYAM|MOUKAFIH JAMILA|NEDDAOUI BASMA|OUHADDOU ILHAM|OUMANSOUR RAJA|RAFIQ AICHA|TAOUSSI RABHA|LAANANI DOUA|MOHTADI FATIMA EZZAHRA|ELMAKKAOUY OUMAIMA|OUDAHA CHAIMA|OUIRDY SAFAE|LACHKHAM DOHA|STITI NAJWA|ZAOUIA FATIMA-EZZAHRA|TOUILI FATIMA EZZAHRA|ZEGRAOUI SARA|YOUSSOUFI ZINEB'),
+    modules: ["Ethique et deontologie appliquee a la profession","Pathologies, syndromes geriatriques et soins infirmiers 2","Communication et relation en geratrie","Nutrition et dietetique du sujet age","Evaluation geriatrique","Stage de professionnalisation 1"]
+  },
+  'IG S4': {
+    students: P('AANIBA ANASS|AITAYAD NADA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ARAHAL KHADIJA|BADDAZ TOURIA|BENKHALTI NADA|AITBENMOUSSA SALMA|ABBOU IMANE|AAZRI OUMAIMA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|AYANI RIMA|ABARAGH MERYEM|AFOULOUS ASMAE|AMAZOUZ WASSIM|ABOUHANI MAROUA|BELAKZIZ AYA|ABRARAY KHADIJA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|BOURADOUAN MAHDI|AIT BARHICH SAAD'),
+    modules: ["Genie civil II : Hygiene de l'habitat et urbanisme","Genie sanitaire IV : Gestion des dechets liquides","Biochimie alimentaire/ Technologie des industries alimentaires","Hygiene Hospitaliere","Stage de specialisation I : HOPITAL","Stage de specialisation II : INH"]
+  },
+  'IG S5': {
+    students: P('AITAYAD NADA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ARAHAL KHADIJA|BADDAZ TOURIA|BENKHALTI NADA|ABBOU IMANE|AAZRI OUMAIMA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|AYANI RIMA|ABARAGH MERYEM|AFOULOUS ASMAE|AMAZOUZ WASSIM|ABOUHANI MAROUA|BELAKZIZ AYA|ABRARAY KHADIJA'),
+    modules: ["Genie sanitaire avance","Gestion des dechets dangereux","Stage de specialisation avance","Memoire de fin d'etudes"]
+  },
+  'IG S1': {
+    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
+    modules: ["Anatomie physiologie 50 Majeur","Droit humain/ ethique","Sociologie/psychologie","Systeme de l'offre de soins/ Economie de sante","Demographie/Epidemiologie/statistique descriptive","Anatomie et Physiologie humaine"]
+  },
+  'IG S2': {
+    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
+    modules: ["Pharmacologie generale","Genie civil I : Dessins et Plans/Materiaux de construction","Malacologie et lutte contre les mollusques","Biologie murine et lutte contre les rongeurs","Genie sanitaire I : Gestion des dechets solides","Hygiene des denrees alimentaires"]
+  },
+  'SE S1': {
+    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
+    modules: ["Langues/ communication/informatique","Programmes d'activites sanitaires et semiologie medicale","Notions de droits de l'Homme libertes publiques","Introduction aux sciences humaines","Introduction a l'etude de droit","Systeme de sante et economie de sante"]
+  },
+  'SE S2': {
+    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
+    modules: ["Chimie generale/chimie organique","Psychologie sociale et psychopedagogie","Notions de secourisme","Relation soignant soigne et diversite culturelle","Sante et population et sante mentale","Communication / TIC 2"]
+  },
+  'IAR S1': {
+    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
+    modules: ["Anatomie et physiologie","Anatomie et physiologie","Microbiologie, parasitologie et examens de laboratoire","Soins infirmiers de base 1","Langues Communication et informatique","Psycho - sociologie"]
+  },
+  'IAR S2': {
+    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
+    modules: ["Pharmacologie generale","Soins infirmiers de base 2","Pensee infirmiere et planification des soins infirmiers","Systeme national de sante et economie de sante","Nutrition et regimes alimentaires","Epidemiologie et notions de statistiques"]
+  },
+  'IBO S1': {
+    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
+    modules: ["Anatomie physiologie","Microbiologie, parasitologie et examens de laboratoire","Soins infirmiers de base 1","Langue, communication et informatique","Psychologie, sociologie","Droit et deontologie professionnelle"]
+  },
+  'IBO S2': {
+    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
+    modules: ["Pharmacologie generale","Soins infirmiers de base 2","Pensee infirmiere et planification des soins infirmiers","Systeme national de sante et economie de sante","Nutrition et regimes alimentaires","Epidemiologie et notions de statistiques"]
+  },
+  'SF S1': {
+    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
+    modules: ["Langues, communication et informatique","Profession de la Sage-femme, Ethique et deontologie professionnelle","Sciences biologiques","Anatomie generale","Pathologies medico-chirurgicales et Pharmacologie generale","Prestations de base en sante sexuelle et reproductive"]
+  },
+  'SF S2': {
+    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
+    modules: ["Psycho-socio-anthropologie","Sante publique","Anatomie gyneco-obstetricale et physiologie de la grossesse","Diagnostic et surveillance de la grossesse normale","Les trois stades de l'accouchement normal","Programmes de la sante maternelle et infantile"]
+  },
+  'ISUSI S1': {
+    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
+    modules: ["Anatomie et physiologie","Microbiologie/ parasitologie et Examens de laboratoire","Soins infirmiers de Base (SIB) 1","Langues Communication et informatique","Psycho - sociologie","Droit et Deontologie"]
+  },
+  'ISUSI S2': {
+    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
+    modules: ["Pharmacologie generale","Soins infirmiers de base 2","Pensee infirmiere et planification des soins infirmiers","Systeme national de sante et economie de sante","Nutrition et regimes alimentaires","Epidemiologie et notions de statistiques"]
+  },
+  'LABO S1': {
+    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
+    modules: ["Langue et TIC","Biologie cellulaire, Hematologie & Immunologie","Anatomie & Physiologie","Microbiologie, Parasitologie & Mycologie","Chimie generale & organique","Biochimie structurale & Nutrition"]
+  },
+  'LABO S2': {
+    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
+    modules: ["SIB/ Semio-Pathologie","Biochimie metabolique","Biophysique","Chimie analytique","Examens de laboratoire & Biosecurite","Pharmacologie & toxicologie"]
+  },
+  'ISFSC S1': {
+    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
+    modules: ["Anatomie et physiologie","Microbiologie/ parasitologie et Examens de laboratoire","SIB 1 (soins d'hygiene, nursing, surveillance du patient)","Langue, communication et informatique","Psychologie, sociologie","Droit et deontologie professionnelle"]
+  },
+  'ISFSC S2': {
+    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
+    modules: ["Pharmacologie generale","Soins infirmiers de base 2","Pensee infirmiere et planification des soins infirmiers","Systeme national de sante et economie de sante","Nutrition et regimes alimentaires","Epidemiologie et notions de statistiques"]
+  },
+  'INP S1': {
+    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
+    modules: ["Anatomie et physiologie","Microbiologie/ parasitologie et Examens de laboratoire","Soins infirmiers de Base (SIB) 1","Langues Communication et informatique","Psycho - sociologie","Droit et Deontologie"]
+  },
+  'INP S2': {
+    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
+    modules: ["Pharmacologie generale","SIB2 : administration de la therapeutique et sterilisation du materiel","Pensee infirmiere et planification des soins","Systeme national de sante et Economie de Sante","Nutrition et regime alimentaire","Epidemiologie et notion de statistiques"]
+  },
+  'ISM S1': {
+    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
+    modules: ["Anatomie physiologie","Droit et Ethique professionnelle","Sociologie de sante et psychologie","Démographie - Epidémiologie- Statistique","SNS - Economie de sante et Principe de gestion","Anatomie et physiologie"]
+  },
+  'ISM S2': {
+    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
+    modules: ["Sociologie de la famille et de la sante","Psychologie sociale et psychopedagogie","Notions de secourisme","Relation soignant soigne et diversite culturelle","Sante et population et sante mentale","Communication / TIC 2"]
+  },
+  'AS S1': {
+    students: P('ABBOU IMANE|ABBOU IMANE|AAZRI OUMAIMA|AAZRI OUMAIMA|AGOUJJIF HAFSA|AGOUJJIF HAFSA|AIT BOUTSKIL ROUMAISSAE|AIT BOUTSKIL ROUMAISSAE|ALAHMOUM MOHAMED|ALAHMOUM MOHAMED|AYANI RIMA|AYANI RIMA|ABARAGH MERYEM|ABARAGH MERYEM|AFOULOUS ASMAE|AFOULOUS ASMAE|AMAZOUZ WASSIM|AMAZOUZ WASSIM|ABOUHANI MAROUA|ABOUHANI MAROUA|BELAKZIZ AYA|BELAKZIZ AYA|ABRARAY KHADIJA|ABRARAY KHADIJA'),
+    modules: ["Langue Communication Informatique (L.C.I)","Droit et Ethique professionnelle","Sociologie de sante et psychologie","Démographie - Epidémiologie- Statistique","SNS - Economie de sante et Principe de gestion","Anatomie et physiologie"]
+  },
+  'AS S2': {
+    students: P('AITBENMOUSSA SALMA|AITBENMOUSSA SALMA|ABDELBAKI MERYEM|ABDELBAKI MERYEM|ARAHAL KHADIJA|ARAHAL KHADIJA|BADDAZ TOURIA|BADDAZ TOURIA|BENKHALTI NADA|BENKHALTI NADA|AIT EL CADI FATIMA|AIT EL CADI FATIMA|AIT BOUCHAIB RAIHANA|AIT BOUCHAIB RAIHANA|AMEZOUAR OUMAIMA|AMEZOUAR OUMAIMA|AIDALI KHADIJA|AIDALI KHADIJA|BOURADOUAN MAHDI|BOURADOUAN MAHDI|AIT BARHICH SAAD|AIT BARHICH SAAD'),
+    modules: ["Sociologie de la famille et de la sante","Psychologie sociale et psychopedagogie","Notions de secourisme","Relation soignant soigne et diversite culturelle","Sante et population et sante mentale","Communication / TIC 2"]
+  }
+};
+
+// ============================================
+// ETAT DE L'APPLICATION
+// ============================================
+let currentGroup = 'ISUSI S3';
+let currentTab = 'enregistrement';
+let absences = []; // Toutes les absences enregistrees
+
+// Charger depuis localStorage
+function loadData() {
+  try {
+    const saved = localStorage.getItem('absenceTrack_data');
+    if (saved) absences = JSON.parse(saved);
+  } catch(e) { absences = []; }
+}
+function saveData() {
+  localStorage.setItem('absenceTrack_data', JSON.stringify(absences));
 }
 
-// ─── Marquer Absences ─────────────────────────────────────────────────────────
+// ============================================
+// INITIALISATION
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+  loadData();
+  // Date du jour par defaut
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('absDate').value = today;
+  // Remplir les creneaux horaires
+  const timeSel = document.getElementById('absTime');
+  TIME_SLOTS.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t; opt.textContent = t;
+    timeSel.appendChild(opt);
+  });
+  // Render groupe list
+  renderGroupList();
+  // Selectionner le premier groupe
+  selectGroup('ISUSI S3');
+  // Hamburger
+  document.getElementById('hamburgerBtn').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+  });
+  // Fermer sidebar au clic hors zone (mobile)
+  document.getElementById('mainContent').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('open');
+  });
+});
 
-function MarquerAbsences({ students, modules, plages, absences, onSave }: {
-  students: Student[];
-  modules: Module[];
-  plages: PlageHoraire[];
-  absences: AbsenceRecord[];
-  onSave: (record: AbsenceRecord) => void;
-}) {
-  const [date, setDate] = useState(today);
-  const [moduleId, setModuleId] = useState("");
-  const [plageId, setPlageId] = useState("");
-  const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [saved, setSaved] = useState(false);
+// ============================================
+// NAVIGATION / GROUPES
+// ============================================
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+  document.getElementById('tab-' + tab).style.display = 'block';
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.tab === tab);
+  });
+  document.getElementById('sidebar').classList.remove('open');
+  renderCurrentTab();
+}
 
-  const selectedModule = modules.find((m) => m.id === moduleId);
-  
-  // ✅ CORRECTION 2 : Suppression du "|| true" pour activer le filtrage par filière
-  const filteredStudents = students
-    .filter((s) => !selectedModule || s.filiere === selectedModule.filiere)
-    .filter((s) => {
-      const q = search.toLowerCase();
-      return s.nom.toLowerCase().includes(q) || s.prenom.toLowerCase().includes(q) || s.matricule.includes(q);
+function renderGroupList() {
+  const container = document.getElementById('groupList');
+  const search = (document.getElementById('groupSearch').value || '').toLowerCase();
+  // Regrouper par filiere
+  const filieres = {};
+  Object.keys(GROUPS).forEach(g => {
+    if (search && !g.toLowerCase().includes(search)) return;
+    const parts = g.split(' ');
+    const filiere = parts.slice(0, -1).join(' ');
+    if (!filiere[filiere]) filieres[filiere] = [];
+    filieres[filiere].push(g);
+  });
+  // Corriger
+  const filMap = {};
+  Object.keys(GROUPS).forEach(g => {
+    if (search && !g.toLowerCase().includes(search)) return;
+    const match = g.match(/^(.+?)\s+S\d+$/);
+    const fil = match ? match[1] : g;
+    if (!filMap[fil]) filMap[fil] = [];
+    filMap[fil].push(g);
+  });
+  let html = '';
+  // Trier les filieres, puis les semestres
+  Object.keys(filMap).sort().forEach(fil => {
+    html += `<div class="group-label">${fil}</div>`;
+    filMap[fil].sort((a,b) => {
+      const sa = parseInt(a.match(/S(\d+)$/)[1]);
+      const sb = parseInt(b.match(/S(\d+)$/)[1]);
+      return sa - sb;
+    }).forEach(g => {
+      const count = GROUPS[g].students.length;
+      const active = g === currentGroup ? 'active' : '';
+      html += `<div class="group-item ${active}" onclick="selectGroup('${g}')">${g}<span class="count">${count}</span></div>`;
     });
-
-  const toggle = (id: string) => {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-    setSaved(false);
-  };
-
-  const toggleAll = () => {
-    if (selected.size === filteredStudents.length) {
-      setSelected(new Set());
-    } else {
-      setSelected(new Set(filteredStudents.map((s) => s.id)));
-    }
-    setSaved(false);
-  };
-
-  const handleSave = () => {
-    if (!moduleId || !plageId || !date) return;
-    onSave({ id: uid(), date, moduleId, plageId, etudiantIds: [...selected] });
-    setSaved(true);
-    setSelected(new Set());
-  };
-
-  const allSelected = filteredStudents.length > 0 && selected.size === filteredStudents.length;
-
-  return (
-    <div className="space-y-5">
-      {/* Session info */}
-      <div className="bg-card border border-border rounded-xl shadow-sm p-5">
-        <h3 className="font-bold text-foreground mb-4 flex items-center gap-2"><Calendar className="w-4 h-4" /> Paramètres de la Séance</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Input label="Date" type="date" value={date} onChange={(e) => { setDate(e.target.value); setSaved(false); }} />
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Module</label>
-            <select
-              value={moduleId}
-              onChange={(e) => { setModuleId(e.target.value); setSaved(false); }}
-              className="bg-input-background border border-border rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option value="">— Choisir un module —</option>
-              {modules.map((m) => (
-                <option key={m.id} value={m.id}>{m.code} · {m.intitule}</option>
-              ))}
-            </select>
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Plage Horaire</label>
-            <select
-              value={plageId}
-              onChange={(e) => { setPlageId(e.target.value); setSaved(false); }}
-              className="bg-input-background border border-border rounded px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option value="">— Choisir une plage —</option>
-              {plages.map((p) => (
-                <option key={p.id} value={p.id}>{p.label}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Student selection */}
-      <div className="bg-card border border-border rounded-xl shadow-sm">
-        <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-3">
-            <h3 className="font-bold text-foreground">Marquer les Absents</h3>
-            <Badge variant={selected.size > 0 ? "danger" : "default"}>{selected.size} absent(s)</Badge>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher..."
-                className="bg-input-background border border-border rounded pl-8 pr-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring w-48"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Header row */}
-        <div className="px-5 py-2 border-b border-border bg-muted/40 flex items-center gap-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-          <button onClick={toggleAll} className="flex items-center gap-1.5 hover:text-foreground transition-colors">
-            {allSelected ? <CheckSquare className="w-4 h-4 text-primary" /> : <Square className="w-4 h-4" />}
-            Tout sélectionner
-          </button>
-          <span className="ml-auto">{filteredStudents.length} étudiant(s)</span>
-        </div>
-
-        <div className="divide-y divide-border max-h-[420px] overflow-y-auto">
-          {filteredStudents.length === 0 && (
-            <p className="text-sm text-muted-foreground p-6 text-center">Aucun étudiant trouvé.</p>
-          )}
-          {filteredStudents.map((s) => {
-            const isAbsent = selected.has(s.id);
-            return (
-              <button
-                key={s.id}
-                onClick={() => toggle(s.id)}
-                className={cls(
-                  "w-full flex items-center gap-4 px-5 py-3 text-left transition-colors",
-                  isAbsent ? "bg-red-50 hover:bg-red-100" : "hover:bg-muted/40"
-                )}
-              >
-                <div className={cls("w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors",
-                  isAbsent ? "bg-destructive border-destructive" : "border-border"
-                )}>
-                  {isAbsent && <Check className="w-3 h-3 text-white" />}
-                </div>
-                <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
-                  style={{ background: isAbsent ? "#fecaca" : "#dbeafe", color: isAbsent ? "#dc2626" : "#1d4ed8" }}>
-                  {s.prenom[0]}{s.nom[0]}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-sm text-foreground">{s.prenom} {s.nom}</div>
-                  <div className="text-xs text-muted-foreground">{s.matricule} · {s.groupe} · {s.filiere}</div>
-                </div>
-                {isAbsent && <Badge variant="danger">Absent</Badge>}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="px-5 py-4 border-t border-border flex items-center justify-between flex-wrap gap-3">
-          <div className="text-sm text-muted-foreground">
-            {selected.size} étudiant(s) marqué(s) absent(s) sur {filteredStudents.length}
-          </div>
-          <div className="flex gap-2">
-            <Btn variant="ghost" size="sm" onClick={() => { setSelected(new Set()); setSaved(false); }}>
-              <X className="w-3.5 h-3.5" /> Réinitialiser
-            </Btn>
-            <Btn
-              variant="primary"
-              onClick={handleSave}
-              disabled={!moduleId || !plageId || !date}
-            >
-              <ClipboardCheck className="w-4 h-4" />
-              {saved ? "Enregistré ✓" : "Enregistrer les Absences"}
-            </Btn>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  });
+  container.innerHTML = html;
 }
 
-// ─── Student List ─────────────────────────────────────────────────────────────
+function filterGroups() { renderGroupList(); }
 
-function EtudiantList({ students, setStudents }: {
-  students: Student[];
-  setStudents: React.Dispatch<React.SetStateAction<Student[]>>;
-}) {
-  const [search, setSearch] = useState("");
-  const [showForm, setShowForm] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState<Omit<Student, "id">>({ nom: "", prenom: "", matricule: "", groupe: "", filiere: "" });
-  const fileRef = useRef<HTMLInputElement>(null);
+function selectGroup(group) {
+  currentGroup = group;
+  renderGroupList();
+  updateModuleSelect();
+  renderCurrentTab();
+  document.getElementById('sidebar').classList.remove('open');
+}
 
-  const filtered = students.filter((s) => {
-    const q = search.toLowerCase();
-    return s.nom.toLowerCase().includes(q) || s.prenom.toLowerCase().includes(q) || s.matricule.includes(q) || s.filiere.toLowerCase().includes(q);
+function updateModuleSelect() {
+  const sel = document.getElementById('absModule');
+  sel.innerHTML = '<option value="">-- Choisir --</option>';
+  (GROUPS[currentGroup]?.modules || []).forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m; opt.textContent = m;
+    sel.appendChild(opt);
+  });
+}
+
+function renderCurrentTab() {
+  switch(currentTab) {
+    case 'enregistrement': renderStudentGrid(); break;
+    case 'historique': renderHistory(); break;
+    case 'statistiques': renderStats(); break;
+    case 'etudiants': renderStudentCards(); break;
+  }
+  renderPageHeader();
+}
+
+function renderPageHeader() {
+  const students = GROUPS[currentGroup]?.students || [];
+  const tabNames = { enregistrement: 'Enregistrement des absences', historique: 'Historique des absences', statistiques: 'Statistiques', etudiants: 'Fiches etudiants' };
+  const tabIcons = { enregistrement: 'fa-pen-to-square', historique: 'fa-clock-rotate-left', statistiques: 'fa-chart-pie', etudiants: 'fa-users' };
+  document.getElementById('pageHeader').innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+          <span style="background:var(--accent-glow);color:var(--accent);padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;">${currentGroup}</span>
+          <span style="color:var(--muted);font-size:13px;">${students.length} etudiants</span>
+        </div>
+        <h2 style="font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px;">
+          <i class="fas ${tabIcons[currentTab]}" style="color:var(--accent);font-size:20px;"></i>
+          ${tabNames[currentTab]}
+        </h2>
+      </div>
+      <div style="display:flex;gap:8px;">
+        ${currentTab === 'historique' ? `<button class="btn btn-ghost btn-sm" onclick="exportCSV()"><i class="fas fa-download"></i> Exporter CSV</button>` : ''}
+        ${currentTab === 'statistiques' ? `<button class="btn btn-ghost btn-sm" onclick="exportCSV()"><i class="fas fa-download"></i> Exporter CSV</button>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================
+// ONGLET ENREGISTREMENT
+// ============================================
+function renderStudentGrid() {
+  const students = GROUPS[currentGroup]?.students || [];
+  const search = (document.getElementById('studentSearch')?.value || '').toLowerCase();
+  const filtered = students.filter(s => s.toLowerCase().includes(search));
+
+  // Obtenir les absences deja enregistrees pour ce groupe/date/creneau/module
+  const date = document.getElementById('absDate').value;
+  const time = document.getElementById('absTime').value;
+  const mod = document.getElementById('absModule').value;
+  const existing = getAbsencesFor(currentGroup, date, time, mod);
+
+  let html = `<table class="data-table">
+    <thead><tr>
+      <th style="width:50px;"><input type="checkbox" class="abs-checkbox" id="checkAll" onchange="toggleAll(this.checked)" title="Tout cocher/decocher"></th>
+      <th style="width:60px;">N</th>
+      <th>Nom complet</th>
+      <th style="width:120px;">Statut</th>
+      <th style="width:200px;">Justification</th>
+    </tr></thead><tbody>`;
+
+  filtered.forEach((name, i) => {
+    const abs = existing.find(a => a.student === name);
+    const checked = abs ? 'checked' : '';
+    const rowClass = abs ? 'absent-row' : '';
+    const origIdx = students.indexOf(name) + 1;
+    const statusHtml = abs
+      ? `<span class="absent-tag"><i class="fas fa-xmark"></i> Absent</span>`
+      : `<span style="color:var(--accent);font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Present</span>`;
+    const justVal = abs?.justification || '';
+    html += `<tr class="${rowClass}" data-student="${name}">
+      <td><input type="checkbox" class="abs-checkbox student-cb" data-name="${name}" ${checked} onchange="updateAbsCount()"></td>
+      <td style="color:var(--muted);font-size:13px;">${origIdx}</td>
+      <td style="font-weight:500;">${name}</td>
+      <td>${statusHtml}</td>
+      <td><input type="text" class="form-input" style="padding:6px 10px;font-size:12px;" placeholder="Justification..." data-just="${name}" value="${justVal}"></td>
+    </tr>`;
   });
 
-  const openAdd = () => { setForm({ nom: "", prenom: "", matricule: "", groupe: "", filiere: "" }); setEditId(null); setShowForm(true); };
-  const openEdit = (s: Student) => { setForm({ nom: s.nom, prenom: s.prenom, matricule: s.matricule, groupe: s.groupe, filiere: s.filiere }); setEditId(s.id); setShowForm(true); };
+  if (filtered.length === 0) {
+    html += `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Aucun etudiant trouve</td></tr>`;
+  }
+  html += '</tbody></table>';
+  document.getElementById('studentGrid').innerHTML = html;
+  updateAbsCount();
+}
 
-  const handleSave = () => {
-    if (!form.nom || !form.prenom || !form.matricule) return;
-    if (editId) {
-      setStudents((prev) => prev.map((s) => s.id === editId ? { ...s, ...form } : s));
-    } else {
-      setStudents((prev) => [...prev, { id: uid(), ...form }]);
-    }
-    setShowForm(false);
-  };
+function filterStudents() { renderStudentGrid(); }
 
-  const handleDelete = (id: string) => {
-    setStudents((prev) => prev.filter((s) => s.id !== id));
-  };
+function toggleAll(checked) {
+  document.querySelectorAll('.student-cb').forEach(cb => {
+    cb.checked = checked;
+    cb.closest('tr').classList.toggle('absent-row', checked);
+    // Mettre a jour le statut visuel
+    const statusTd = cb.closest('tr').children[3];
+    statusTd.innerHTML = checked
+      ? `<span class="absent-tag"><i class="fas fa-xmark"></i> Absent</span>`
+      : `<span style="color:var(--accent);font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Present</span>`;
+  });
+  updateAbsCount();
+}
 
-  // ✅ CORRECTION 3 : Cast explicite en string pour TypeScript
-  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const data = ev.target?.result as string;
-      const wb = XLSX.read(data, { type: "binary" });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json<Record<string, string>>(ws, { defval: "" });
-      const imported: Student[] = rows.map((r) => ({
-        id: uid(),
-        nom: r["Nom"] ?? r["nom"] ?? r["NOM"] ?? "",
-        prenom: r["Prenom"] ?? r["prenom"] ?? r["Prénom"] ?? r["PRENOM"] ?? "",
-        matricule: String(r["Matricule"] ?? r["matricule"] ?? r["MATRICULE"] ?? ""),
-        groupe: r["Groupe"] ?? r["groupe"] ?? r["GROUPE"] ?? "",
-        filiere: r["Filiere"] ?? r["filiere"] ?? r["Filière"] ?? r["FILIERE"] ?? "",
-      })).filter((s) => s.nom || s.prenom);
-      setStudents((prev) => [...prev, ...imported]);
-    };
-    reader.readAsBinaryString(file);
-    e.target.value = "";
-  };
+function selectAllVisible() { toggleAll(true); document.getElementById('checkAll').checked = true; }
+function deselectAllVisible() { toggleAll(false); document.getElementById('checkAll').checked = false; }
 
-  const handleExportTemplate = () => {
-    const ws = XLSX.utils.aoa_to_sheet([["Nom", "Prenom", "Matricule", "Groupe", "Filiere"]]);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Etudiants");
-    XLSX.writeFile(wb, "modele_etudiants.xlsx");
-  };
+function updateAbsCount() {
+  const count = document.querySelectorAll('.student-cb:checked').length;
+  document.getElementById('absCountLabel').textContent = `${count} absent(s) selectionne(s)`;
+  document.getElementById('absCountLabel').style.color = count > 0 ? 'var(--danger)' : 'var(--muted)';
+}
 
-  return (
-    <div className="space-y-4">
-      <div className="bg-card border border-border rounded-xl shadow-sm">
-        <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-3">
-            <h3 className="font-bold text-foreground">Liste des Étudiants</h3>
-            <Badge variant="info">{students.length}</Badge>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher..."
-                className="bg-input-background border border-border rounded pl-8 pr-3 py-1.5 text-sm w-44 focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-            </div>
-            <Btn variant="ghost" size="sm" onClick={handleExportTemplate}><Download className="w-3.5 h-3.5" /> Modèle Excel</Btn>
-            <Btn variant="secondary" size="sm" onClick={() => fileRef.current?.click()}><Upload className="w-3.5 h-3.5" /> Importer Excel</Btn>
-            <Btn variant="primary" size="sm" onClick={openAdd}><Plus className="w-3.5 h-3.5" /> Ajouter</Btn>
-            <input ref={fileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImport} />
-          </div>
-        </div>
+function clearSelection() {
+  deselectAllVisible();
+  document.querySelectorAll('[data-just]').forEach(inp => inp.value = '');
+}
 
-        {/* Form inline */}
-        {showForm && (
-          <div className="px-5 py-4 border-b border-border bg-secondary/30">
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-              <Input label="Nom" value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })} placeholder="Benali" />
-              <Input label="Prénom" value={form.prenom} onChange={(e) => setForm({ ...form, prenom: e.target.value })} placeholder="Ahmed" />
-              <Input label="Matricule" value={form.matricule} onChange={(e) => setForm({ ...form, matricule: e.target.value })} placeholder="20231001" />
-              <Input label="Groupe" value={form.groupe} onChange={(e) => setForm({ ...form, groupe: e.target.value })} placeholder="G1" />
-              <Input label="Filière" value={form.filiere} onChange={(e) => setForm({ ...form, filiere: e.target.value })} placeholder="Informatique" />
-            </div>
-            <div className="flex gap-2 mt-3">
-              <Btn variant="primary" size="sm" onClick={handleSave}><Check className="w-3.5 h-3.5" /> {editId ? "Modifier" : "Ajouter"}</Btn>
-              <Btn variant="ghost" size="sm" onClick={() => setShowForm(false)}><X className="w-3.5 h-3.5" /> Annuler</Btn>
-            </div>
-          </div>
-        )}
+// Ecouter les changements de date/creneau/module pour rafraichir
+document.addEventListener('change', e => {
+  if (['absDate','absTime','absModule'].includes(e.target.id)) {
+    renderStudentGrid();
+  }
+});
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-muted/40 text-muted-foreground text-xs uppercase tracking-wide">
-                <th className="text-left px-5 py-3 font-semibold">#</th>
-                <th className="text-left px-5 py-3 font-semibold">Nom Complet</th>
-                <th className="text-left px-5 py-3 font-semibold">Matricule</th>
-                <th className="text-left px-5 py-3 font-semibold">Groupe</th>
-                <th className="text-left px-5 py-3 font-semibold">Filière</th>
-                <th className="text-right px-5 py-3 font-semibold">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {filtered.length === 0 && (
-                <tr><td colSpan={6} className="text-center py-8 text-muted-foreground">Aucun étudiant.</td></tr>
-              )}
-              {filtered.map((s, i) => (
-                <tr key={s.id} className="hover:bg-muted/20 transition-colors">
-                  <td className="px-5 py-3 text-muted-foreground">{i + 1}</td>
-                  <td className="px-5 py-3 font-semibold text-foreground flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center text-xs font-bold text-primary">
-                      {s.prenom[0]}{s.nom[0]}
-                    </span>
-                    {s.prenom} {s.nom}
-                  </td>
-                  <td className="px-5 py-3 font-mono text-xs text-muted-foreground">{s.matricule}</td>
-                  <td className="px-5 py-3"><Badge>{s.groupe}</Badge></td>
-                  <td className="px-5 py-3 text-muted-foreground">{s.filiere}</td>
-                  <td className="px-5 py-3 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => openEdit(s)} className="p-1.5 rounded hover:bg-secondary transition-colors text-muted-foreground hover:text-primary">
-                        <Edit3 className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={() => handleDelete(s.id)} className="p-1.5 rounded hover:bg-red-50 transition-colors text-muted-foreground hover:text-destructive">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+function getAbsencesFor(group, date, time, mod) {
+  return absences.filter(a =>
+    a.group === group && a.date === date && a.time === time && a.module === mod
   );
 }
 
-// ─── Module List ──────────────────────────────────────────────────────────────
+function saveAbsences() {
+  const date = document.getElementById('absDate').value;
+  const time = document.getElementById('absTime').value;
+  const mod = document.getElementById('absModule').value;
 
-function ModuleList({ modules, setModules }: {
-  modules: Module[];
-  setModules: React.Dispatch<React.SetStateAction<Module[]>>;
-}) {
-  const [showForm, setShowForm] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState<Omit<Module, "id">>({ code: "", intitule: "", enseignant: "", filiere: "" });
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [search, setSearch] = useState("");
+  if (!date) { showToast('Veuillez selectionner une date', 'error'); return; }
+  if (!time) { showToast('Veuillez selectionner un creneau horaire', 'error'); return; }
+  if (!mod) { showToast('Veuillez selectionner un module', 'error'); return; }
 
-  const filtered = modules.filter((m) => {
-    const q = search.toLowerCase();
-    return m.code.toLowerCase().includes(q) || m.intitule.toLowerCase().includes(q) || m.enseignant.toLowerCase().includes(q);
+  // Supprimer les anciennes absences pour cette session
+  absences = absences.filter(a =>
+    !(a.group === currentGroup && a.date === date && a.time === time && a.module === mod)
+  );
+
+  // Ajouter les nouvelles
+  const checked = document.querySelectorAll('.student-cb:checked');
+  if (checked.length === 0) {
+    showToast('Aucune absence a enregistrer', 'info');
+    saveData();
+    renderStudentGrid();
+    return;
+  }
+
+  checked.forEach(cb => {
+    const name = cb.dataset.name;
+    const justInput = document.querySelector(`[data-just="${name}"]`);
+    absences.push({
+      id: Date.now() + Math.random(),
+      group: currentGroup,
+      student: name,
+      date, time, module: mod,
+      justification: justInput ? justInput.value.trim() : '',
+      timestamp: new Date().toISOString()
+    });
   });
 
-  const openAdd = () => { setForm({ code: "", intitule: "", enseignant: "", filiere: "" }); setEditId(null); setShowForm(true); };
-  const openEdit = (m: Module) => { setForm({ code: m.code, intitule: m.intitule, enseignant: m.enseignant, filiere: m.filiere }); setEditId(m.id); setShowForm(true); };
-
-  const handleSave = () => {
-    if (!form.code || !form.intitule) return;
-    if (editId) {
-      setModules((prev) => prev.map((m) => m.id === editId ? { ...m, ...form } : m));
-    } else {
-      setModules((prev) => [...prev, { id: uid(), ...form }]);
-    }
-    setShowForm(false);
-  };
-
-  // ✅ CORRECTION 3 : Cast explicite en string pour TypeScript
-  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const data = ev.target?.result as string;
-      const wb = XLSX.read(data, { type: "binary" });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json<Record<string, string>>(ws, { defval: "" });
-      const imported: Module[] = rows.map((r) => ({
-        id: uid(),
-        code: r["Code"] ?? r["code"] ?? "",
-        intitule: r["Intitule"] ?? r["intitule"] ?? r["Intitulé"] ?? "",
-        enseignant: r["Enseignant"] ?? r["enseignant"] ?? "",
-        filiere: r["Filiere"] ?? r["filiere"] ?? r["Filière"] ?? "",
-      })).filter((m) => m.code);
-      setModules((prev) => [...prev, ...imported]);
-    };
-    reader.readAsBinaryString(file);
-    e.target.value = "";
-  };
-
-  const handleExportTemplate = () => {
-    const ws = XLSX.utils.aoa_to_sheet([["Code", "Intitule", "Enseignant", "Filiere"]]);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Modules");
-    XLSX.writeFile(wb, "modele_modules.xlsx");
-  };
-
-  return (
-    <div className="space-y-4">
-      <div className="bg-card border border-border rounded-xl shadow-sm">
-        <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-3">
-            <h3 className="font-bold text-foreground">Liste des Modules</h3>
-            <Badge variant="info">{modules.length}</Badge>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher..."
-                className="bg-input-background border border-border rounded pl-8 pr-3 py-1.5 text-sm w-44 focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-            </div>
-            <Btn variant="ghost" size="sm" onClick={handleExportTemplate}><Download className="w-3.5 h-3.5" /> Modèle Excel</Btn>
-            <Btn variant="secondary" size="sm" onClick={() => fileRef.current?.click()}><Upload className="w-3.5 h-3.5" /> Importer Excel</Btn>
-            <Btn variant="primary" size="sm" onClick={openAdd}><Plus className="w-3.5 h-3.5" /> Ajouter</Btn>
-            <input ref={fileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImport} />
-          </div>
-        </div>
-
-        {showForm && (
-          <div className="px-5 py-4 border-b border-border bg-secondary/30">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <Input label="Code" value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} placeholder="INF301" />
-              <Input label="Intitulé" value={form.intitule} onChange={(e) => setForm({ ...form, intitule: e.target.value })} placeholder="Algorithmes Avancés" />
-              <Input label="Enseignant" value={form.enseignant} onChange={(e) => setForm({ ...form, enseignant: e.target.value })} placeholder="Dr. Mansouri" />
-              <Input label="Filière" value={form.filiere} onChange={(e) => setForm({ ...form, filiere: e.target.value })} placeholder="Informatique" />
-            </div>
-            <div className="flex gap-2 mt-3">
-              <Btn variant="primary" size="sm" onClick={handleSave}><Check className="w-3.5 h-3.5" /> {editId ? "Modifier" : "Ajouter"}</Btn>
-              <Btn variant="ghost" size="sm" onClick={() => setShowForm(false)}><X className="w-3.5 h-3.5" /> Annuler</Btn>
-            </div>
-          </div>
-        )}
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-muted/40 text-muted-foreground text-xs uppercase tracking-wide">
-                <th className="text-left px-5 py-3 font-semibold">Code</th>
-                <th className="text-left px-5 py-3 font-semibold">Intitulé</th>
-                <th className="text-left px-5 py-3 font-semibold">Enseignant</th>
-                <th className="text-left px-5 py-3 font-semibold">Filière</th>
-                <th className="text-right px-5 py-3 font-semibold">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {filtered.length === 0 && (
-                <tr><td colSpan={5} className="text-center py-8 text-muted-foreground">Aucun module.</td></tr>
-              )}
-              {filtered.map((m) => (
-                <tr key={m.id} className="hover:bg-muted/20 transition-colors">
-                  <td className="px-5 py-3 font-mono text-xs font-bold text-primary">{m.code}</td>
-                  <td className="px-5 py-3 font-semibold text-foreground">{m.intitule}</td>
-                  <td className="px-5 py-3 text-muted-foreground">{m.enseignant}</td>
-                  <td className="px-5 py-3"><Badge variant="info">{m.filiere}</Badge></td>
-                  <td className="px-5 py-3 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => openEdit(m)} className="p-1.5 rounded hover:bg-secondary transition-colors text-muted-foreground hover:text-primary">
-                        <Edit3 className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={() => setModules((prev) => prev.filter((x) => x.id !== m.id))} className="p-1.5 rounded hover:bg-red-50 transition-colors text-muted-foreground hover:text-destructive">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
+  saveData();
+  showToast(`${checked.length} absence(s) enregistree(s) avec succes`, 'success');
+  renderStudentGrid();
 }
 
-// ─── Plages Horaires ──────────────────────────────────────────────────────────
+// ============================================
+// ONGLET HISTORIQUE
+// ============================================
+function renderHistory() {
+  const search = (document.getElementById('histSearch')?.value || '').toLowerCase();
+  const dateFrom = document.getElementById('histDateFrom')?.value || '';
+  const dateTo = document.getElementById('histDateTo')?.value || '';
 
-function PlagesList({ plages, setPlages }: {
-  plages: PlageHoraire[];
-  setPlages: React.Dispatch<React.SetStateAction<PlageHoraire[]>>;
-}) {
-  const [showForm, setShowForm] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState({ debut: "", fin: "" });
+  let filtered = absences.filter(a => a.group === currentGroup);
+  if (search) filtered = filtered.filter(a => a.student.toLowerCase().includes(search) || (a.module||'').toLowerCase().includes(search) || (a.justification||'').toLowerCase().includes(search));
+  if (dateFrom) filtered = filtered.filter(a => a.date >= dateFrom);
+  if (dateTo) filtered = filtered.filter(a => a.date <= dateTo);
 
-  const openAdd = () => { setForm({ debut: "", fin: "" }); setEditId(null); setShowForm(true); };
-  const openEdit = (p: PlageHoraire) => { setForm({ debut: p.debut, fin: p.fin }); setEditId(p.id); setShowForm(true); };
+  // Trier par date decroissante puis nom
+  filtered.sort((a,b) => b.date.localeCompare(a.date) || a.student.localeCompare(b.student));
 
-  const handleSave = () => {
-    if (!form.debut || !form.fin) return;
-    const label = `${form.debut.replace(":", "h")} – ${form.fin.replace(":", "h")}`;
-    if (editId) {
-      setPlages((prev) => prev.map((p) => p.id === editId ? { ...p, ...form, label } : p));
-    } else {
-      setPlages((prev) => [...prev, { id: uid(), ...form, label }]);
-    }
-    setShowForm(false);
-  };
+  let html = `<table class="data-table">
+    <thead><tr>
+      <th>Date</th><th>Creneau</th><th>Module</th><th>Etudiant</th><th>Justification</th><th style="width:60px;">Action</th>
+    </tr></thead><tbody>`;
 
-  return (
-    <div className="bg-card border border-border rounded-xl shadow-sm max-w-xl">
-      <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h3 className="font-bold text-foreground">Plages Horaires</h3>
-          <Badge variant="info">{plages.length}</Badge>
-        </div>
-        <Btn variant="primary" size="sm" onClick={openAdd}><Plus className="w-3.5 h-3.5" /> Ajouter</Btn>
-      </div>
-
-      {showForm && (
-        <div className="px-5 py-4 border-b border-border bg-secondary/30">
-          <div className="grid grid-cols-2 gap-3">
-            <Input label="Heure Début" type="time" value={form.debut} onChange={(e) => setForm({ ...form, debut: e.target.value })} />
-            <Input label="Heure Fin" type="time" value={form.fin} onChange={(e) => setForm({ ...form, fin: e.target.value })} />
-          </div>
-          <div className="flex gap-2 mt-3">
-            <Btn variant="primary" size="sm" onClick={handleSave}><Check className="w-3.5 h-3.5" /> {editId ? "Modifier" : "Ajouter"}</Btn>
-            <Btn variant="ghost" size="sm" onClick={() => setShowForm(false)}><X className="w-3.5 h-3.5" /> Annuler</Btn>
-          </div>
-        </div>
-      )}
-
-      <div className="divide-y divide-border">
-        {plages.length === 0 && <p className="text-sm text-muted-foreground p-6 text-center">Aucune plage horaire.</p>}
-        {plages.map((p, i) => (
-          <div key={p.id} className="flex items-center justify-between px-5 py-3 hover:bg-muted/20 transition-colors">
-            <div className="flex items-center gap-4">
-              <span className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">{i + 1}</span>
-              <div>
-                <div className="font-semibold text-foreground">{p.label}</div>
-                <div className="text-xs text-muted-foreground font-mono">{p.debut} → {p.fin}</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <button onClick={() => openEdit(p)} className="p-1.5 rounded hover:bg-secondary transition-colors text-muted-foreground hover:text-primary">
-                <Edit3 className="w-3.5 h-3.5" />
-              </button>
-              <button onClick={() => setPlages((prev) => prev.filter((x) => x.id !== p.id))} className="p-1.5 rounded hover:bg-red-50 transition-colors text-muted-foreground hover:text-destructive">
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── Historique Absences ──────────────────────────────────────────────────────
-
-function Historique({ absences, students, modules, plages, onDelete }: {
-  absences: AbsenceRecord[];
-  students: Student[];
-  modules: Module[];
-  plages: PlageHoraire[];
-  onDelete: (id: string) => void;
-}) {
-  const [search, setSearch] = useState("");
-
-  const enriched = absences
-    .map((a) => ({
-      ...a,
-      module: modules.find((m) => m.id === a.moduleId),
-      plage: plages.find((p) => p.id === a.plageId),
-      absentStudents: a.etudiantIds.map((id) => students.find((s) => s.id === id)).filter(Boolean) as Student[],
-    }))
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .filter((a) => {
-      const q = search.toLowerCase();
-      return !q || a.module?.intitule.toLowerCase().includes(q) || a.date.includes(q) || a.absentStudents.some((s) => `${s.prenom} ${s.nom}`.toLowerCase().includes(q));
+  if (filtered.length === 0) {
+    html += `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">
+      <i class="fas fa-inbox" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.3;"></i>
+      Aucun enregistrement d'absence pour ce groupe
+    </td></tr>`;
+  } else {
+    let lastDate = '';
+    filtered.forEach(a => {
+      const dateSep = a.date !== lastDate;
+      lastDate = a.date;
+      const dateFormatted = formatDate(a.date);
+      html += `<tr>
+        <td style="font-weight:${dateSep?'600':'400'};font-size:${dateSep?'13px':'12px'};color:${dateSep?'var(--fg)':'var(--muted)'};">${dateSep ? dateFormatted : ''}</td>
+        <td style="font-size:12px;">${a.time || '-'}</td>
+        <td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.module||''}">${a.module || '-'}</td>
+        <td style="font-weight:500;">${a.student}</td>
+        <td style="font-size:12px;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.justification||''}">${a.justification || '-'}</td>
+        <td><button class="btn btn-sm btn-ghost" style="padding:4px 8px;color:var(--danger);" onclick="deleteAbsence(${a.id})" title="Supprimer"><i class="fas fa-trash-can"></i></button></td>
+      </tr>`;
     });
+  }
 
-  const handleExport = () => {
-    const rows = enriched.flatMap((a) =>
-      a.absentStudents.map((s) => ({
-        Date: a.date,
-        Module: a.module?.intitule ?? "",
-        Code: a.module?.code ?? "",
-        PlageHoraire: a.plage?.label ?? "",
-        Nom: s.nom,
-        Prenom: s.prenom,
-        Matricule: s.matricule,
-        Groupe: s.groupe,
-      }))
-    );
-    const ws = XLSX.utils.json_to_sheet(rows);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Absences");
-    XLSX.writeFile(wb, `absences_${today}.xlsx`);
+  html += '</tbody></table>';
+  document.getElementById('historyTable').innerHTML = html;
+}
+
+function deleteAbsence(id) {
+  showModal('Supprimer cette absence', 'Cette action est irreversible. Voulez-vous vraiment supprimer cet enregistrement ?', () => {
+    absences = absences.filter(a => a.id !== id);
+    saveData();
+    renderHistory();
+    showToast('Absence supprimee', 'success');
+  });
+}
+
+// ============================================
+// ONGLET STATISTIQUES
+// ============================================
+function renderStats() {
+  const groupAbs = absences.filter(a => a.group === currentGroup);
+  const students = GROUPS[currentGroup]?.students || [];
+  const totalSessions = [...new Set(groupAbs.map(a => `${a.date}_${a.time}_${a.module}`))].length;
+
+  // Stats par etudiant
+  const studentStats = {};
+  students.forEach(s => { studentStats[s] = 0; });
+  groupAbs.forEach(a => { if (studentStats[a.student] !== undefined) studentStats[a.student]++; });
+
+  const totalAbsences = groupAbs.length;
+  const avgAbs = students.length ? (totalAbsences / students.length).toFixed(1) : 0;
+  const maxAbs = Math.max(...Object.values(studentStats), 0);
+  const studentsWithAbs = Object.values(studentStats).filter(v => v > 0).length;
+
+  // Top absents
+  const sorted = Object.entries(studentStats).sort((a,b) => b[1] - a[1]);
+  const topAbs = sorted.filter(([,v]) => v > 0).slice(0, 10);
+
+  // Stats par module
+  const moduleStats = {};
+  groupAbs.forEach(a => {
+    const m = a.module || 'Non defini';
+    moduleStats[m] = (moduleStats[m] || 0) + 1;
+  });
+  const sortedModules = Object.entries(moduleStats).sort((a,b) => b[1] - a[1]);
+
+  // Stats par date
+  const dateStats = {};
+  groupAbs.forEach(a => {
+    dateStats[a.date] = (dateStats[a.date] || 0) + 1;
+  });
+  const sortedDates = Object.entries(dateStats).sort((a,b) => a[0].localeCompare(b[0]));
+
+  let html = `
+  <!-- Cartes resume -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;" class="fade-up">
+    <div class="stat-card">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div class="icon-wrap" style="background:var(--danger-glow);color:var(--danger);"><i class="fas fa-user-xmark"></i></div>
+        <div>
+          <div class="stat-value" style="color:var(--danger);">${totalAbsences}</div>
+          <div class="stat-label">Total absences</div>
+        </div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div class="icon-wrap" style="background:var(--warn-glow);color:var(--warn);"><i class="fas fa-chart-line"></i></div>
+        <div>
+          <div class="stat-value" style="color:var(--warn);">${avgAbs}</div>
+          <div class="stat-label">Moyenne / etudiant</div>
+        </div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div class="icon-wrap" style="background:var(--accent-glow);color:var(--accent);"><i class="fas fa-calendar-check"></i></div>
+        <div>
+          <div class="stat-value" style="color:var(--accent);">${totalSessions}</div>
+          <div class="stat-label">Seances enregistrees</div>
+        </div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div class="icon-wrap" style="background:rgba(139,92,246,0.12);color:#8B5CF6;"><i class="fas fa-users"></i></div>
+        <div>
+          <div class="stat-value" style="color:#8B5CF6;">${studentsWithAbs}/${students.length}</div>
+          <div class="stat-label">Etudiants concernes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+    <!-- Top absents -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;" class="fade-up fade-up-d1">
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+        <i class="fas fa-ranking-star" style="color:var(--danger);"></i> Etudiants les plus absents
+      </h3>`;
+
+  if (topAbs.length === 0) {
+    html += `<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune donnee</div>`;
+  } else {
+    topAbs.forEach(([name, count], i) => {
+      const pct = maxAbs > 0 ? (count / maxAbs * 100) : 0;
+      const barColor = count >= 5 ? 'var(--danger)' : count >= 3 ? 'var(--warn)' : 'var(--accent)';
+      html += `<div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:12.5px;font-weight:500;display:flex;align-items:center;gap:6px;">
+            <span style="color:var(--muted);font-size:11px;width:18px;">${i+1}.</span> ${name}
+          </span>
+          <span class="badge ${count >= 5 ? 'badge-danger' : count >= 3 ? 'badge-warn' : 'badge-ok'}">${count}</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${barColor};"></div></div>
+      </div>`;
+    });
+  }
+
+  html += `</div>
+    <!-- Par module -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;" class="fade-up fade-up-d2">
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+        <i class="fas fa-book" style="color:var(--accent);"></i> Absences par module
+      </h3>`;
+
+  if (sortedModules.length === 0) {
+    html += `<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune donnee</div>`;
+  } else {
+    const maxMod = sortedModules[0][1];
+    sortedModules.forEach(([mod, count]) => {
+      const pct = maxMod > 0 ? (count / maxMod * 100) : 0;
+      html += `<div style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:12px;font-weight:500;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${mod}">${mod}</span>
+          <span style="font-size:12px;color:var(--muted);font-weight:600;">${count}</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:var(--accent);"></div></div>
+      </div>`;
+    });
+  }
+
+  html += `</div></div>
+
+  <!-- Evolution temporelle -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:20px;" class="fade-up fade-up-d3">
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+      <i class="fas fa-chart-bar" style="color:var(--warn);"></i> Evolution des absences par date
+    </h3>`;
+
+  if (sortedDates.length === 0) {
+    html += `<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune donnee</div>`;
+  } else {
+    const maxDate = Math.max(...sortedDates.map(([,v]) => v));
+    html += `<div style="display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:10px;">`;
+    sortedDates.forEach(([date, count]) => {
+      const pct = maxDate > 0 ? (count / maxDate * 100) : 0;
+      const barColor = count >= maxDate * 0.7 ? 'var(--danger)' : count >= maxDate * 0.4 ? 'var(--warn)' : 'var(--accent)';
+      html += `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <span style="font-size:11px;font-weight:600;color:${barColor};">${count}</span>
+        <div style="width:100%;height:${Math.max(pct, 4)}%;background:${barColor};border-radius:4px 4px 0 0;min-height:4px;transition:height 0.5s;"></div>
+        <span style="font-size:9px;color:var(--muted);transform:rotate(-45deg);white-space:nowrap;">${date.slice(5)}</span>
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  html += '</div>';
+  document.getElementById('statsContent').innerHTML = html;
+}
+
+// ============================================
+// ONGLET FICHES ETUDIANTS
+// ============================================
+function renderStudentCards() {
+  const students = GROUPS[currentGroup]?.students || [];
+  const search = (document.getElementById('etudSearch')?.value || '').toLowerCase();
+  const sort = document.getElementById('etudSort')?.value || 'name';
+
+  // Calculer les stats par etudiant
+  const groupAbs = absences.filter(a => a.group === currentGroup);
+  const studentData = students.map(name => {
+    const absList = groupAbs.filter(a => a.student === name);
+    const modules = [...new Set(absList.map(a => a.module).filter(Boolean))];
+    return { name, count: absList.length, modules, lastAbs: absList.length ? absList[absList.length-1].date : null };
+  });
+
+  let filtered = studentData;
+  if (search) filtered = filtered.filter(s => s.name.toLowerCase().includes(search));
+
+  if (sort === 'abs-desc') filtered.sort((a,b) => b.count - a.count);
+  else if (sort === 'abs-asc') filtered.sort((a,b) => a.count - b.count);
+  else filtered.sort((a,b) => a.name.localeCompare(b.name));
+
+  let html = '';
+  filtered.forEach(s => {
+    const statusClass = s.count >= 5 ? 'badge-danger' : s.count >= 3 ? 'badge-warn' : s.count > 0 ? 'badge-ok' : '';
+    const borderColor = s.count >= 5 ? 'var(--danger)' : s.count >= 3 ? 'var(--warn)' : 'var(--border)';
+    html += `<div style="background:var(--card);border:1px solid ${borderColor};border-radius:12px;padding:16px;transition:all 0.2s;" class="fade-up"
+      onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.3)'"
+      onmouseleave="this.style.transform='';this.style.boxShadow=''">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+        <div>
+          <div style="font-weight:600;font-size:14px;margin-bottom:2px;">${s.name}</div>
+          <div style="font-size:11px;color:var(--muted);">${currentGroup}</div>
+        </div>
+        ${statusClass ? `<span class="badge ${statusClass}">${s.count} abs.</span>` : `<span style="font-size:11px;color:var(--accent);font-weight:600;"><i class="fas fa-check-circle"></i> Aucune absence</span>`}
+      </div>
+      ${s.modules.length > 0 ? `<div style="font-size:11px;color:var(--muted);margin-bottom:6px;"><i class="fas fa-book" style="margin-right:4px;"></i> Modules: ${s.modules.slice(0,3).join(', ')}${s.modules.length > 3 ? ` +${s.modules.length-3}` : ''}</div>` : ''}
+      ${s.lastAbs ? `<div style="font-size:11px;color:var(--muted);"><i class="fas fa-calendar" style="margin-right:4px;"></i> Derniere: ${formatDate(s.lastAbs)}</div>` : ''}
+    </div>`;
+  });
+
+  if (filtered.length === 0) {
+    html = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted);">
+      <i class="fas fa-search" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.3;"></i>
+      Aucun etudiant trouve
+    </div>`;
+  }
+
+  document.getElementById('studentCards').innerHTML = html;
+}
+
+// ============================================
+// EXPORT CSV
+// ============================================
+function exportCSV() {
+  const groupAbs = absences.filter(a => a.group === currentGroup);
+  if (groupAbs.length === 0) {
+    showToast('Aucune donnee a exporter', 'info');
+    return;
+  }
+  groupAbs.sort((a,b) => a.date.localeCompare(b.date) || a.student.localeCompare(b.student));
+
+  let csv = '\uFEFF'; // BOM pour Excel
+  csv += 'Date,Creneau,Module,Etudiant,Justification\n';
+  groupAbs.forEach(a => {
+    csv += `${a.date},"${a.time}","${a.module}","${a.student}","${a.justification || ''}"\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `absences_${currentGroup.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Fichier CSV exporte avec succes', 'success');
+}
+
+// ============================================
+// UTILITAIRES
+// ============================================
+function formatDate(dateStr) {
+  if (!dateStr) return '-';
+  const parts = dateStr.split('-');
+  const months = ['Jan','Fev','Mar','Avr','Mai','Jun','Jul','Aou','Sep','Oct','Nov','Dec'];
+  return `${parseInt(parts[2])} ${months[parseInt(parts[1])-1]} ${parts[0]}`;
+}
+
+function showToast(msg, type='info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+  toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('toast-exit');
+    setTimeout(() => toast.remove(), 300);
+  }, 3500);
+}
+
+let modalCallback = null;
+function showModal(title, msg, onConfirm) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalMsg').textContent = msg;
+  modalCallback = onConfirm;
+  document.getElementById('modalConfirmBtn').onclick = () => {
+    closeModal();
+    if (modalCallback) modalCallback();
   };
-
-  return (
-    <div className="space-y-4">
-      <div className="bg-card border border-border rounded-xl shadow-sm">
-        <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-3">
-            <h3 className="font-bold text-foreground">Historique des Absences</h3>
-            <Badge variant="danger">{absences.flatMap((a) => a.etudiantIds).length} absences</Badge>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher..."
-                className="bg-input-background border border-border rounded pl-8 pr-3 py-1.5 text-sm w-44 focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-            </div>
-            <Btn variant="secondary" size="sm" onClick={handleExport}><Download className="w-3.5 h-3.5" /> Exporter</Btn>
-          </div>
-        </div>
-
-        <div className="divide-y divide-border">
-          {enriched.length === 0 && <p className="text-sm text-muted-foreground p-6 text-center">Aucun enregistrement.</p>}
-          {enriched.map((a) => (
-            <div key={a.id} className="px-5 py-4 hover:bg-muted/20 transition-colors">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2 flex-wrap">
-                    <span className="font-bold text-foreground">{a.module?.intitule ?? "—"}</span>
-                    <Badge variant="info">{a.module?.code}</Badge>
-                    <span className="text-muted-foreground text-xs">·</span>
-                    <span className="text-xs text-muted-foreground">{a.date}</span>
-                    <span className="text-muted-foreground text-xs">·</span>
-                    <span className="text-xs text-muted-foreground">{a.plage?.label ?? "—"}</span>
-                    <Badge variant="danger">{a.absentStudents.length} absent(s)</Badge>
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {a.absentStudents.map((s) => (
-                      <span key={s.id} className="inline-flex items-center gap-1 bg-red-50 border border-red-200 text-red-700 text-xs px-2 py-0.5 rounded-full font-medium">
-                        {s.prenom} {s.nom}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <button
-                  onClick={() => onDelete(a.id)}
-                  className="p-1.5 rounded hover:bg-red-50 text-muted-foreground hover:text-destructive transition-colors flex-shrink-0"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+  document.getElementById('confirmModal').classList.add('show');
 }
-
-// ─── App ──────────────────────────────────────────────────────────────────────
-
-type Tab = "dashboard" | "marquer" | "etudiants" | "modules" | "plages" | "historique";
-
-const NAV_ITEMS: { id: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-  { id: "dashboard", label: "Tableau de Bord", icon: BarChart3 },
-  { id: "marquer", label: "Marquer Absences", icon: ClipboardCheck },
-  { id: "etudiants", label: "Étudiants", icon: Users },
-  { id: "modules", label: "Modules", icon: BookOpen },
-  { id: "plages", label: "Plages Horaires", icon: Clock },
-  { id: "historique", label: "Historique", icon: Calendar },
-];
-
-export default function App() {
-  const [tab, setTab] = useState<Tab>("dashboard");
-  const [students, setStudents] = useState<Student[]>(seedStudents);
-  const [modules, setModules] = useState<Module[]>(seedModules);
-  const [plages, setPlages] = useState<PlageHoraire[]>(seedPlages);
-  const [absences, setAbsences] = useState<AbsenceRecord[]>([]);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const handleSaveAbsence = useCallback((record: AbsenceRecord) => {
-    setAbsences((prev) => [...prev, record]);
-  }, []);
-
-  const handleDeleteAbsence = useCallback((id: string) => {
-    setAbsences((prev) => prev.filter((a) => a.id !== id));
-  }, []);
-
-  const activeNav = NAV_ITEMS.find((n) => n.id === tab);
-
-  return (
-    <div className="min-h-screen bg-background flex" style={{ fontFamily: "'Nunito', 'Nunito Sans', sans-serif" }}>
-      {/* Sidebar */}
-      <aside
-        className={cls(
-          "fixed inset-y-0 left-0 z-40 w-64 bg-card border-r border-border flex flex-col transition-transform duration-200 lg:translate-x-0 lg:static lg:z-auto",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        )}
-      >
-        {/* Logo */}
-        <div className="px-5 py-5 border-b border-border">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
-              <ClipboardCheck className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <div className="font-extrabold text-foreground text-sm leading-tight">AbsenceManager</div>
-              <div className="text-xs text-muted-foreground">Gestion des absences</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Nav */}
-        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-          {NAV_ITEMS.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              onClick={() => { setTab(id); setSidebarOpen(false); }}
-              className={cls(
-                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors",
-                tab === id
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <Icon className="w-4 h-4 flex-shrink-0" />
-              {label}
-            </button>
-          ))}
-        </nav>
-
-        {/* Footer */}
-        <div className="px-5 py-4 border-t border-border">
-          <div className="text-xs text-muted-foreground">
-            <div className="font-semibold text-foreground">Année 2024–2025</div>
-            <div>{students.length} étudiants · {modules.length} modules</div>
-          </div>
-        </div>
-      </aside>
-
-      {/* Overlay */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-30 bg-black/30 lg:hidden" onClick={() => setSidebarOpen(false)} />
-      )}
-
-      {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Topbar */}
-        <header className="sticky top-0 z-20 bg-card border-b border-border px-5 py-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded hover:bg-muted transition-colors"
-            >
-              <ChevronDown className="w-4 h-4 rotate-90" />
-            </button>
-            <div>
-              <h1 className="font-extrabold text-foreground">{activeNav?.label}</h1>
-              <div className="text-xs text-muted-foreground">{today}</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Badge variant="success">● En ligne</Badge>
-          </div>
-        </header>
-
-        {/* Content */}
-        <main className="flex-1 p-5 overflow-y-auto">
-          {tab === "dashboard" && (
-            <Dashboard students={students} modules={modules} absences={absences} plages={plages} />
-          )}
-          {tab === "marquer" && (
-            <MarquerAbsences
-              students={students}
-              modules={modules}
-              plages={plages}
-              absences={absences}
-              onSave={handleSaveAbsence}
-            />
-          )}
-          {tab === "etudiants" && (
-            <EtudiantList students={students} setStudents={setStudents} />
-          )}
-          {tab === "modules" && (
-            <ModuleList modules={modules} setModules={setModules} />
-          )}
-          {tab === "plages" && (
-            <PlagesList plages={plages} setPlages={setPlages} />
-          )}
-          {tab === "historique" && (
-            <Historique
-              absences={absences}
-              students={students}
-              modules={modules}
-              plages={plages}
-              onDelete={handleDeleteAbsence}
-            />
-          )}
-        </main>
-      </div>
-    </div>
-  );
+function closeModal() {
+  document.getElementById('confirmModal').classList.remove('show');
+  modalCallback = null;
 }
-// ✅ CORRECTION 1 : Suppression de l'accolade supplémentaire qui était ici
+// Fermer modal au clic hors zone
+document.getElementById('confirmModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// Responsive grille stats
+const statsGrid = document.querySelector('#tab-statistiques .fade-up');
+</script>
+</body>
+</html>
