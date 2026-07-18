@@ -9,79 +9,79 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-:root{--bg:#0B0F19;--bg2:#111827;--card:#151C2C;--card2:#1A2332;--border:#1E293B;--border2:#2A3A50;--fg:#E2E8F0;--muted:#64748B;--accent:#10B981;--accent2:#059669;--accent-glow:rgba(16,185,129,0.15);--danger:#EF4444;--danger2:#DC2626;--danger-glow:rgba(239,68,68,0.12);--warn:#F59E0B;--warn-glow:rgba(245,158,11,0.12);--info:#3B82F6;--info-glow:rgba(59,130,246,0.12);--purple:#8B5CF6;--purple-glow:rgba(139,92,246,0.12)}
+:root{--bg:#F0F4F8;--bg2:#FFFFFF;--card:#FFFFFF;--card2:#F8FAFC;--border:#E2E8F0;--border2:#CBD5E1;--fg:#0F172A;--muted:#64748B;--accent:#059669;--accent2:#047857;--accent-glow:rgba(5,150,105,0.08);--accent-glow2:rgba(5,150,105,0.15);--danger:#DC2626;--danger2:#B91C1C;--danger-glow:rgba(220,38,38,0.07);--warn:#D97706;--warn-glow:rgba(217,119,6,0.08);--info:#2563EB;--info-glow:rgba(37,99,235,0.08);--purple:#7C3AED;--purple-glow:rgba(124,58,237,0.08)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden}
 h1,h2,h3,h4,h5{font-family:'Space Grotesk',sans-serif}
 ::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:var(--muted)}
-.bg-glow{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;background:radial-gradient(ellipse 600px 400px at 10% 20%,rgba(16,185,129,0.04),transparent),radial-gradient(ellipse 500px 500px at 90% 80%,rgba(16,185,129,0.03),transparent),radial-gradient(ellipse 300px 300px at 50% 50%,rgba(245,158,11,0.02),transparent)}
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:280px;background:var(--bg2);border-right:1px solid var(--border);z-index:50;display:flex;flex-direction:column;transition:transform .3s ease}
+.bg-glow{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;background:radial-gradient(ellipse 800px 500px at 5% 10%,rgba(5,150,105,0.05),transparent),radial-gradient(ellipse 600px 600px at 95% 90%,rgba(5,150,105,0.04),transparent),radial-gradient(ellipse 400px 400px at 50% 50%,rgba(217,119,6,0.02),transparent)}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:280px;background:var(--bg2);border-right:1px solid var(--border);z-index:50;display:flex;flex-direction:column;transition:transform .3s ease;box-shadow:2px 0 12px rgba(0,0,0,0.04)}
 .sidebar-logo{padding:24px 20px;border-bottom:1px solid var(--border)}
 .sidebar-nav{padding:12px 10px;flex-shrink:0}
 .nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;cursor:pointer;transition:all .2s;color:var(--muted);font-weight:500;font-size:14px;margin-bottom:2px}
-.nav-item:hover{background:var(--card);color:var(--fg)}
-.nav-item.active{background:var(--accent-glow);color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.nav-item:hover{background:var(--card2);color:var(--fg)}
+.nav-item.active{background:var(--accent-glow2);color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
 .nav-item i{width:20px;text-align:center;font-size:15px}
 .group-section{padding:10px;border-top:1px solid var(--border);flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
-.group-search{width:100%;padding:9px 12px 9px 34px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--fg);font-size:13px;outline:none;transition:border-color .2s}
+.group-search{width:100%;padding:9px 12px 9px 34px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--fg);font-size:13px;outline:none;transition:border-color .2s}
 .group-search:focus{border-color:var(--accent)}
 .group-search-wrap{position:relative;flex-shrink:0}
 .group-search-wrap i{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px}
 .group-list{max-height:260px;overflow-y:auto;margin-top:8px}
 .group-item{padding:8px 12px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .15s;display:flex;justify-content:space-between;align-items:center}
-.group-item:hover{background:var(--card);color:var(--fg)}
-.group-item.active{background:var(--accent-glow);color:var(--accent);font-weight:600}
-.group-item .count{background:var(--card2);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
-.group-item.active .count{background:rgba(16,185,129,0.2)}
+.group-item:hover{background:var(--card2);color:var(--fg)}
+.group-item.active{background:var(--accent-glow2);color:var(--accent);font-weight:600}
+.group-item .count{background:var(--card2);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;border:1px solid var(--border)}
+.group-item.active .count{background:rgba(5,150,105,0.1);border-color:rgba(5,150,105,0.2);color:var(--accent)}
 .group-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);padding:8px 12px 4px;font-weight:700}
 .main{margin-left:280px;padding:24px 32px;position:relative;z-index:1;min-height:100vh}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;transition:all .25s;position:relative;overflow:hidden}
-.stat-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;transition:all .25s;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.stat-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.08)}
 .stat-card .icon-wrap{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
 .stat-card .stat-value{font-family:'Space Grotesk';font-size:28px;font-weight:700}
 .stat-card .stat-label{font-size:13px;color:var(--muted);margin-top:2px}
 .data-table{width:100%;border-collapse:separate;border-spacing:0}
-.data-table thead th{background:var(--bg2);padding:12px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5}
+.data-table thead th{background:var(--card2);padding:12px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:5}
 .data-table tbody td{padding:10px 16px;border-bottom:1px solid var(--border);font-size:13.5px;transition:background .15s}
 .data-table tbody tr:hover td{background:var(--card2)}
 .data-table tbody tr.absent-row td{background:var(--danger-glow)}
-.abs-checkbox{appearance:none;width:20px;height:20px;border:2px solid var(--border2);border-radius:5px;cursor:pointer;transition:all .2s;position:relative;flex-shrink:0}
+.abs-checkbox{appearance:none;width:20px;height:20px;border:2px solid var(--border2);border-radius:5px;cursor:pointer;transition:all .2s;position:relative;flex-shrink:0;background:var(--card)}
 .abs-checkbox:hover{border-color:var(--danger)}
 .abs-checkbox:checked{background:var(--danger);border-color:var(--danger)}
 .abs-checkbox:checked::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:13px;font-weight:700}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:'DM Sans'}
-.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,0.3)}
-.btn-primary:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 6px 16px rgba(16,185,129,0.4)}
-.btn-danger{background:var(--danger);color:#fff;box-shadow:0 4px 12px rgba(239,68,68,0.3)}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(5,150,105,0.25)}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 14px rgba(5,150,105,0.35)}
+.btn-danger{background:var(--danger);color:#fff;box-shadow:0 2px 8px rgba(220,38,38,0.25)}
 .btn-danger:hover{background:var(--danger2)}
-.btn-info{background:var(--info);color:#fff;box-shadow:0 4px 12px rgba(59,130,246,0.3)}
-.btn-info:hover{background:#2563EB}
-.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
-.btn-ghost:hover{border-color:var(--border2);color:var(--fg);background:var(--card)}
+.btn-info{background:var(--info);color:#fff;box-shadow:0 2px 8px rgba(37,99,235,0.25)}
+.btn-info:hover{background:#1D4ED8}
+.btn-ghost{background:var(--card);color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--fg);background:var(--card2)}
 .btn-sm{padding:6px 14px;font-size:12px;border-radius:7px}
 .btn-xs{padding:4px 10px;font-size:11px;border-radius:6px}
 .form-input{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:10px 14px;color:var(--fg);font-size:14px;outline:none;transition:border-color .2s;font-family:'DM Sans';width:100%}
-.form-input:focus{border-color:var(--accent)}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
 .form-label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:block}
 select.form-input{cursor:pointer}
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
 .badge-danger{background:var(--danger-glow);color:var(--danger)}
 .badge-warn{background:var(--warn-glow);color:var(--warn)}
-.badge-ok{background:var(--accent-glow);color:var(--accent)}
+.badge-ok{background:var(--accent-glow2);color:var(--accent)}
 .toast-container{position:fixed;top:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
-.toast{padding:14px 20px;border-radius:10px;font-size:14px;font-weight:500;display:flex;align-items:center;gap:10px;min-width:300px;animation:toastIn .3s ease;box-shadow:0 8px 24px rgba(0,0,0,0.4)}
-.toast-success{background:#065F46;color:#A7F3D0;border:1px solid #10B981}
-.toast-error{background:#7F1D1D;color:#FCA5A5;border:1px solid #EF4444}
-.toast-info{background:#1E3A5F;color:#93C5FD;border:1px solid #3B82F6}
+.toast{padding:14px 20px;border-radius:10px;font-size:14px;font-weight:500;display:flex;align-items:center;gap:10px;min-width:300px;animation:toastIn .3s ease;box-shadow:0 8px 24px rgba(0,0,0,0.12)}
+.toast-success{background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0}
+.toast-error{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
+.toast-info{background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE}
 .toast-exit{animation:toastOut .3s ease forwards}
 @keyframes toastIn{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
 @keyframes toastOut{to{opacity:0;transform:translateX(60px)}}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.3);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
 .modal-overlay.show{opacity:1;pointer-events:auto}
-.modal-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:560px;width:90%;max-height:85vh;overflow-y:auto;transform:scale(.95);transition:transform .25s}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:560px;width:90%;max-height:85vh;overflow-y:auto;transform:scale(.95);transition:transform .25s;box-shadow:0 20px 60px rgba(0,0,0,0.12)}
 .modal-overlay.show .modal-box{transform:scale(1)}
 .progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
 .progress-fill{height:100%;border-radius:3px;transition:width .5s ease}
@@ -92,23 +92,20 @@ select.form-input{cursor:pointer}
 .fade-up-d3{animation-delay:.15s}
 .fade-up-d4{animation-delay:.2s}
 .absent-tag{display:inline-flex;align-items:center;gap:4px;background:var(--danger-glow);color:var(--danger);padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600}
-.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:60;width:40px;height:40px;border-radius:10px;background:var(--card);border:1px solid var(--border);cursor:pointer;align-items:center;justify-content:center;color:var(--fg);font-size:18px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:60;width:40px;height:40px;border-radius:10px;background:var(--card);border:1px solid var(--border);cursor:pointer;align-items:center;justify-content:center;color:var(--fg);font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
 @media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0;padding:16px;padding-top:64px}.hamburger{display:flex}}
 .sub-tab{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);transition:all .2s;border:1px solid transparent}
-.sub-tab:hover{color:var(--fg);background:var(--card)}
-.sub-tab.active{color:var(--accent);background:var(--accent-glow);border-color:rgba(16,185,129,0.2)}
-.drop-zone{border:2px dashed var(--border2);border-radius:14px;padding:48px 24px;text-align:center;cursor:pointer;transition:all .25s}
+.sub-tab:hover{color:var(--fg);background:var(--card2)}
+.sub-tab.active{color:var(--accent);background:var(--accent-glow2);border-color:rgba(5,150,105,0.15)}
+.drop-zone{border:2px dashed var(--border2);border-radius:14px;padding:48px 24px;text-align:center;cursor:pointer;transition:all .25s;background:var(--card2)}
 .drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:var(--accent-glow)}
-.edit-input{background:var(--bg2);border:1px solid var(--accent);border-radius:6px;padding:4px 8px;color:var(--fg);font-size:13px;outline:none;width:100%;font-family:'DM Sans'}
-.inline-action{cursor:pointer;padding:4px 8px;border-radius:5px;transition:all .15s;font-size:13px}
-.inline-action:hover{background:var(--card2)}
+.edit-input{background:var(--card);border:1px solid var(--accent);border-radius:6px;padding:4px 8px;color:var(--fg);font-size:13px;outline:none;width:100%;font-family:'DM Sans';box-shadow:0 0 0 3px var(--accent-glow)}
 .preview-table{width:100%;border-collapse:collapse;font-size:12px}
-.preview-table th{background:var(--bg2);padding:8px 10px;text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+.preview-table th{background:var(--card2);padding:8px 10px;text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border)}
 .preview-table td{padding:6px 10px;border-bottom:1px solid var(--border);color:var(--fg)}
 .preview-table tr:hover td{background:var(--card2)}
-.step-indicator{display:flex;align-items:center;gap:0}
-.step-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border:2px solid var(--border);color:var(--muted);transition:all .3s}
-.step-dot.active{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
+.step-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border:2px solid var(--border);color:var(--muted);transition:all .3s;background:var(--card)}
+.step-dot.active{border-color:var(--accent);color:var(--accent);background:var(--accent-glow2)}
 .step-dot.done{border-color:var(--accent);background:var(--accent);color:#fff}
 .step-line{width:40px;height:2px;background:var(--border);transition:background .3s}
 .step-line.done{background:var(--accent)}
@@ -126,7 +123,7 @@ select.form-input{cursor:pointer}
         <i class="fas fa-clipboard-check" style="color:#fff;font-size:16px;"></i>
       </div>
       <div>
-        <div style="font-family:'Space Grotesk';font-weight:700;font-size:16px;">AbsenceTrack</div>
+        <div style="font-family:'Space Grotesk';font-weight:700;font-size:16px;color:var(--fg);">AbsenceTrack</div>
         <div style="font-size:11px;color:var(--muted);">2025 — 2026</div>
       </div>
     </div>
@@ -150,7 +147,6 @@ select.form-input{cursor:pointer}
 <div class="main" id="mainContent">
   <div id="pageHeader" style="margin-bottom:24px;"></div>
 
-  <!-- ENREGISTREMENT -->
   <div id="tab-enregistrement" class="tab-content">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;" class="fade-up">
       <div><label class="form-label">Date</label><input type="date" class="form-input" id="absDate"></div>
@@ -172,12 +168,11 @@ select.form-input{cursor:pointer}
       </div>
       <div style="font-size:13px;color:var(--muted);" id="absCountLabel">0 absent(s) selectionne(s)</div>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;" class="fade-up fade-up-d2">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d2">
       <div style="max-height:60vh;overflow-y:auto;" id="studentGrid"></div>
     </div>
   </div>
 
-  <!-- HISTORIQUE -->
   <div id="tab-historique" class="tab-content" style="display:none;">
     <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up">
       <div style="position:relative;flex:1;min-width:200px;">
@@ -189,17 +184,15 @@ select.form-input{cursor:pointer}
       <input type="date" class="form-input" style="width:auto;" id="histDateTo" onchange="renderHistory()">
       <button class="btn btn-ghost btn-sm" onclick="exportCSV()"><i class="fas fa-download"></i> Exporter CSV</button>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;" class="fade-up fade-up-d1">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d1">
       <div style="max-height:65vh;overflow-y:auto;" id="historyTable"></div>
     </div>
   </div>
 
-  <!-- STATISTIQUES -->
   <div id="tab-statistiques" class="tab-content" style="display:none;">
     <div id="statsContent"></div>
   </div>
 
-  <!-- FICHES ETUDIANTS -->
   <div id="tab-etudiants" class="tab-content" style="display:none;">
     <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up">
       <div style="position:relative;flex:1;min-width:200px;">
@@ -215,17 +208,13 @@ select.form-input{cursor:pointer}
     <div id="studentCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;"></div>
   </div>
 
-  <!-- GESTION DES DONNEES -->
   <div id="tab-gestion" class="tab-content" style="display:none;">
-    <!-- Sous-onglets -->
     <div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;" class="fade-up">
       <div class="sub-tab active" data-subtab="etudiants-mgmt" onclick="switchSubTab('etudiants-mgmt')"><i class="fas fa-user-pen"></i> Etudiants</div>
       <div class="sub-tab" data-subtab="modules-mgmt" onclick="switchSubTab('modules-mgmt')"><i class="fas fa-book-pen"></i> Modules</div>
       <div class="sub-tab" data-subtab="groupes-mgmt" onclick="switchSubTab('groupes-mgmt')"><i class="fas fa-layer-group"></i> Groupes</div>
       <div class="sub-tab" data-subtab="import" onclick="switchSubTab('import')"><i class="fas fa-file-excel"></i> Import Excel</div>
     </div>
-
-    <!-- Gestion Etudiants -->
     <div id="subtab-etudiants-mgmt" class="subtab-content">
       <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up fade-up-d1">
         <div style="position:relative;flex:1;min-width:200px;">
@@ -235,35 +224,28 @@ select.form-input{cursor:pointer}
         <button class="btn btn-primary btn-sm" onclick="showAddStudentModal()"><i class="fas fa-plus"></i> Ajouter</button>
         <button class="btn btn-info btn-sm" onclick="showBulkAddStudentModal()"><i class="fas fa-list"></i> Ajout multiple</button>
       </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;" class="fade-up fade-up-d2">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d2">
         <div style="max-height:55vh;overflow-y:auto;" id="mgmtStudentsTable"></div>
       </div>
     </div>
-
-    <!-- Gestion Modules -->
     <div id="subtab-modules-mgmt" class="subtab-content" style="display:none;">
       <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up fade-up-d1">
         <span style="font-size:13px;color:var(--muted);" id="modCountLabel"></span>
         <button class="btn btn-primary btn-sm" onclick="showAddModuleModal()"><i class="fas fa-plus"></i> Ajouter un module</button>
       </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;" class="fade-up fade-up-d2">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d2">
         <div style="max-height:55vh;overflow-y:auto;" id="mgmtModulesTable"></div>
       </div>
     </div>
-
-    <!-- Gestion Groupes -->
     <div id="subtab-groupes-mgmt" class="subtab-content" style="display:none;">
       <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up fade-up-d1">
         <button class="btn btn-primary btn-sm" onclick="showAddGroupModal()"><i class="fas fa-plus"></i> Creer un groupe</button>
       </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;" class="fade-up fade-up-d2">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d2">
         <div style="max-height:55vh;overflow-y:auto;" id="mgmtGroupsTable"></div>
       </div>
     </div>
-
-    <!-- Import Excel -->
     <div id="subtab-import" class="subtab-content" style="display:none;">
-      <!-- Etapes -->
       <div style="display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:28px;" class="fade-up">
         <div class="step-dot active" id="step1dot">1</div>
         <div class="step-line" id="step1line"></div>
@@ -273,8 +255,6 @@ select.form-input{cursor:pointer}
         <div class="step-line" id="step3line"></div>
         <div class="step-dot" id="step4dot">4</div>
       </div>
-
-      <!-- Step 1: Upload -->
       <div id="importStep1" class="fade-up fade-up-d1">
         <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()"
              ondragover="event.preventDefault();this.classList.add('dragover')"
@@ -286,49 +266,19 @@ select.form-input{cursor:pointer}
           <div style="font-size:11px;color:var(--muted);">Formats supportes : .xlsx, .xls, .csv</div>
         </div>
         <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleFileSelect(this.files[0])">
-        <div id="fileInfo" style="display:none;margin-top:16px;padding:14px 18px;background:var(--card);border:1px solid var(--border);border-radius:10px;"></div>
+        <div id="fileInfo" style="display:none;margin-top:16px;padding:14px 18px;background:var(--card);border:1px solid var(--border);border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.04);"></div>
       </div>
-
-      <!-- Step 2: Configuration -->
       <div id="importStep2" style="display:none;" class="fade-up">
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
           <h3 style="font-size:16px;font-weight:600;margin-bottom:16px;">Configuration de l'import</h3>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-            <div>
-              <label class="form-label">Feuille a importer</label>
-              <select class="form-input" id="importSheet" onchange="onSheetChange()"></select>
-            </div>
-            <div>
-              <label class="form-label">Type de donnees</label>
-              <select class="form-input" id="importType">
-                <option value="etudiants">Liste d'etudiants</option>
-                <option value="modules">Liste de modules</option>
-                <option value="absences">Enregistrement d'absences</option>
-              </select>
-            </div>
-            <div>
-              <label class="form-label">Groupe cible</label>
-              <select class="form-input" id="importGroup"></select>
-            </div>
-            <div>
-              <label class="form-label">Mode d'import</label>
-              <select class="form-input" id="importMode">
-                <option value="append">Ajouter a la liste existante</option>
-                <option value="replace">Remplacer la liste existante</option>
-              </select>
-            </div>
+            <div><label class="form-label">Feuille a importer</label><select class="form-input" id="importSheet" onchange="onSheetChange()"></select></div>
+            <div><label class="form-label">Type de donnees</label><select class="form-input" id="importType"><option value="etudiants">Liste d'etudiants</option><option value="modules">Liste de modules</option><option value="absences">Enregistrement d'absences</option></select></div>
+            <div><label class="form-label">Groupe cible</label><select class="form-input" id="importGroup"></select></div>
+            <div><label class="form-label">Mode d'import</label><select class="form-input" id="importMode"><option value="append">Ajouter a la liste existante</option><option value="replace">Remplacer la liste existante</option></select></div>
           </div>
-          <!-- Mapping colonnes pour etudiants -->
-          <div id="colMappingStudents" style="margin-top:20px;">
-            <label class="form-label">Colonne contenant les noms</label>
-            <select class="form-input" id="importNameCol" style="max-width:300px;"></select>
-          </div>
-          <!-- Mapping colonnes pour modules -->
-          <div id="colMappingModules" style="margin-top:20px;display:none;">
-            <label class="form-label">Colonne contenant les noms de modules</label>
-            <select class="form-input" id="importModCol" style="max-width:300px;"></select>
-          </div>
-          <!-- Mapping colonnes pour absences -->
+          <div id="colMappingStudents" style="margin-top:20px;"><label class="form-label">Colonne contenant les noms</label><select class="form-input" id="importNameCol" style="max-width:300px;"></select></div>
+          <div id="colMappingModules" style="margin-top:20px;display:none;"><label class="form-label">Colonne contenant les noms de modules</label><select class="form-input" id="importModCol" style="max-width:300px;"></select></div>
           <div id="colMappingAbsences" style="margin-top:20px;display:none;">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
               <div><label class="form-label">Colonne noms etudiants</label><select class="form-input" id="importAbsNameCol"></select></div>
@@ -344,10 +294,8 @@ select.form-input{cursor:pointer}
           </div>
         </div>
       </div>
-
-      <!-- Step 3: Preview -->
       <div id="importStep3" style="display:none;" class="fade-up">
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
             <h3 style="font-size:16px;font-weight:600;">Apercu des donnees</h3>
             <span class="badge badge-ok" id="previewCount"></span>
@@ -359,11 +307,9 @@ select.form-input{cursor:pointer}
           </div>
         </div>
       </div>
-
-      <!-- Step 4: Result -->
       <div id="importStep4" style="display:none;" class="fade-up">
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:48px;text-align:center;">
-          <div style="width:64px;height:64px;border-radius:50%;background:var(--accent-glow);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:48px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+          <div style="width:64px;height:64px;border-radius:50%;background:var(--accent-glow2);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
             <i class="fas fa-check" style="font-size:28px;color:var(--accent);"></i>
           </div>
           <h3 style="font-size:20px;font-weight:700;margin-bottom:8px;">Import termine avec succes</h3>
@@ -375,15 +321,11 @@ select.form-input{cursor:pointer}
   </div>
 </div>
 
-<!-- Modal generique -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box" id="modalBox"></div>
 </div>
 
 <script>
-// ============================================
-// DONNEES
-// ============================================
 const TIME_SLOTS=['08H30 - 10H30','10H30 - 12H30','08H30 - 12H30','14H00 - 16H00','16H00 - 18H00','14H00 - 18H00','15H00 - 18H00'];
 function P(s){return s?s.split('|').filter(x=>x.trim()):[];}
 
@@ -408,287 +350,129 @@ const DEFAULT_GROUPS={
 'IG S5':{students:P('AITAYAD NADA|ABDELBAKI MERYEM|ARAHAL KHADIJA|BADDAZ TOURIA|BENKHALTI NADA|ABBOU IMANE|AAZRI OUMAIMA|AGOUJJIF HAFSA|ALAHMOUM MOHAMED|AYANI RIMA|ABARAGH MERYEM|AFOULOUS ASMAE|AMAZOUZ WASSIM|ABOUHANI MAROUA|BELAKZIZ AYA|ABRARAY KHADIJA'),modules:["Genie sanitaire avance","Gestion des dechets dangereux","Stage de specialisation avance","Memoire de fin d'etudes"]}
 };
 
-// ============================================
-// ETAT
-// ============================================
-let GROUPS = {};
-let currentGroup = 'ISUSI S3';
-let currentTab = 'enregistrement';
-let currentSubTab = 'etudiants-mgmt';
-let absences = [];
-let importWorkbook = null;
-let importSheetData = null;
-let importPreviewData = [];
+let GROUPS={},currentGroup='ISUSI S3',currentTab='enregistrement',currentSubTab='etudiants-mgmt',absences=[],importWorkbook=null,importSheetData=null,importPreviewData=[];
 
-function loadData(){
-  try{
-    const g = localStorage.getItem('at_groups');
-    GROUPS = g ? JSON.parse(g) : JSON.parse(JSON.stringify(DEFAULT_GROUPS));
-    const a = localStorage.getItem('at_absences');
-    if(a) absences = JSON.parse(a);
-  }catch(e){GROUPS=JSON.parse(JSON.stringify(DEFAULT_GROUPS));absences=[];}
-}
-function saveData(){
-  localStorage.setItem('at_groups', JSON.stringify(GROUPS));
-  localStorage.setItem('at_absences', JSON.stringify(absences));
-}
-function resetAllData(){
-  GROUPS=JSON.parse(JSON.stringify(DEFAULT_GROUPS));
-  absences=[];
-  saveData();
-}
+function loadData(){try{const g=localStorage.getItem('at_groups');GROUPS=g?JSON.parse(g):JSON.parse(JSON.stringify(DEFAULT_GROUPS));const a=localStorage.getItem('at_absences');if(a)absences=JSON.parse(a);}catch(e){GROUPS=JSON.parse(JSON.stringify(DEFAULT_GROUPS));absences=[];}}
+function saveData(){localStorage.setItem('at_groups',JSON.stringify(GROUPS));localStorage.setItem('at_absences',JSON.stringify(absences));}
 
-// ============================================
-// INIT
-// ============================================
 document.addEventListener('DOMContentLoaded',()=>{
   loadData();
   document.getElementById('absDate').value=new Date().toISOString().split('T')[0];
-  const ts=document.getElementById('absTime');
-  TIME_SLOTS.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;ts.appendChild(o);});
-  // Si aucun groupe dans les donnees, initialiser
-  if(Object.keys(GROUPS).length===0){GROUPS=JSON.parse(JSON.stringify(DEFAULT_GROUPS));saveData();}
+  const ts=document.getElementById('absTime');TIME_SLOTS.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;ts.appendChild(o);});
+  if(!Object.keys(GROUPS).length){GROUPS=JSON.parse(JSON.stringify(DEFAULT_GROUPS));saveData();}
   if(!GROUPS[currentGroup])currentGroup=Object.keys(GROUPS)[0];
   renderGroupList();selectGroup(currentGroup);
-  document.getElementById('hamburgerBtn').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('open');});
-  document.getElementById('mainContent').addEventListener('click',()=>{document.getElementById('sidebar').classList.remove('open');});
+  document.getElementById('hamburgerBtn').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+  document.getElementById('mainContent').addEventListener('click',()=>document.getElementById('sidebar').classList.remove('open'));
   document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
-  // Ecouter changements de date/creneau/module
-  ['absDate','absTime','absModule'].forEach(id=>{
-    document.getElementById(id).addEventListener('change',()=>{if(currentTab==='enregistrement')renderStudentGrid();});
+  ['absDate','absTime','absModule'].forEach(id=>{document.getElementById(id).addEventListener('change',()=>{if(currentTab==='enregistrement')renderStudentGrid();});});
+  document.getElementById('importType').addEventListener('change',e=>{
+    const t=e.target.value;
+    document.getElementById('colMappingStudents').style.display=t==='etudiants'?'block':'none';
+    document.getElementById('colMappingModules').style.display=t==='modules'?'block':'none';
+    document.getElementById('colMappingAbsences').style.display=t==='absences'?'block':'none';
   });
 });
 
-// ============================================
-// NAVIGATION
-// ============================================
-function switchTab(tab){
-  currentTab=tab;
-  document.querySelectorAll('.tab-content').forEach(el=>el.style.display='none');
-  document.getElementById('tab-'+tab).style.display='block';
-  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.tab===tab));
-  document.getElementById('sidebar').classList.remove('open');
-  if(tab==='gestion')switchSubTab(currentSubTab);
-  renderCurrentTab();
-}
-function switchSubTab(sub){
-  currentSubTab=sub;
-  document.querySelectorAll('.sub-tab').forEach(el=>el.classList.toggle('active',el.dataset.subtab===sub));
-  document.querySelectorAll('.subtab-content').forEach(el=>el.style.display='none');
-  const target=document.getElementById('subtab-'+sub);if(target)target.style.display='block';
-  if(sub==='etudiants-mgmt')renderMgmtStudents();
-  if(sub==='modules-mgmt')renderMgmtModules();
-  if(sub==='groupes-mgmt')renderMgmtGroups();
-}
+function switchTab(tab){currentTab=tab;document.querySelectorAll('.tab-content').forEach(el=>el.style.display='none');document.getElementById('tab-'+tab).style.display='block';document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.tab===tab));document.getElementById('sidebar').classList.remove('open');if(tab==='gestion')switchSubTab(currentSubTab);renderCurrentTab();}
+function switchSubTab(sub){currentSubTab=sub;document.querySelectorAll('.sub-tab').forEach(el=>el.classList.toggle('active',el.dataset.subtab===sub));document.querySelectorAll('.subtab-content').forEach(el=>el.style.display='none');const t=document.getElementById('subtab-'+sub);if(t)t.style.display='block';if(sub==='etudiants-mgmt')renderMgmtStudents();if(sub==='modules-mgmt')renderMgmtModules();if(sub==='groupes-mgmt')renderMgmtGroups();}
+
 function renderGroupList(){
-  const c=document.getElementById('groupList');
-  const s=(document.getElementById('groupSearch').value||'').toLowerCase();
-  const fm={};
-  Object.keys(GROUPS).forEach(g=>{
-    if(s&&!g.toLowerCase().includes(s))return;
-    const m=g.match(/^(.+?)\s+S(\d+)$/);if(!m)return;
-    const f=m[1];if(!fm[f])fm[f]=[];fm[f].push(g);
-  });
-  let h='';
-  Object.keys(fm).sort().forEach(f=>{
-    h+=`<div class="group-label">${f}</div>`;
-    fm[f].sort((a,b)=>{const sa=parseInt(a.match(/S(\d+)$/)[1]),sb=parseInt(b.match(/S(\d+)$/)[1]);return sa-sb;}).forEach(g=>{
-      const cnt=GROUPS[g]?GROUPS[g].students.length:0;
-      h+=`<div class="group-item ${g===currentGroup?'active':''}" onclick="selectGroup('${g.replace(/'/g,"\\'")}')">${g}<span class="count">${cnt}</span></div>`;
-    });
-  });
+  const c=document.getElementById('groupList'),s=(document.getElementById('groupSearch').value||'').toLowerCase(),fm={};
+  Object.keys(GROUPS).forEach(g=>{if(s&&!g.toLowerCase().includes(s))return;const m=g.match(/^(.+?)\s+S(\d+)$/);if(!m)return;const f=m[1];if(!fm[f])fm[f]=[];fm[f].push(g);});
+  let h='';Object.keys(fm).sort().forEach(f=>{h+=`<div class="group-label">${f}</div>`;fm[f].sort((a,b)=>parseInt(a.match(/S(\d+)$/)[1])-parseInt(b.match(/S(\d+)$/)[1])).forEach(g=>{const cnt=GROUPS[g]?GROUPS[g].students.length:0;h+=`<div class="group-item ${g===currentGroup?'active':''}" onclick="selectGroup('${g.replace(/'/g,"\\'")}')">${g}<span class="count">${cnt}</span></div>`;});});
   c.innerHTML=h;
 }
 function filterGroups(){renderGroupList();}
-function selectGroup(g){
-  currentGroup=g;renderGroupList();updateModuleSelect();renderCurrentTab();
-  document.getElementById('sidebar').classList.remove('open');
-}
-function updateModuleSelect(){
-  const sel=document.getElementById('absModule');sel.innerHTML='<option value="">-- Choisir --</option>';
-  (GROUPS[currentGroup]?.modules||[]).forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o);});
-}
-function renderCurrentTab(){
-  switch(currentTab){
-    case'enregistrement':renderStudentGrid();break;
-    case'historique':renderHistory();break;
-    case'statistiques':renderStats();break;
-    case'etudiants':renderStudentCards();break;
-    case'gestion':switchSubTab(currentSubTab);break;
-  }
-  renderPageHeader();
-}
+function selectGroup(g){currentGroup=g;renderGroupList();updateModuleSelect();renderCurrentTab();document.getElementById('sidebar').classList.remove('open');}
+function updateModuleSelect(){const sel=document.getElementById('absModule');sel.innerHTML='<option value="">-- Choisir --</option>';(GROUPS[currentGroup]?.modules||[]).forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o);});}
+function renderCurrentTab(){switch(currentTab){case'enregistrement':renderStudentGrid();break;case'historique':renderHistory();break;case'statistiques':renderStats();break;case'etudiants':renderStudentCards();break;case'gestion':switchSubTab(currentSubTab);break;}renderPageHeader();}
 function renderPageHeader(){
   const students=GROUPS[currentGroup]?.students||[];
   const tn={enregistrement:'Enregistrement des absences',historique:'Historique des absences',statistiques:'Statistiques',etudiants:'Fiches etudiants',gestion:'Gestion des donnees'};
   const ti={enregistrement:'fa-pen-to-square',historique:'fa-clock-rotate-left',statistiques:'fa-chart-pie',etudiants:'fa-users',gestion:'fa-gear'};
-  document.getElementById('pageHeader').innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-    <div><div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-      <span style="background:var(--accent-glow);color:var(--accent);padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;">${currentGroup}</span>
-      <span style="color:var(--muted);font-size:13px;">${students.length} etudiants</span></div>
-      <h2 style="font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px;">
-      <i class="fas ${ti[currentTab]}" style="color:var(--accent);font-size:20px;"></i>${tn[currentTab]}</h2></div></div>`;
+  document.getElementById('pageHeader').innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;"><div><div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;"><span style="background:var(--accent-glow2);color:var(--accent);padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;">${currentGroup}</span><span style="color:var(--muted);font-size:13px;">${students.length} etudiants</span></div><h2 style="font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px;"><i class="fas ${ti[currentTab]}" style="color:var(--accent);font-size:20px;"></i>${tn[currentTab]}</h2></div></div>`;
 }
 
-// ============================================
-// ENREGISTREMENT
-// ============================================
 function renderStudentGrid(){
-  const students=GROUPS[currentGroup]?.students||[];
-  const search=(document.getElementById('studentSearch')?.value||'').toLowerCase();
-  const filtered=students.filter(s=>s.toLowerCase().includes(search));
-  const date=document.getElementById('absDate').value;
-  const time=document.getElementById('absTime').value;
-  const mod=document.getElementById('absModule').value;
+  const students=GROUPS[currentGroup]?.students||[],search=(document.getElementById('studentSearch')?.value||'').toLowerCase(),filtered=students.filter(s=>s.toLowerCase().includes(search));
+  const date=document.getElementById('absDate').value,time=document.getElementById('absTime').value,mod=document.getElementById('absModule').value;
   const existing=absences.filter(a=>a.group===currentGroup&&a.date===date&&a.time===time&&a.module===mod);
-  let h=`<table class="data-table"><thead><tr>
-    <th style="width:50px;"><input type="checkbox" class="abs-checkbox" id="checkAll" onchange="toggleAll(this.checked)"></th>
-    <th style="width:60px;">N</th><th>Nom complet</th><th style="width:120px;">Statut</th><th style="width:200px;">Justification</th>
-  </tr></thead><tbody>`;
-  filtered.forEach((name,i)=>{
-    const abs=existing.find(a=>a.student===name);
-    const checked=abs?'checked':'';
-    const rc=abs?'absent-row':'';
-    const oi=students.indexOf(name)+1;
+  let h=`<table class="data-table"><thead><tr><th style="width:50px;"><input type="checkbox" class="abs-checkbox" id="checkAll" onchange="toggleAll(this.checked)"></th><th style="width:60px;">N</th><th>Nom complet</th><th style="width:120px;">Statut</th><th style="width:200px;">Justification</th></tr></thead><tbody>`;
+  filtered.forEach((name,i)=>{const abs=existing.find(a=>a.student===name),checked=abs?'checked':'',rc=abs?'absent-row':'',oi=students.indexOf(name)+1;
     const st=abs?`<span class="absent-tag"><i class="fas fa-xmark"></i> Absent</span>`:`<span style="color:var(--accent);font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Present</span>`;
-    h+=`<tr class="${rc}" data-student="${name}">
-      <td><input type="checkbox" class="abs-checkbox student-cb" data-name="${name}" ${checked} onchange="onStudentCbChange(this)"></td>
-      <td style="color:var(--muted);font-size:13px;">${oi}</td>
-      <td style="font-weight:500;">${name}</td><td>${st}</td>
-      <td><input type="text" class="form-input" style="padding:6px 10px;font-size:12px;" placeholder="Justification..." data-just="${name}" value="${abs?.justification||''}"></td></tr>`;
-  });
+    h+=`<tr class="${rc}"><td><input type="checkbox" class="abs-checkbox student-cb" data-name="${name}" ${checked} onchange="onStudentCbChange(this)"></td><td style="color:var(--muted);font-size:13px;">${oi}</td><td style="font-weight:500;">${name}</td><td>${st}</td><td><input type="text" class="form-input" style="padding:6px 10px;font-size:12px;" placeholder="Justification..." data-just="${name}" value="${abs?.justification||''}"></td></tr>`;});
   if(!filtered.length)h+=`<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Aucun etudiant</td></tr>`;
-  h+='</tbody></table>';
-  document.getElementById('studentGrid').innerHTML=h;updateAbsCount();
+  h+='</tbody></table>';document.getElementById('studentGrid').innerHTML=h;updateAbsCount();
 }
 function filterStudents(){renderStudentGrid();}
-function onStudentCbChange(cb){
-  const tr=cb.closest('tr');tr.classList.toggle('absent-row',cb.checked);
-  tr.children[3].innerHTML=cb.checked?`<span class="absent-tag"><i class="fas fa-xmark"></i> Absent</span>`:`<span style="color:var(--accent);font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Present</span>`;
-  updateAbsCount();
-}
-function toggleAll(checked){
-  document.querySelectorAll('.student-cb').forEach(cb=>{cb.checked=checked;onStudentCbChange(cb);});
-  document.getElementById('checkAll').checked=checked;
-}
-function selectAllVisible(){toggleAll(true);}
-function deselectAllVisible(){toggleAll(false);}
-function updateAbsCount(){
-  const c=document.querySelectorAll('.student-cb:checked').length;
-  const el=document.getElementById('absCountLabel');el.textContent=`${c} absent(s) selectionne(s)`;el.style.color=c>0?'var(--danger)':'var(--muted)';
-}
+function onStudentCbChange(cb){const tr=cb.closest('tr');tr.classList.toggle('absent-row',cb.checked);tr.children[3].innerHTML=cb.checked?`<span class="absent-tag"><i class="fas fa-xmark"></i> Absent</span>`:`<span style="color:var(--accent);font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Present</span>`;updateAbsCount();}
+function toggleAll(checked){document.querySelectorAll('.student-cb').forEach(cb=>{cb.checked=checked;onStudentCbChange(cb);});document.getElementById('checkAll').checked=checked;}
+function selectAllVisible(){toggleAll(true);}function deselectAllVisible(){toggleAll(false);}
+function updateAbsCount(){const c=document.querySelectorAll('.student-cb:checked').length;const el=document.getElementById('absCountLabel');el.textContent=`${c} absent(s) selectionne(s)`;el.style.color=c>0?'var(--danger)':'var(--muted)';}
 function clearSelection(){deselectAllVisible();document.querySelectorAll('[data-just]').forEach(i=>i.value='');}
 function saveAbsences(){
   const date=document.getElementById('absDate').value,time=document.getElementById('absTime').value,mod=document.getElementById('absModule').value;
-  if(!date){showToast('Selectionnez une date','error');return;}
-  if(!time){showToast('Selectionnez un creneau','error');return;}
-  if(!mod){showToast('Selectionnez un module','error');return;}
+  if(!date){showToast('Selectionnez une date','error');return;}if(!time){showToast('Selectionnez un creneau','error');return;}if(!mod){showToast('Selectionnez un module','error');return;}
   absences=absences.filter(a=>!(a.group===currentGroup&&a.date===date&&a.time===time&&a.module===mod));
   const checked=document.querySelectorAll('.student-cb:checked');
   if(!checked.length){showToast('Aucune absence a enregistrer','info');saveData();renderStudentGrid();return;}
-  checked.forEach(cb=>{
-    const name=cb.dataset.name;const ji=document.querySelector(`[data-just="${name}"]`);
-    absences.push({id:Date.now()+Math.random(),group:currentGroup,student:name,date,time,module:mod,justification:ji?ji.value.trim():'',timestamp:new Date().toISOString()});
-  });
+  checked.forEach(cb=>{const name=cb.dataset.name;const ji=document.querySelector(`[data-just="${name}"]`);absences.push({id:Date.now()+Math.random(),group:currentGroup,student:name,date,time,module:mod,justification:ji?ji.value.trim():'',timestamp:new Date().toISOString()});});
   saveData();showToast(`${checked.length} absence(s) enregistree(s)`,'success');renderStudentGrid();
 }
 
-// ============================================
-// HISTORIQUE
-// ============================================
 function renderHistory(){
-  const search=(document.getElementById('histSearch')?.value||'').toLowerCase();
-  const df=document.getElementById('histDateFrom')?.value||'',dt=document.getElementById('histDateTo')?.value||'';
+  const search=(document.getElementById('histSearch')?.value||'').toLowerCase(),df=document.getElementById('histDateFrom')?.value||'',dt=document.getElementById('histDateTo')?.value||'';
   let f=absences.filter(a=>a.group===currentGroup);
   if(search)f=f.filter(a=>a.student.toLowerCase().includes(search)||(a.module||'').toLowerCase().includes(search)||(a.justification||'').toLowerCase().includes(search));
   if(df)f=f.filter(a=>a.date>=df);if(dt)f=f.filter(a=>a.date<=dt);
   f.sort((a,b)=>b.date.localeCompare(a.date)||a.student.localeCompare(b.student));
   let h=`<table class="data-table"><thead><tr><th>Date</th><th>Creneau</th><th>Module</th><th>Etudiant</th><th>Justification</th><th style="width:60px;"></th></tr></thead><tbody>`;
   if(!f.length)h+=`<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);"><i class="fas fa-inbox" style="font-size:32px;display:block;margin-bottom:12px;opacity:.3;"></i>Aucun enregistrement</td></tr>`;
-  else{let ld='';f.forEach(a=>{
-    const ds=a.date!==ld;ld=a.date;
-    h+=`<tr><td style="font-weight:${ds?'600':'400'};font-size:${ds?'13':'12'}px;color:${ds?'var(--fg)':'var(--muted)'};">${ds?formatDate(a.date):''}</td>
-    <td style="font-size:12px;">${a.time||'-'}</td>
-    <td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.module||''}">${a.module||'-'}</td>
-    <td style="font-weight:500;">${a.student}</td>
-    <td style="font-size:12px;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.justification||''}">${a.justification||'-'}</td>
-    <td><button class="btn btn-xs btn-ghost" style="color:var(--danger);padding:4px 8px;" onclick="deleteAbsence(${a.id})"><i class="fas fa-trash-can"></i></button></td></tr>`;
-  });}
+  else{let ld='';f.forEach(a=>{const ds=a.date!==ld;ld=a.date;h+=`<tr><td style="font-weight:${ds?'600':'400'};font-size:${ds?'13':'12'}px;color:${ds?'var(--fg)':'var(--muted)'};">${ds?formatDate(a.date):''}</td><td style="font-size:12px;">${a.time||'-'}</td><td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.module||''}">${a.module||'-'}</td><td style="font-weight:500;">${a.student}</td><td style="font-size:12px;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.justification||''}">${a.justification||'-'}</td><td><button class="btn btn-xs btn-ghost" style="color:var(--danger);padding:4px 8px;" onclick="deleteAbsence(${a.id})"><i class="fas fa-trash-can"></i></button></td></tr>`;});}
   h+='</tbody></table>';document.getElementById('historyTable').innerHTML=h;
 }
 function deleteAbsence(id){showModal('Supprimer','Supprimer cette absence ?',()=>{absences=absences.filter(a=>a.id!==id);saveData();renderHistory();showToast('Supprime','success');});}
 
-// ============================================
-// STATISTIQUES
-// ============================================
 function renderStats(){
-  const ga=absences.filter(a=>a.group===currentGroup);
-  const students=GROUPS[currentGroup]?.students||[];
+  const ga=absences.filter(a=>a.group===currentGroup),students=GROUPS[currentGroup]?.students||[];
   const ts=[...new Set(ga.map(a=>`${a.date}_${a.time}_${a.module}`))].length;
   const ss={};students.forEach(s=>ss[s]=0);ga.forEach(a=>{if(ss[a.student]!==undefined)ss[a.student]++;});
-  const ta=ga.length,avg=students.length?(ta/students.length).toFixed(1):0;
-  const mx=Math.max(...Object.values(ss),0),swa=Object.values(ss).filter(v=>v>0).length;
+  const ta=ga.length,avg=students.length?(ta/students.length).toFixed(1):0,mx=Math.max(...Object.values(ss),0),swa=Object.values(ss).filter(v=>v>0).length;
   const sorted=Object.entries(ss).sort((a,b)=>b[1]-a[1]).filter(([,v])=>v>0).slice(0,10);
-  const ms={};ga.forEach(a=>{const m=a.module||'Non defini';ms[m]=(ms[m]||0)+1;});
-  const sm=Object.entries(ms).sort((a,b)=>b[1]-a[1]);
-  const ds={};ga.forEach(a=>ds[a.date]=(ds[a.date]||0)+1);
-  const sd=Object.entries(ds).sort((a,b)=>a[0].localeCompare(b[0]));
+  const ms={};ga.forEach(a=>{const m=a.module||'Non defini';ms[m]=(ms[m]||0)+1;});const sm=Object.entries(ms).sort((a,b)=>b[1]-a[1]);
+  const ds={};ga.forEach(a=>ds[a.date]=(ds[a.date]||0)+1);const sd=Object.entries(ds).sort((a,b)=>a[0].localeCompare(b[0]));
   let h=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;" class="fade-up">
     <div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--danger-glow);color:var(--danger);"><i class="fas fa-user-xmark"></i></div><div><div class="stat-value" style="color:var(--danger);">${ta}</div><div class="stat-label">Total absences</div></div></div></div>
     <div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--warn-glow);color:var(--warn);"><i class="fas fa-chart-line"></i></div><div><div class="stat-value" style="color:var(--warn);">${avg}</div><div class="stat-label">Moyenne / etudiant</div></div></div></div>
-    <div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--accent-glow);color:var(--accent);"><i class="fas fa-calendar-check"></i></div><div><div class="stat-value" style="color:var(--accent);">${ts}</div><div class="stat-label">Seances enregistrees</div></div></div></div>
+    <div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--accent-glow2);color:var(--accent);"><i class="fas fa-calendar-check"></i></div><div><div class="stat-value" style="color:var(--accent);">${ts}</div><div class="stat-label">Seances enregistrees</div></div></div></div>
     <div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--purple-glow);color:var(--purple);"><i class="fas fa-users"></i></div><div><div class="stat-value" style="color:var(--purple);">${swa}/${students.length}</div><div class="stat-label">Etudiants concernes</div></div></div></div></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;" class="fade-up fade-up-d1">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d1">
     <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;"><i class="fas fa-ranking-star" style="color:var(--danger);"></i> Etudiants les plus absents</h3>`;
   if(!sorted.length)h+=`<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune donnee</div>`;
-  else sorted.forEach(([n,c],i)=>{const p=mx>0?c/mx*100:0;const bc=c>=5?'var(--danger)':c>=3?'var(--warn)':'var(--accent)';
-    h+=`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-    <span style="font-size:12.5px;font-weight:500;"><span style="color:var(--muted);font-size:11px;width:18px;display:inline-block;">${i+1}.</span> ${n}</span>
-    <span class="badge ${c>=5?'badge-danger':c>=3?'badge-warn':'badge-ok'}">${c}</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:${p}%;background:${bc};"></div></div></div>`;});
-  h+=`</div><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;" class="fade-up fade-up-d2">
+  else sorted.forEach(([n,c],i)=>{const p=mx>0?c/mx*100:0;const bc=c>=5?'var(--danger)':c>=3?'var(--warn)':'var(--accent)';h+=`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-size:12.5px;font-weight:500;"><span style="color:var(--muted);font-size:11px;width:18px;display:inline-block;">${i+1}.</span> ${n}</span><span class="badge ${c>=5?'badge-danger':c>=3?'badge-warn':'badge-ok'}">${c}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${p}%;background:${bc};"></div></div></div>`;});
+  h+=`</div><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d2">
     <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;"><i class="fas fa-book" style="color:var(--accent);"></i> Par module</h3>`;
   if(!sm.length)h+=`<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune donnee</div>`;
-  else{const mm=sm[0][1];sm.forEach(([m,c])=>{const p=mm>0?c/mm*100:0;
-    h+=`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-    <span style="font-size:12px;font-weight:500;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${m}">${m}</span>
-    <span style="font-size:12px;color:var(--muted);font-weight:600;">${c}</span></div>
-    <div class="progress-bar"><div class="progress-fill" style="width:${p}%;background:var(--accent);"></div></div></div>`;});}
-  h+=`</div></div>
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:20px;" class="fade-up fade-up-d3">
+  else{const mm=sm[0][1];sm.forEach(([m,c])=>{const p=mm>0?c/mm*100:0;h+=`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-size:12px;font-weight:500;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${m}">${m}</span><span style="font-size:12px;color:var(--muted);font-weight:600;">${c}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${p}%;background:var(--accent);"></div></div></div>`;});}
+  h+=`</div></div><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d3">
     <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;"><i class="fas fa-chart-bar" style="color:var(--warn);"></i> Evolution par date</h3>`;
   if(!sd.length)h+=`<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune donnee</div>`;
-  else{const md=Math.max(...sd.map(([,v])=>v));
-    h+=`<div style="display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:10px;">`;
-    sd.forEach(([d,c])=>{const p=md>0?c/md*100:0;const bc=c>=md*.7?'var(--danger)':c>=md*.4?'var(--warn)':'var(--accent)';
-      h+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
-      <span style="font-size:11px;font-weight:600;color:${bc};">${c}</span>
-      <div style="width:100%;height:${Math.max(p,4)}%;background:${bc};border-radius:4px 4px 0 0;min-height:4px;"></div>
-      <span style="font-size:9px;color:var(--muted);transform:rotate(-45deg);white-space:nowrap;">${d.slice(5)}</span></div>`;});
-    h+='</div>';}h+='</div>';
+  else{const md=Math.max(...sd.map(([,v])=>v));h+=`<div style="display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:10px;">`;sd.forEach(([d,c])=>{const p=md>0?c/md*100:0;const bc=c>=md*.7?'var(--danger)':c>=md*.4?'var(--warn)':'var(--accent)';h+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="font-size:11px;font-weight:600;color:${bc};">${c}</span><div style="width:100%;height:${Math.max(p,4)}%;background:${bc};border-radius:4px 4px 0 0;min-height:4px;"></div><span style="font-size:9px;color:var(--muted);transform:rotate(-45deg);white-space:nowrap;">${d.slice(5)}</span></div>`;});h+='</div>';}h+='</div>';
   document.getElementById('statsContent').innerHTML=h;
 }
 
-// ============================================
-// FICHES ETUDIANTS
-// ============================================
 function renderStudentCards(){
-  const students=GROUPS[currentGroup]?.students||[];
-  const search=(document.getElementById('etudSearch')?.value||'').toLowerCase();
-  const sort=document.getElementById('etudSort')?.value||'name';
+  const students=GROUPS[currentGroup]?.students||[],search=(document.getElementById('etudSearch')?.value||'').toLowerCase(),sort=document.getElementById('etudSort')?.value||'name';
   const ga=absences.filter(a=>a.group===currentGroup);
   const sd=students.map(name=>{const al=ga.filter(a=>a.student===name);return{name,count:al.length,modules:[...new Set(al.map(a=>a.module).filter(Boolean))],lastAbs:al.length?al[al.length-1].date:null};});
   let f=sd;if(search)f=f.filter(s=>s.name.toLowerCase().includes(search));
   if(sort==='abs-desc')f.sort((a,b)=>b.count-a.count);else if(sort==='abs-asc')f.sort((a,b)=>a.count-b.count);else f.sort((a,b)=>a.name.localeCompare(b.name));
   let h='';
-  f.forEach(s=>{const sc=s.count>=5?'badge-danger':s.count>=3?'badge-warn':s.count>0?'badge-ok':'';
-    const bc=s.count>=5?'var(--danger)':s.count>=3?'var(--warn)':'var(--border)';
-    h+=`<div style="background:var(--card);border:1px solid ${bc};border-radius:12px;padding:16px;transition:all .2s;" class="fade-up"
-    onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,.3)'"
-    onmouseleave="this.style.transform='';this.style.boxShadow=''">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-    <div><div style="font-weight:600;font-size:14px;margin-bottom:2px;">${s.name}</div><div style="font-size:11px;color:var(--muted);">${currentGroup}</div></div>
+  f.forEach(s=>{const sc=s.count>=5?'badge-danger':s.count>=3?'badge-warn':s.count>0?'badge-ok':'';const bc=s.count>=5?'var(--danger)':s.count>=3?'var(--warn)':'var(--border)';
+    h+=`<div style="background:var(--card);border:1px solid ${bc};border-radius:12px;padding:16px;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.08)'" onmouseleave="this.style.transform='';this.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)'">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;"><div><div style="font-weight:600;font-size:14px;margin-bottom:2px;">${s.name}</div><div style="font-size:11px;color:var(--muted);">${currentGroup}</div></div>
     ${sc?`<span class="badge ${sc}">${s.count} abs.</span>`:`<span style="font-size:11px;color:var(--accent);font-weight:600;"><i class="fas fa-check-circle"></i> Aucune absence</span>`}</div>
     ${s.modules.length?`<div style="font-size:11px;color:var(--muted);margin-bottom:6px;"><i class="fas fa-book" style="margin-right:4px;"></i> ${s.modules.slice(0,3).join(', ')}${s.modules.length>3?' +'+(s.modules.length-3):''}</div>`:''}
     ${s.lastAbs?`<div style="font-size:11px;color:var(--muted);"><i class="fas fa-calendar" style="margin-right:4px;"></i> Derniere: ${formatDate(s.lastAbs)}</div>`:''}</div>`;});
@@ -696,411 +480,60 @@ function renderStudentCards(){
   document.getElementById('studentCards').innerHTML=h;
 }
 
-// ============================================
 // GESTION ETUDIANTS
-// ============================================
 function renderMgmtStudents(){
-  const students=GROUPS[currentGroup]?.students||[];
-  const search=(document.getElementById('mgmtStudSearch')?.value||'').toLowerCase();
-  const filtered=students.filter(s=>s.toLowerCase().includes(search));
+  const students=GROUPS[currentGroup]?.students||[],search=(document.getElementById('mgmtStudSearch')?.value||'').toLowerCase(),filtered=students.filter(s=>s.toLowerCase().includes(search));
   let h=`<table class="data-table"><thead><tr><th style="width:60px;">N</th><th>Nom complet</th><th style="width:140px;">Actions</th></tr></thead><tbody>`;
-  filtered.forEach((name,i)=>{
-    const oi=students.indexOf(name)+1;
-    h+=`<tr id="stud-row-${i}"><td style="color:var(--muted);font-size:13px;">${oi}</td>
-    <td style="font-weight:500;" id="stud-name-${i}">${name}</td>
-    <td><div style="display:flex;gap:4px;">
-      <button class="btn btn-xs btn-ghost" onclick="editStudentInline(${i},'${name.replace(/'/g,"\\'")}')" title="Modifier"><i class="fas fa-pen" style="color:var(--info);"></i></button>
-      <button class="btn btn-xs btn-ghost" onclick="deleteStudent('${name.replace(/'/g,"\\'")}')" title="Supprimer"><i class="fas fa-trash-can" style="color:var(--danger);"></i></button>
-    </div></td></tr>`;
-  });
+  filtered.forEach((name,i)=>{const oi=students.indexOf(name)+1;h+=`<tr><td style="color:var(--muted);font-size:13px;">${oi}</td><td style="font-weight:500;" id="stud-name-${i}">${name}</td><td><div style="display:flex;gap:4px;"><button class="btn btn-xs btn-ghost" onclick="editStudentInline(${i},'${name.replace(/'/g,"\\'")}')"><i class="fas fa-pen" style="color:var(--info);"></i></button><button class="btn btn-xs btn-ghost" onclick="deleteStudent('${name.replace(/'/g,"\\'")}')"><i class="fas fa-trash-can" style="color:var(--danger);"></i></button></div></td></tr>`;});
   if(!filtered.length)h+=`<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);">Aucun etudiant</td></tr>`;
   h+='</tbody></table>';document.getElementById('mgmtStudentsTable').innerHTML=h;
 }
-function editStudentInline(idx,oldName){
-  const nameEl=document.getElementById('stud-name-'+idx);
-  nameEl.innerHTML=`<input type="text" class="edit-input" id="stud-edit-${idx}" value="${oldName}" onkeydown="if(event.key==='Enter')saveStudentEdit(${idx},'${oldName.replace(/'/g,"\\'")}');if(event.key==='Escape')renderMgmtStudents();">`;
-  document.getElementById('stud-edit-'+idx).focus();document.getElementById('stud-edit-'+idx).select();
-}
-function saveStudentEdit(idx,oldName){
-  const inp=document.getElementById('stud-edit-'+idx);if(!inp)return;
-  const newName=inp.value.trim();
-  if(!newName){showToast('Le nom ne peut pas etre vide','error');return;}
-  if(newName!==oldName&&GROUPS[currentGroup].students.includes(newName)){showToast('Cet etudiant existe deja','error');return;}
-  // Mettre a jour dans le groupe
-  const si=GROUPS[currentGroup].students.indexOf(oldName);
-  if(si>-1)GROUPS[currentGroup].students[si]=newName;
-  // Mettre a jour dans les absences
-  absences.forEach(a=>{if(a.group===currentGroup&&a.student===oldName)a.student=newName;});
-  saveData();showToast('Etudiant modifie','success');renderMgmtStudents();
-}
-function deleteStudent(name){
-  showModal('Supprimer etudiant',`Supprimer ${name} de ${currentGroup} ? Ses absences seront conservees.`,()=>{
-    GROUPS[currentGroup].students=GROUPS[currentGroup].students.filter(s=>s!==name);
-    saveData();showToast('Etudiant supprime','success');renderMgmtStudents();
-  });
-}
-function showAddStudentModal(){
-  openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Ajouter un etudiant</h3>
-    <div style="margin-bottom:16px;"><label class="form-label">Nom complet</label><input type="text" class="form-input" id="newStudentName" placeholder="NOM PRENOM" onkeydown="if(event.key==='Enter')addStudent()"></div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;">
-    <button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>
-    <button class="btn btn-primary btn-sm" onclick="addStudent()"><i class="fas fa-plus"></i> Ajouter</button></div>`);
-  setTimeout(()=>{const i=document.getElementById('newStudentName');if(i)i.focus();},100);
-}
-function addStudent(){
-  const name=(document.getElementById('newStudentName')?.value||'').trim().toUpperCase();
-  if(!name){showToast('Saisissez un nom','error');return;}
-  if(GROUPS[currentGroup].students.includes(name)){showToast('Cet etudiant existe deja','error');return;}
-  GROUPS[currentGroup].students.push(name);saveData();closeModal();showToast('Etudiant ajoute','success');renderMgmtStudents();
-}
-function showBulkAddStudentModal(){
-  openModal(`<h3 style="font-size:18px;margin-bottom:8px;">Ajout multiple d'etudiants</h3>
-    <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">Un nom par ligne. Les noms seront convertis en majuscules automatiquement.</p>
-    <div style="margin-bottom:16px;"><label class="form-label">Liste des etudiants</label>
-    <textarea class="form-input" id="bulkStudentNames" rows="10" placeholder="NOM PRENOM 1&#10;NOM PRENOM 2&#10;NOM PRENOM 3&#10;..." style="resize:vertical;"></textarea></div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;">
-    <button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>
-    <button class="btn btn-primary btn-sm" onclick="addBulkStudents()"><i class="fas fa-list"></i> Ajouter tous</button></div>`);
-  setTimeout(()=>{const i=document.getElementById('bulkStudentNames');if(i)i.focus();},100);
-}
-function addBulkStudents(){
-  const text=(document.getElementById('bulkStudentNames')?.value||'').trim();
-  if(!text){showToast('Saisissez au moins un nom','error');return;}
-  const names=text.split('\n').map(s=>s.trim().toUpperCase()).filter(s=>s);
-  let added=0,dup=0;
-  names.forEach(n=>{if(GROUPS[currentGroup].students.includes(n))dup++;else{GROUPS[currentGroup].students.push(n);added++;}});
-  saveData();closeModal();
-  let msg=`${added} etudiant(s) ajoute(s)`;if(dup)msg+=`, ${dup} doublon(s) ignore(s)`;
-  showToast(msg,added>0?'success':'info');renderMgmtStudents();
-}
+function editStudentInline(idx,oldName){const el=document.getElementById('stud-name-'+idx);el.innerHTML=`<input type="text" class="edit-input" id="stud-edit-${idx}" value="${oldName}" onkeydown="if(event.key==='Enter')saveStudentEdit(${idx},'${oldName.replace(/'/g,"\\'")}');if(event.key==='Escape')renderMgmtStudents();">`;document.getElementById('stud-edit-'+idx).focus();document.getElementById('stud-edit-'+idx).select();}
+function saveStudentEdit(idx,oldName){const inp=document.getElementById('stud-edit-'+idx);if(!inp)return;const newName=inp.value.trim();if(!newName){showToast('Le nom ne peut pas etre vide','error');return;}if(newName!==oldName&&GROUPS[currentGroup].students.includes(newName)){showToast('Cet etudiant existe deja','error');return;}const si=GROUPS[currentGroup].students.indexOf(oldName);if(si>-1)GROUPS[currentGroup].students[si]=newName;absences.forEach(a=>{if(a.group===currentGroup&&a.student===oldName)a.student=newName;});saveData();showToast('Etudiant modifie','success');renderMgmtStudents();}
+function deleteStudent(name){showModal('Supprimer etudiant',`Supprimer ${name} de ${currentGroup} ?`,()=>{GROUPS[currentGroup].students=GROUPS[currentGroup].students.filter(s=>s!==name);saveData();showToast('Etudiant supprime','success');renderMgmtStudents();});}
+function showAddStudentModal(){openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Ajouter un etudiant</h3><div style="margin-bottom:16px;"><label class="form-label">Nom complet</label><input type="text" class="form-input" id="newStudentName" placeholder="NOM PRENOM" onkeydown="if(event.key==='Enter')addStudent()"></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="addStudent()"><i class="fas fa-plus"></i> Ajouter</button></div>`);setTimeout(()=>{const i=document.getElementById('newStudentName');if(i)i.focus();},100);}
+function addStudent(){const name=(document.getElementById('newStudentName')?.value||'').trim().toUpperCase();if(!name){showToast('Saisissez un nom','error');return;}if(GROUPS[currentGroup].students.includes(name)){showToast('Cet etudiant existe deja','error');return;}GROUPS[currentGroup].students.push(name);saveData();closeModal();showToast('Etudiant ajoute','success');renderMgmtStudents();}
+function showBulkAddStudentModal(){openModal(`<h3 style="font-size:18px;margin-bottom:8px;">Ajout multiple</h3><p style="color:var(--muted);font-size:13px;margin-bottom:16px;">Un nom par ligne, convertis en majuscules automatiquement.</p><div style="margin-bottom:16px;"><label class="form-label">Liste des etudiants</label><textarea class="form-input" id="bulkStudentNames" rows="10" placeholder="NOM PRENOM 1&#10;NOM PRENOM 2&#10;..." style="resize:vertical;"></textarea></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="addBulkStudents()"><i class="fas fa-list"></i> Ajouter tous</button></div>`);setTimeout(()=>document.getElementById('bulkStudentNames').focus(),100);}
+function addBulkStudents(){const text=(document.getElementById('bulkStudentNames')?.value||'').trim();if(!text){showToast('Saisissez au moins un nom','error');return;}const names=text.split('\n').map(s=>s.trim().toUpperCase()).filter(s=>s);let added=0,dup=0;names.forEach(n=>{if(GROUPS[currentGroup].students.includes(n))dup++;else{GROUPS[currentGroup].students.push(n);added++;}});saveData();closeModal();showToast(`${added} ajoute(s)${dup?', '+dup+' doublon(s) ignore(s)':''}`,added>0?'success':'info');renderMgmtStudents();}
 
-// ============================================
 // GESTION MODULES
-// ============================================
-function renderMgmtModules(){
-  const mods=GROUPS[currentGroup]?.modules||[];
-  document.getElementById('modCountLabel').textContent=`${mods.length} module(s) dans ${currentGroup}`;
-  let h=`<table class="data-table"><thead><tr><th style="width:60px;">N</th><th>Nom du module</th><th style="width:140px;">Actions</th></tr></thead><tbody>`;
-  mods.forEach((m,i)=>{
-    h+=`<tr id="mod-row-${i}"><td style="color:var(--muted);font-size:13px;">${i+1}</td>
-    <td style="font-weight:500;" id="mod-name-${i}">${m}</td>
-    <td><div style="display:flex;gap:4px;">
-      <button class="btn btn-xs btn-ghost" onclick="editModuleInline(${i})" title="Modifier"><i class="fas fa-pen" style="color:var(--info);"></i></button>
-      <button class="btn btn-xs btn-ghost" onclick="deleteModule(${i})" title="Supprimer"><i class="fas fa-trash-can" style="color:var(--danger);"></i></button>
-    </div></td></tr>`;
-  });
-  if(!mods.length)h+=`<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);">Aucun module</td></tr>`;
-  h+='</tbody></table>';document.getElementById('mgmtModulesTable').innerHTML=h;
-}
-function editModuleInline(idx){
-  const el=document.getElementById('mod-name-'+idx);
-  const old=GROUPS[currentGroup].modules[idx];
-  el.innerHTML=`<input type="text" class="edit-input" id="mod-edit-${idx}" value="${old}" onkeydown="if(event.key==='Enter')saveModuleEdit(${idx});if(event.key==='Escape')renderMgmtModules();">`;
-  document.getElementById('mod-edit-'+idx).focus();document.getElementById('mod-edit-'+idx).select();
-}
-function saveModuleEdit(idx){
-  const inp=document.getElementById('mod-edit-'+idx);if(!inp)return;
-  const v=inp.value.trim();if(!v){showToast('Le nom ne peut pas etre vide','error');return;}
-  const old=GROUPS[currentGroup].modules[idx];
-  GROUPS[currentGroup].modules[idx]=v;
-  absences.forEach(a=>{if(a.group===currentGroup&&a.module===old)a.module=v;});
-  saveData();showToast('Module modifie','success');renderMgmtModules();
-}
-function deleteModule(idx){
-  const m=GROUPS[currentGroup].modules[idx];
-  showModal('Supprimer module',`Supprimer "${m}" ? Les absences liees seront conservees.`,()=>{
-    GROUPS[currentGroup].modules.splice(idx,1);saveData();showToast('Module supprime','success');renderMgmtModules();
-  });
-}
-function showAddModuleModal(){
-  openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Ajouter un module</h3>
-    <div style="margin-bottom:16px;"><label class="form-label">Nom du module</label><input type="text" class="form-input" id="newModuleName" onkeydown="if(event.key==='Enter')addModule()"></div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;">
-    <button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>
-    <button class="btn btn-primary btn-sm" onclick="addModule()"><i class="fas fa-plus"></i> Ajouter</button></div>`);
-  setTimeout(()=>{const i=document.getElementById('newModuleName');if(i)i.focus();},100);
-}
-function addModule(){
-  const name=(document.getElementById('newModuleName')?.value||'').trim();
-  if(!name){showToast('Saisissez un nom','error');return;}
-  GROUPS[currentGroup].modules.push(name);saveData();closeModal();showToast('Module ajoute','success');renderMgmtModules();
-}
+function renderMgmtModules(){const mods=GROUPS[currentGroup]?.modules||[];document.getElementById('modCountLabel').textContent=`${mods.length} module(s) dans ${currentGroup}`;let h=`<table class="data-table"><thead><tr><th style="width:60px;">N</th><th>Nom du module</th><th style="width:140px;">Actions</th></tr></thead><tbody>`;mods.forEach((m,i)=>{h+=`<tr><td style="color:var(--muted);font-size:13px;">${i+1}</td><td style="font-weight:500;" id="mod-name-${i}">${m}</td><td><div style="display:flex;gap:4px;"><button class="btn btn-xs btn-ghost" onclick="editModuleInline(${i})"><i class="fas fa-pen" style="color:var(--info);"></i></button><button class="btn btn-xs btn-ghost" onclick="deleteModule(${i})"><i class="fas fa-trash-can" style="color:var(--danger);"></i></button></div></td></tr>`;});if(!mods.length)h+=`<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);">Aucun module</td></tr>`;h+='</tbody></table>';document.getElementById('mgmtModulesTable').innerHTML=h;}
+function editModuleInline(idx){const el=document.getElementById('mod-name-'+idx);el.innerHTML=`<input type="text" class="edit-input" id="mod-edit-${idx}" value="${GROUPS[currentGroup].modules[idx]}" onkeydown="if(event.key==='Enter')saveModuleEdit(${idx});if(event.key==='Escape')renderMgmtModules();">`;document.getElementById('mod-edit-'+idx).focus();document.getElementById('mod-edit-'+idx).select();}
+function saveModuleEdit(idx){const inp=document.getElementById('mod-edit-'+idx);if(!inp)return;const v=inp.value.trim();if(!v){showToast('Le nom ne peut pas etre vide','error');return;}const old=GROUPS[currentGroup].modules[idx];GROUPS[currentGroup].modules[idx]=v;absences.forEach(a=>{if(a.group===currentGroup&&a.module===old)a.module=v;});saveData();showToast('Module modifie','success');renderMgmtModules();}
+function deleteModule(idx){const m=GROUPS[currentGroup].modules[idx];showModal('Supprimer module',`Supprimer "${m}" ?`,()=>{GROUPS[currentGroup].modules.splice(idx,1);saveData();showToast('Module supprime','success');renderMgmtModules();});}
+function showAddModuleModal(){openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Ajouter un module</h3><div style="margin-bottom:16px;"><label class="form-label">Nom du module</label><input type="text" class="form-input" id="newModuleName" onkeydown="if(event.key==='Enter')addModule()"></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="addModule()"><i class="fas fa-plus"></i> Ajouter</button></div>`);setTimeout(()=>document.getElementById('newModuleName').focus(),100);}
+function addModule(){const name=(document.getElementById('newModuleName')?.value||'').trim();if(!name){showToast('Saisissez un nom','error');return;}GROUPS[currentGroup].modules.push(name);saveData();closeModal();showToast('Module ajoute','success');renderMgmtModules();}
 
-// ============================================
 // GESTION GROUPES
-// ============================================
-function renderMgmtGroups(){
-  const fMap={};Object.keys(GROUPS).forEach(g=>{const m=g.match(/^(.+?)\s+S(\d+)$/);if(!m)return;const f=m[1];if(!fMap[f])fMap[f]=[];fMap[f].push(g);});
-  let h=`<table class="data-table"><thead><tr><th>Groupe</th><th style="width:100px;">Etudiants</th><th style="width:100px;">Modules</th><th style="width:140px;">Actions</th></tr></thead><tbody>`;
-  Object.keys(fMap).sort().forEach(f=>{
-    fMap[f].sort((a,b)=>{return parseInt(a.match(/S(\d+)$/)[1])-parseInt(b.match(/S(\d+)$/)[1]);}).forEach(g=>{
-      const s=GROUPS[g]?.students.length||0,m=GROUPS[g]?.modules.length||0;
-      const isCur=g===currentGroup;
-      h+=`<tr style="${isCur?'background:var(--accent-glow);':''}"><td style="font-weight:${isCur?'700':'500'};">${g} ${isCur?'<span style="font-size:10px;color:var(--accent);">(actif)</span>':''}</td>
-      <td style="color:var(--muted);">${s}</td><td style="color:var(--muted);">${m}</td>
-      <td><div style="display:flex;gap:4px;">
-        <button class="btn btn-xs btn-ghost" onclick="renameGroup('${g.replace(/'/g,"\\'")}')" title="Renommer"><i class="fas fa-pen" style="color:var(--info);"></i></button>
-        <button class="btn btn-xs btn-ghost" onclick="duplicateGroup('${g.replace(/'/g,"\\'")}')" title="Dupliquer"><i class="fas fa-copy" style="color:var(--warn);"></i></button>
-        <button class="btn btn-xs btn-ghost" onclick="deleteGroup('${g.replace(/'/g,"\\'")}')" title="Supprimer"><i class="fas fa-trash-can" style="color:var(--danger);"></i></button>
-      </div></td></tr>`;
-    });
-  });
-  h+='</tbody></table>';document.getElementById('mgmtGroupsTable').innerHTML=h;
-}
-function showAddGroupModal(){
-  const fMap={};Object.keys(GROUPS).forEach(g=>{const m=g.match(/^(.+?)\s+S(\d+)$/);if(m)fMap[m[1]]=true;});
-  let opts='';Object.keys(fMap).sort().forEach(f=>{opts+=`<option value="${f}">${f}</option>`;});
-  openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Creer un groupe</h3>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
-    <div><label class="form-label">Filiere</label>
-    <input type="text" class="form-input" id="newGroupFiliere" list="filiereList" placeholder="Ex: ISUSI">
-    <datalist id="filiereList">${opts.split('</option>').map(o=>`<option value="${o.replace('<option value="','').replace('"','')}">`).join('')}</datalist></div>
-    <div><label class="form-label">Semestre</label>
-    <select class="form-input" id="newGroupSem"><option value="S1">S1</option><option value="S2">S2</option><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select></div></div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;">
-    <button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>
-    <button class="btn btn-primary btn-sm" onclick="addGroup()"><i class="fas fa-plus"></i> Creer</button></div>`);
-  setTimeout(()=>document.getElementById('newGroupFiliere').focus(),100);
-}
-function addGroup(){
-  const f=(document.getElementById('newGroupFiliere')?.value||'').trim().toUpperCase();
-  const s=document.getElementById('newGroupSem')?.value||'S1';
-  if(!f){showToast('Saisissez une filiere','error');return;}
-  const name=`${f} ${s}`;
-  if(GROUPS[name]){showToast('Ce groupe existe deja','error');return;}
-  GROUPS[name]={students:[],modules:[]};saveData();closeModal();
-  showToast(`Groupe ${name} cree`,'success');renderMgmtGroups();renderGroupList();
-}
-function renameGroup(oldName){
-  openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Renommer le groupe</h3>
-    <div style="margin-bottom:16px;"><label class="form-label">Nouveau nom</label><input type="text" class="form-input" id="renameGroupInput" value="${oldName}" onkeydown="if(event.key==='Enter')confirmRenameGroup('${oldName.replace(/'/g,"\\'")}')"></div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;">
-    <button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>
-    <button class="btn btn-primary btn-sm" onclick="confirmRenameGroup('${oldName.replace(/'/g,"\\'")}')">Renommer</button></div>`);
-  setTimeout(()=>{const i=document.getElementById('renameGroupInput');if(i){i.focus();i.select();}},100);
-}
-function confirmRenameGroup(oldName){
-  const newName=(document.getElementById('renameGroupInput')?.value||'').trim();
-  if(!newName||newName===oldName){closeModal();return;}
-  if(GROUPS[newName]){showToast('Ce nom est deja utilise','error');return;}
-  GROUPS[newName]=GROUPS[oldName];delete GROUPS[oldName];
-  absences.forEach(a=>{if(a.group===oldName)a.group=newName;});
-  if(currentGroup===oldName)currentGroup=newName;
-  saveData();closeModal();showToast('Groupe renomme','success');renderMgmtGroups();renderGroupList();
-}
-function duplicateGroup(name){
-  const base=name.replace(/S\d+$/,'');
-  let num=2;while(GROUPS[`${base}S${num}`])num++;
-  const newName=`${base}S${num}`;
-  GROUPS[newName]=JSON.parse(JSON.stringify(GROUPS[name]));
-  GROUPS[newName].students=[];// Vide la liste, garde les modules
-  saveData();showToast(`Groupe ${newName} cree (modules copies, liste vide)`,'success');renderMgmtGroups();renderGroupList();
-}
-function deleteGroup(name){
-  const sc=GROUPS[name]?.students.length||0;
-  const ac=absences.filter(a=>a.group===name).length;
-  showModal('Supprimer le groupe',`Supprimer ${name} ? ${sc} etudiants et ${ac} absences seront supprimes.`,()=>{
-    delete GROUPS[name];absences=absences.filter(a=>a.group!==name);
-    if(currentGroup===name)currentGroup=Object.keys(GROUPS)[0]||'';
-    saveData();showToast('Groupe supprime','success');renderMgmtGroups();renderGroupList();updateModuleSelect();renderCurrentTab();
-  });
-}
+function renderMgmtGroups(){const fMap={};Object.keys(GROUPS).forEach(g=>{const m=g.match(/^(.+?)\s+S(\d+)$/);if(!m)return;const f=m[1];if(!fMap[f])fMap[f]=[];fMap[f].push(g);});let h=`<table class="data-table"><thead><tr><th>Groupe</th><th style="width:100px;">Etudiants</th><th style="width:100px;">Modules</th><th style="width:140px;">Actions</th></tr></thead><tbody>`;Object.keys(fMap).sort().forEach(f=>{fMap[f].sort((a,b)=>parseInt(a.match(/S(\d+)$/)[1])-parseInt(b.match(/S(\d+)$/)[1])).forEach(g=>{const s=GROUPS[g]?.students.length||0,m=GROUPS[g]?.modules.length||0,isCur=g===currentGroup;h+=`<tr style="${isCur?'background:var(--accent-glow);':''}"><td style="font-weight:${isCur?'700':'500'};">${g} ${isCur?'<span style="font-size:10px;color:var(--accent);">(actif)</span>':''}</td><td style="color:var(--muted);">${s}</td><td style="color:var(--muted);">${m}</td><td><div style="display:flex;gap:4px;"><button class="btn btn-xs btn-ghost" onclick="renameGroup('${g.replace(/'/g,"\\'")}')"><i class="fas fa-pen" style="color:var(--info);"></i></button><button class="btn btn-xs btn-ghost" onclick="duplicateGroup('${g.replace(/'/g,"\\'")}')"><i class="fas fa-copy" style="color:var(--warn);"></i></button><button class="btn btn-xs btn-ghost" onclick="deleteGroup('${g.replace(/'/g,"\\'")}')"><i class="fas fa-trash-can" style="color:var(--danger);"></i></button></div></td></tr>`;});});h+='</tbody></table>';document.getElementById('mgmtGroupsTable').innerHTML=h;}
+function showAddGroupModal(){const fMap={};Object.keys(GROUPS).forEach(g=>{const m=g.match(/^(.+?)\s+S(\d+)$/);if(m)fMap[m[1]]=true;});let opts='';Object.keys(fMap).sort().forEach(f=>{opts+=`<option value="${f}">${f}</option>`;});openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Creer un groupe</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;"><div><label class="form-label">Filiere</label><input type="text" class="form-input" id="newGroupFiliere" list="filiereList" placeholder="Ex: ISUSI"><datalist id="filiereList">${Object.keys(fMap).sort().map(f=>`<option value="${f}">`).join('')}</datalist></div><div><label class="form-label">Semestre</label><select class="form-input" id="newGroupSem"><option value="S1">S1</option><option value="S2">S2</option><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select></div></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="addGroup()"><i class="fas fa-plus"></i> Creer</button></div>`);setTimeout(()=>document.getElementById('newGroupFiliere').focus(),100);}
+function addGroup(){const f=(document.getElementById('newGroupFiliere')?.value||'').trim().toUpperCase(),s=document.getElementById('newGroupSem')?.value||'S1';if(!f){showToast('Saisissez une filiere','error');return;}const name=`${f} ${s}`;if(GROUPS[name]){showToast('Ce groupe existe deja','error');return;}GROUPS[name]={students:[],modules:[]};saveData();closeModal();showToast(`Groupe ${name} cree`,'success');renderMgmtGroups();renderGroupList();}
+function renameGroup(oldName){openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Renommer le groupe</h3><div style="margin-bottom:16px;"><label class="form-label">Nouveau nom</label><input type="text" class="form-input" id="renameGroupInput" value="${oldName}" onkeydown="if(event.key==='Enter')confirmRenameGroup('${oldName.replace(/'/g,"\\'")}')"></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" id="renameConfirmBtn">Renommer</button></div>`);setTimeout(()=>{const i=document.getElementById('renameGroupInput');if(i){i.focus();i.select();}document.getElementById('renameConfirmBtn').onclick=()=>confirmRenameGroup(oldName);},100);}
+function confirmRenameGroup(oldName){const newName=(document.getElementById('renameGroupInput')?.value||'').trim();if(!newName||newName===oldName){closeModal();return;}if(GROUPS[newName]){showToast('Ce nom est deja utilise','error');return;}GROUPS[newName]=GROUPS[oldName];delete GROUPS[oldName];absences.forEach(a=>{if(a.group===oldName)a.group=newName;});if(currentGroup===oldName)currentGroup=newName;saveData();closeModal();showToast('Groupe renomme','success');renderMgmtGroups();renderGroupList();}
+function duplicateGroup(name){const base=name.replace(/S\d+$/,'');let num=2;while(GROUPS[`${base}S${num}`])num++;const newName=`${base}S${num}`;GROUPS[newName]=JSON.parse(JSON.stringify(GROUPS[name]));GROUPS[newName].students=[];saveData();showToast(`${newName} cree (modules copies)`,'success');renderMgmtGroups();renderGroupList();}
+function deleteGroup(name){const sc=GROUPS[name]?.students.length||0,ac=absences.filter(a=>a.group===name).length;showModal('Supprimer le groupe',`Supprimer ${name} ? ${sc} etudiants et ${ac} absences seront supprimes.`,()=>{delete GROUPS[name];absences=absences.filter(a=>a.group!==name);if(currentGroup===name)currentGroup=Object.keys(GROUPS)[0]||'';saveData();showToast('Groupe supprime','success');renderMgmtGroups();renderGroupList();updateModuleSelect();renderCurrentTab();});}
 
-// ============================================
 // IMPORT EXCEL
-// ============================================
 function handleFileSelect(file){if(file)processFile(file);}
 function handleFileDrop(file){if(file)processFile(file);}
-function processFile(file){
-  const validExts=['.xlsx','.xls','.csv'];
-  const ext=file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-  if(!validExts.includes(ext)){showToast('Format non supporte. Utilisez .xlsx, .xls ou .csv','error');return;}
-  const reader=new FileReader();
-  reader.onload=function(e){
-    try{
-      importWorkbook=XLSX.read(e.target.result,{type:'array',cellDates:true});
-      const info=document.getElementById('fileInfo');info.style.display='block';
-      info.innerHTML=`<div style="display:flex;align-items:center;gap:12px;">
-        <i class="fas fa-file-excel" style="font-size:28px;color:var(--accent);"></i>
-        <div><div style="font-weight:600;font-size:14px;">${file.name}</div>
-        <div style="font-size:12px;color:var(--muted);">${(file.size/1024).toFixed(1)} Ko — ${importWorkbook.SheetNames.length} feuille(s)</div></div></div>`;
-      // Remplir selecteur de feuilles
-      const sheetSel=document.getElementById('importSheet');sheetSel.innerHTML='';
-      importWorkbook.SheetNames.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sheetSel.appendChild(o);});
-      // Remplir selecteur de groupe
-      const grpSel=document.getElementById('importGroup');grpSel.innerHTML='';
-      Object.keys(GROUPS).sort().forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;grpSel.appendChild(o);});
-      grpSel.value=currentGroup;
-      goToImportStep(2);onSheetChange();
-    }catch(err){showToast('Erreur de lecture du fichier: '+err.message,'error');}
-  };
-  reader.readAsArrayBuffer(file);
-}
-function onSheetChange(){
-  const sheetName=document.getElementById('importSheet').value;
-  if(!importWorkbook||!sheetName)return;
-  const ws=importWorkbook.Sheets[sheetName];
-  importSheetData=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
-  // Remplir les selects de colonnes
-  const headers=importSheetData[0]||[];
-  ['importNameCol','importModCol','importAbsNameCol','importAbsDateCol','importAbsTimeCol','importAbsModCol','importAbsJustCol'].forEach(id=>{
-    const sel=document.getElementById(id);if(!sel)return;sel.innerHTML='';
-    headers.forEach((h,i)=>{const o=document.createElement('option');o.value=i;
-      o.textContent=`Colonne ${i+1}${h?': '+String(h).substring(0,40):''}`;sel.appendChild(o);});
-  });
-  // Auto-detect: nom si contient "nom" ou "etudiant" ou "prenom"
-  autoDetectColumn('importNameCol',headers,['nom','etudiant','prenom','name','student']);
-  autoDetectColumn('importModCol',headers,['module','matiere','subject']);
-  autoDetectColumn('importAbsNameCol',headers,['nom','etudiant','prenom','name']);
-  autoDetectColumn('importAbsDateCol',headers,['date','jour','day']);
-  autoDetectColumn('importAbsTimeCol',headers,['creneau','heure','horaire','time','slot']);
-  autoDetectColumn('importAbsModCol',headers,['module','matiere','subject']);
-  autoDetectColumn('importAbsJustCol',headers,['justif','raison','motif','justification','reason']);
-}
-function autoDetectColumn(selId,headers,keywords){
-  const sel=document.getElementById(selId);if(!sel)return;
-  for(let i=0;i<headers.length;i++){
-    const h=String(headers[i]).toLowerCase();
-    if(keywords.some(k=>h.includes(k))){sel.value=i;return;}
-  }
-}
-function goToImportStep(step){
-  for(let i=1;i<=4;i++){
-    document.getElementById('importStep'+i).style.display=i===step?'block':'none';
-    const dot=document.getElementById('step'+i+'dot');
-    dot.className='step-dot'+(i<step?' done':i===step?' active':'');
-    if(i<4){const line=document.getElementById('step'+i+'line');line.className='step-line'+(i<step?' done':'');}
-  }
-  if(step===3)generatePreview();
-}
-function generatePreview(){
-  if(!importSheetData)return;
-  const type=document.getElementById('importType').value;
-  const mode=document.getElementById('importMode').value;
-  importPreviewData=[];
-  if(type==='etudiants'){
-    const ci=parseInt(document.getElementById('importNameCol').value)||0;
-    importSheetData.forEach((row,i)=>{if(i===0)return;const v=String(row[ci]||'').trim();if(v)importPreviewData.push({name:v.toUpperCase()});});
-  }else if(type==='modules'){
-    const ci=parseInt(document.getElementById('importModCol').value)||0;
-    importSheetData.forEach((row,i)=>{if(i===0)return;const v=String(row[ci]||'').trim();if(v)importPreviewData.push({module:v});});
-  }else{
-    const ni=parseInt(document.getElementById('importAbsNameCol').value)||0;
-    const di=parseInt(document.getElementById('importAbsDateCol').value)||1;
-    const ti=parseInt(document.getElementById('importAbsTimeCol').value)||2;
-    const mi=parseInt(document.getElementById('importAbsModCol').value)||3;
-    const ji=parseInt(document.getElementById('importAbsJustCol').value)||4;
-    importSheetData.forEach((row,i)=>{if(i===0)return;
-      const name=String(row[ni]||'').trim().toUpperCase();
-      if(!name)return;
-      let date=String(row[di]||'');
-      // Gerer les dates Excel (nombre serial)
-      if(typeof row[di]==='number'&&row[di]>40000&&row[di]<60000){
-        const d=new Date((row[di]-25569)*86400000);
-        date=d.toISOString().split('T')[0];
-      }else if(date.includes('/')){const p=date.split('/');if(p.length===3)date=`${p[2].padStart(4,'0')}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;}
-      importPreviewData.push({name,date,time:String(row[ti]||''),module:String(row[mi]||''),justification:String(row[ji]||'')});
-    });
-  }
+function processFile(file){const ext=file.name.substring(file.name.lastIndexOf('.')).toLowerCase();if(!['.xlsx','.xls','.csv'].includes(ext)){showToast('Format non supporte','error');return;}const reader=new FileReader();reader.onload=function(e){try{importWorkbook=XLSX.read(e.target.result,{type:'array',cellDates:true});const info=document.getElementById('fileInfo');info.style.display='block';info.innerHTML=`<div style="display:flex;align-items:center;gap:12px;"><i class="fas fa-file-excel" style="font-size:28px;color:var(--accent);"></i><div><div style="font-weight:600;font-size:14px;">${file.name}</div><div style="font-size:12px;color:var(--muted);">${(file.size/1024).toFixed(1)} Ko — ${importWorkbook.SheetNames.length} feuille(s)</div></div></div>`;const sheetSel=document.getElementById('importSheet');sheetSel.innerHTML='';importWorkbook.SheetNames.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sheetSel.appendChild(o);});const grpSel=document.getElementById('importGroup');grpSel.innerHTML='';Object.keys(GROUPS).sort().forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;grpSel.appendChild(o);});grpSel.value=currentGroup;goToImportStep(2);onSheetChange();}catch(err){showToast('Erreur de lecture: '+err.message,'error');}};reader.readAsArrayBuffer(file);}
+function onSheetChange(){const sheetName=document.getElementById('importSheet').value;if(!importWorkbook||!sheetName)return;const ws=importWorkbook.Sheets[sheetName];importSheetData=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const headers=importSheetData[0]||[];['importNameCol','importModCol','importAbsNameCol','importAbsDateCol','importAbsTimeCol','importAbsModCol','importAbsJustCol'].forEach(id=>{const sel=document.getElementById(id);if(!sel)return;sel.innerHTML='';headers.forEach((h,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`Colonne ${i+1}${h?': '+String(h).substring(0,40):''}`;sel.appendChild(o);});});autoCol('importNameCol',headers,['nom','etudiant','prenom','name','student']);autoCol('importModCol',headers,['module','matiere','subject']);autoCol('importAbsNameCol',headers,['nom','etudiant','prenom','name']);autoCol('importAbsDateCol',headers,['date','jour','day']);autoCol('importAbsTimeCol',headers,['creneau','heure','horaire','time','slot']);autoCol('importAbsModCol',headers,['module','matiere','subject']);autoCol('importAbsJustCol',headers,['justif','raison','motif','justification','reason']);}
+function autoCol(selId,headers,kw){const sel=document.getElementById(selId);if(!sel)return;for(let i=0;i<headers.length;i++){if(kw.some(k=>String(headers[i]).toLowerCase().includes(k))){sel.value=i;return;}}}
+function goToImportStep(step){for(let i=1;i<=4;i++){document.getElementById('importStep'+i).style.display=i===step?'block':'none';const dot=document.getElementById('step'+i+'dot');dot.className='step-dot'+(i<step?' done':i===step?' active':'');if(i<4){const line=document.getElementById('step'+i+'line');line.className='step-line'+(i<step?' done':'');}}if(step===3)generatePreview();}
+function generatePreview(){if(!importSheetData)return;const type=document.getElementById('importType').value;importPreviewData=[];if(type==='etudiants'){const ci=parseInt(document.getElementById('importNameCol').value)||0;importSheetData.forEach((row,i)=>{if(i===0)return;const v=String(row[ci]||'').trim();if(v)importPreviewData.push({name:v.toUpperCase()});});}else if(type==='modules'){const ci=parseInt(document.getElementById('importModCol').value)||0;importSheetData.forEach((row,i)=>{if(i===0)return;const v=String(row[ci]||'').trim();if(v)importPreviewData.push({module:v});});}else{const ni=parseInt(document.getElementById('importAbsNameCol').value)||0,di=parseInt(document.getElementById('importAbsDateCol').value)||1,ti=parseInt(document.getElementById('importAbsTimeCol').value)||2,mi=parseInt(document.getElementById('importAbsModCol').value)||3,ji=parseInt(document.getElementById('importAbsJustCol').value)||4;importSheetData.forEach((row,i)=>{if(i===0)return;const name=String(row[ni]||'').trim().toUpperCase();if(!name)return;let date=String(row[di]||'');if(typeof row[di]==='number'&&row[di]>40000&&row[di]<60000){const d=new Date((row[di]-25569)*86400000);date=d.toISOString().split('T')[0];}else if(date.includes('/')){const p=date.split('/');if(p.length===3)date=`${p[2].padStart(4,'0')}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;}importPreviewData.push({name,date,time:String(row[ti]||''),module:String(row[mi]||''),justification:String(row[ji]||'')});});}
   document.getElementById('previewCount').textContent=`${importPreviewData.length} ligne(s)`;
-  let h='<table class="preview-table"><thead><tr>';
-  if(type==='etudiants')h+='<th>N</th><th>Nom de l\'etudiant</th>';
-  else if(type==='modules')h+='<th>N</th><th>Nom du module</th>';
-  else h+='<th>N</th><th>Etudiant</th><th>Date</th><th>Creneau</th><th>Module</th><th>Justification</th>';
-  h+='</tr></thead><tbody>';
-  const maxRows=Math.min(importPreviewData.length,50);
-  for(let i=0;i<maxRows;i++){
-    const d=importPreviewData[i];h+='<tr>';
-    if(type==='etudiants')h+=`<td>${i+1}</td><td>${d.name}</td>`;
-    else if(type==='modules')h+=`<td>${i+1}</td><td>${d.module}</td>`;
-    else h+=`<td>${i+1}</td><td>${d.name}</td><td>${d.date}</td><td>${d.time}</td><td>${d.module}</td><td>${d.justification}</td>`;
-    h+='</tr>';
-  }
-  if(importPreviewData.length>maxRows)h+=`<tr><td colspan="10" style="text-align:center;color:var(--muted);font-style:italic;">... et ${importPreviewData.length-maxRows} autres lignes</td></tr>`;
-  h+='</tbody></table>';document.getElementById('previewTableWrap').innerHTML=h;
+  let h='<table class="preview-table"><thead><tr>';if(type==='etudiants')h+='<th>N</th><th>Nom</th>';else if(type==='modules')h+='<th>N</th><th>Module</th>';else h+='<th>N</th><th>Etudiant</th><th>Date</th><th>Creneau</th><th>Module</th><th>Justif.</th>';h+='</tr></thead><tbody>';const mr=Math.min(importPreviewData.length,50);for(let i=0;i<mr;i++){const d=importPreviewData[i];h+='<tr>';if(type==='etudiants')h+=`<td>${i+1}</td><td>${d.name}</td>`;else if(type==='modules')h+=`<td>${i+1}</td><td>${d.module}</td>`;else h+=`<td>${i+1}</td><td>${d.name}</td><td>${d.date}</td><td>${d.time}</td><td>${d.module}</td><td>${d.justification}</td>`;h+='</tr>';}if(importPreviewData.length>mr)h+=`<tr><td colspan="10" style="text-align:center;color:var(--muted);font-style:italic;">... et ${importPreviewData.length-mr} autres</td></tr>`;h+='</tbody></table>';document.getElementById('previewTableWrap').innerHTML=h;
 }
-function executeImport(){
-  const type=document.getElementById('importType').value;
-  const mode=document.getElementById('importMode').value;
-  const group=document.getElementById('importGroup').value;
-  if(!GROUPS[group]){showToast('Groupe invalide','error');return;}
-  let count=0;
-  if(type==='etudiants'){
-    if(mode==='replace')GROUPS[group].students=[];
-    importPreviewData.forEach(d=>{
-      if(!GROUPS[group].students.includes(d.name)){GROUPS[group].students.push(d.name);count++;}
-    });
-  }else if(type==='modules'){
-    if(mode==='replace')GROUPS[group].modules=[];
-    importPreviewData.forEach(d=>{
-      if(!GROUPS[group].modules.includes(d.module)){GROUPS[group].modules.push(d.module);count++;}
-    });
-  }else{
-    importPreviewData.forEach(d=>{
-      if(!d.name||!d.date)return;
-      absences.push({id:Date.now()+Math.random(),group,student:d.name,date:d.date,time:d.time,module:d.module,justification:d.justification||'',timestamp:new Date().toISOString()});
-      count++;
-    });
-  }
-  saveData();
-  document.getElementById('importResultMsg').textContent=`${count} element(s) importe(s) dans ${group}`;
-  goToImportStep(4);renderGroupList();if(group===currentGroup)updateModuleSelect();
-}
-function resetImport(){
-  importWorkbook=null;importSheetData=null;importPreviewData=[];
-  document.getElementById('fileInfo').style.display='none';
-  document.getElementById('fileInput').value='';
-  goToImportStep(1);
-}
+function executeImport(){const type=document.getElementById('importType').value,mode=document.getElementById('importMode').value,group=document.getElementById('importGroup').value;if(!GROUPS[group]){showToast('Groupe invalide','error');return;}let count=0;if(type==='etudiants'){if(mode==='replace')GROUPS[group].students=[];importPreviewData.forEach(d=>{if(!GROUPS[group].students.includes(d.name)){GROUPS[group].students.push(d.name);count++;}});}else if(type==='modules'){if(mode==='replace')GROUPS[group].modules=[];importPreviewData.forEach(d=>{if(!GROUPS[group].modules.includes(d.module)){GROUPS[group].modules.push(d.module);count++;}});}else{importPreviewData.forEach(d=>{if(!d.name||!d.date)return;absences.push({id:Date.now()+Math.random(),group,student:d.name,date:d.date,time:d.time,module:d.module,justification:d.justification||'',timestamp:new Date().toISOString()});count++;});}saveData();document.getElementById('importResultMsg').textContent=`${count} element(s) importe(s) dans ${group}`;goToImportStep(4);renderGroupList();if(group===currentGroup)updateModuleSelect();}
+function resetImport(){importWorkbook=null;importSheetData=null;importPreviewData=[];document.getElementById('fileInfo').style.display='none';document.getElementById('fileInput').value='';goToImportStep(1);}
 
-// ============================================
-// EXPORT CSV
-// ============================================
-function exportCSV(){
-  const ga=absences.filter(a=>a.group===currentGroup);
-  if(!ga.length){showToast('Aucune donnee','info');return;}
-  ga.sort((a,b)=>a.date.localeCompare(b.date)||a.student.localeCompare(b.student));
-  let csv='\uFEFFDate,Creneau,Module,Etudiant,Justification\n';
-  ga.forEach(a=>csv+=`${a.date},"${a.time}","${a.module}","${a.student}","${a.justification||''}"\n`);
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;
-  a.download=`absences_${currentGroup.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();URL.revokeObjectURL(url);showToast('CSV exporte','success');
-}
+function exportCSV(){const ga=absences.filter(a=>a.group===currentGroup);if(!ga.length){showToast('Aucune donnee','info');return;}ga.sort((a,b)=>a.date.localeCompare(b.date)||a.student.localeCompare(b.student));let csv='\uFEFFDate,Creneau,Module,Etudiant,Justification\n';ga.forEach(a=>csv+=`${a.date},"${a.time}","${a.module}","${a.student}","${a.justification||''}"\n`);const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`absences_${currentGroup.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);showToast('CSV exporte','success');}
 
-// ============================================
-// UTILITAIRES
-// ============================================
 function formatDate(d){if(!d)return'-';const p=d.split('-');const m=['Jan','Fev','Mar','Avr','Mai','Jun','Jul','Aou','Sep','Oct','Nov','Dec'];return `${parseInt(p[2])} ${m[parseInt(p[1])-1]} ${p[0]}`;}
-function showToast(msg,type='info'){
-  const c=document.getElementById('toastContainer');const t=document.createElement('div');
-  t.className=`toast toast-${type}`;const icons={success:'fa-check-circle',error:'fa-exclamation-circle',info:'fa-info-circle'};
-  t.innerHTML=`<i class="fas ${icons[type]||icons.info}"></i> ${msg}`;c.appendChild(t);
-  setTimeout(()=>{t.classList.add('toast-exit');setTimeout(()=>t.remove(),300);},3500);
-}
-let modalCb=null;
+function showToast(msg,type='info'){const c=document.getElementById('toastContainer'),t=document.createElement('div');t.className=`toast toast-${type}`;const icons={success:'fa-check-circle',error:'fa-exclamation-circle',info:'fa-info-circle'};t.innerHTML=`<i class="fas ${icons[type]||icons.info}"></i> ${msg}`;c.appendChild(t);setTimeout(()=>{t.classList.add('toast-exit');setTimeout(()=>t.remove(),300);},3500);}
 function openModal(html){document.getElementById('modalBox').innerHTML=html;document.getElementById('modalOverlay').classList.add('show');}
-function closeModal(){document.getElementById('modalOverlay').classList.remove('show');modalCb=null;}
-function showModal(title,msg,cb){
-  openModal(`<h3 style="font-size:18px;margin-bottom:8px;">${title}</h3>
-    <p style="color:var(--muted);font-size:14px;margin-bottom:20px;">${msg}</p>
-    <div style="display:flex;gap:10px;justify-content:flex-end;">
-    <button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>
-    <button class="btn btn-danger btn-sm" onclick="closeModal();(${cb.toString()})()">Confirmer</button></div>`);
-  // Rebind pour eviter le scope
-  const btn=document.querySelector('#modalBox .btn-danger');
-  if(btn)btn.onclick=()=>{closeModal();cb();};
-}
-
-// Type d'import change -> montrer/cacher les mappings
-document.addEventListener('change',e=>{
-  if(e.target.id==='importType'){
-    const t=e.target.value;
-    document.getElementById('colMappingStudents').style.display=t==='etudiants'?'block':'none';
-    document.getElementById('colMappingModules').style.display=t==='modules'?'block':'none';
-    document.getElementById('colMappingAbsences').style.display=t==='absences'?'block':'none';
-  }
-});
+function closeModal(){document.getElementById('modalOverlay').classList.remove('show');}
+function showModal(title,msg,cb){openModal(`<h3 style="font-size:18px;margin-bottom:8px;">${title}</h3><p style="color:var(--muted);font-size:14px;margin-bottom:20px;">${msg}</p><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-danger btn-sm" id="modalConfirmBtn">Confirmer</button></div>`);document.getElementById('modalConfirmBtn').onclick=()=>{closeModal();cb();};}
 </script>
 </body>
 </html>
