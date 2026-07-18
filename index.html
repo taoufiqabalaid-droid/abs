@@ -277,8 +277,10 @@ function MarquerAbsences({ students, modules, plages, absences, onSave }: {
   const [saved, setSaved] = useState(false);
 
   const selectedModule = modules.find((m) => m.id === moduleId);
+  
+  // ✅ CORRECTION 2 : Suppression du "|| true" pour activer le filtrage par filière
   const filteredStudents = students
-    .filter((s) => !selectedModule || s.filiere === selectedModule.filiere || true)
+    .filter((s) => !selectedModule || s.filiere === selectedModule.filiere)
     .filter((s) => {
       const q = search.toLowerCase();
       return s.nom.toLowerCase().includes(q) || s.prenom.toLowerCase().includes(q) || s.matricule.includes(q);
@@ -467,12 +469,13 @@ function EtudiantList({ students, setStudents }: {
     setStudents((prev) => prev.filter((s) => s.id !== id));
   };
 
+  // ✅ CORRECTION 3 : Cast explicite en string pour TypeScript
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      const data = ev.target?.result;
+      const data = ev.target?.result as string;
       const wb = XLSX.read(data, { type: "binary" });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json<Record<string, string>>(ws, { defval: "" });
@@ -617,12 +620,13 @@ function ModuleList({ modules, setModules }: {
     setShowForm(false);
   };
 
+  // ✅ CORRECTION 3 : Cast explicite en string pour TypeScript
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      const data = ev.target?.result;
+      const data = ev.target?.result as string;
       const wb = XLSX.read(data, { type: "binary" });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json<Record<string, string>>(ws, { defval: "" });
@@ -876,7 +880,7 @@ function Historique({ absences, students, modules, plages, onDelete }: {
                     <Badge variant="info">{a.module?.code}</Badge>
                     <span className="text-muted-foreground text-xs">·</span>
                     <span className="text-xs text-muted-foreground">{a.date}</span>
-                    <span className="text-xs text-muted-foreground">·</span>
+                    <span className="text-muted-foreground text-xs">·</span>
                     <span className="text-xs text-muted-foreground">{a.plage?.label ?? "—"}</span>
                     <Badge variant="danger">{a.absentStudents.length} absent(s)</Badge>
                   </div>
@@ -1047,3 +1051,4 @@ export default function App() {
     </div>
   );
 }
+// ✅ CORRECTION 1 : Suppression de l'accolade supplémentaire qui était ici
