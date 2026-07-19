@@ -397,19 +397,19 @@ let isSaving = false;
    SAUVEGARDE FIREBASE — AVEC GESTION D'ERREURS ET INDICATEUR
    ============================================================ */
 async function saveData() {
+    if (isSaving) return; // Éviter les sauvegardes simultanées
+    isSaving = true;
+
+    const indicator = document.getElementById('savingIndicator');
+    if (indicator) indicator.classList.add('show');
+
     try {
-        await db.ref("gestion_absences").set({
+        // Utiliser .set() avec un objet propre (pas de clés undefined)
+        const dataToSave = {
             groups: GROUPS,
             absences: absences
-        });
-        console.log("Données sauvegardées avec succès");
-        return true;
-    } catch (e) {
-        console.error("Erreur de sauvegarde Firebase :", e);
-        showToast('Erreur de sauvegarde : ' + e.message, 'error');
-        return false;
-    }
-}
+        };
+
         await db.ref("gestion_absences").set(dataToSave);
 
         // Mettre à jour l'heure de dernière sauvegarde
@@ -1103,23 +1103,29 @@ function showAddGroupModal() {
 }
 
 async function addGroup() {
-    const f = (document.getElementById('newGroupFiliere')?.value || '').trim().toUpperCase();
-    const s = document.getElementById('newGroupSem')?.value || 'S1';
-    if (!f) { showToast('Saisissez une filiere', 'error'); return; }
-    const name = `${f} ${s}`;
-    if (GROUPS[name]) { showToast('Ce groupe existe deja', 'error'); return; }
+    const filiere = document.getElementById('newGroupFiliere').value.trim().toUpperCase();
+    const semestre = document.getElementById('newGroupSemester').value;
+    let customName = document.getElementById('newGroupName').value.trim().toUpperCase();
 
-    GROUPS[name] = { students: [], modules: [] };
-    const ok = await saveData();          // on attend la vraie confirmation
-    if (ok) {
-        closeModal();
-        showToast(`Groupe ${name} cree`, 'success');
-        renderMgmtGroups();
-        renderGroupList();
-    } else {
-        delete GROUPS[name];               // annule si l'écriture a échoué
+    if (!filiere && !customName) {
+        showToast('Veuillez indiquer une filiere ou un nom de groupe', 'error');
+        return;
     }
-}
+
+    // Déterminer le nom du groupe
+    const groupName = customName || (filiere + ' ' + semestre);
+
+    // Vérifier si le groupe existe déjà
+    if (GROUPS[groupName]) {
+        showToast('Le groupe "' + groupName + '" existe deja !', 'error');
+        return;
+    }
+
+    // Créer le groupe avec des listes vides
+    GROUPS[groupName] = {
+        students: [],
+        modules: []
+    };
 
     // ← CLEF : SAUVEGARDER DANS FIREBASE ET ATTENDRE LA RÉPONSE
     try {
