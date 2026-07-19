@@ -372,6 +372,9 @@ async function loadData() {
     try {
         const snapshot = await db.ref("gestion_absences").once("value");
 
+        console.log("Snapshot existe :", snapshot.exists());
+        console.log("Snapshot :", snapshot.val());
+
         if (snapshot.exists()) {
             const data = snapshot.val();
 
@@ -385,11 +388,8 @@ async function loadData() {
 
     } catch (e) {
         console.error(e);
-        GROUPS = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
-        absences = [];
     }
 }
-
 async function saveData() {
     await db.ref("gestion_absences").set({
         groups: GROUPS,
@@ -578,8 +578,6 @@ function openModal(html){document.getElementById('modalBox').innerHTML=html;docu
 function closeModal(){document.getElementById('modalOverlay').classList.remove('show');}
 function showModal(title,msg,cb){openModal(`<h3 style="font-size:18px;margin-bottom:8px;">${title}</h3><p style="color:var(--muted);font-size:14px;margin-bottom:20px;">${msg}</p><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-danger btn-sm" id="modalConfirmBtn">Confirmer</button></div>`);document.getElementById('modalConfirmBtn').onclick=()=>{closeModal();cb();};}
 </script>
-
-<script type="module" src="firebase.js"></script>
 
 </body>
 </html>
