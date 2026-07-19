@@ -1,4 +1,3 @@
-<body>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -111,6 +110,10 @@ select.form-input{cursor:pointer}
 .step-dot.done{border-color:var(--accent);background:var(--accent);color:#fff}
 .step-line{width:40px;height:2px;background:var(--border);transition:background .3s}
 .step-line.done{background:var(--accent)}
+.saving-indicator{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--accent);opacity:0;transition:opacity .2s;}
+.saving-indicator.show{opacity:1;}
+.saving-indicator i{animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -143,6 +146,11 @@ select.form-input{cursor:pointer}
       <input type="text" class="group-search" placeholder="Rechercher un groupe..." id="groupSearch" oninput="filterGroups()">
     </div>
     <div class="group-list" id="groupList"></div>
+  </div>
+  <!-- Indicateur de sauvegarde en temps réel -->
+  <div style="padding:10px 16px;border-top:1px solid var(--border);flex-shrink:0;">
+    <div class="saving-indicator" id="savingIndicator"><i class="fas fa-spinner"></i> Sauvegarde en cours...</div>
+    <div style="font-size:10px;color:var(--muted);" id="lastSaveTime"></div>
   </div>
 </aside>
 
@@ -326,7 +334,11 @@ select.form-input{cursor:pointer}
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box" id="modalBox"></div>
 </div>
+
 <script>
+/* ============================================================
+   CONFIGURATION FIREBASE
+   ============================================================ */
 const firebaseConfig = {
   apiKey: "AIzaSyD9kedxf8KukgwP2D9t5ELkWaEu6RrQngg",
   authDomain: "absences-7b6a1.firebaseapp.com",
@@ -338,14 +350,16 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-
 const db = firebase.database();
-</script>
-<script>
-const TIME_SLOTS=['08H30 - 10H30','10H30 - 12H30','08H30 - 12H30','14H00 - 16H00','16H00 - 18H00','14H00 - 18H00','15H00 - 18H00'];
-function P(s){return s?s.split('|').filter(x=>x.trim()):[];}
 
-const DEFAULT_GROUPS={
+/* ============================================================
+   CONSTANTES
+   ============================================================ */
+const TIME_SLOTS = ['08H30 - 10H30','10H30 - 12H30','08H30 - 12H30','14H00 - 16H00','16H00 - 18H00','14H00 - 18H00','15H00 - 18H00'];
+
+function P(s) { return s ? s.split('|').filter(x => x.trim()) : []; }
+
+const DEFAULT_GROUPS = {
 'ISUSI S3':{students:P('ACHLIKH AICHA|AGOUZOUL MOUNA|ARROUY IKRAM|AZIZ AMINA|BANI NAJMA|BENCHAMA MOHAMED ALI|BOUIDA KATRE-ENNADA|BOURISSA HAMZA|DENDOUN ISLAM|EBOUR KHAOULA|El ABDELLAOUI FATIMA-EZZAHRA|EL HARRARI OUSSAMA|EL HOR HAJAR|EL JAOUHARI MALAK|El MIKH SALMA|ELMOUDAFFAR WISSAL|ENNAJIH RIHAM|ET.TAGHELATY HANANE|FASSINI CHAIMAA|HANGOUR HAFSA|IMAZZANE MAROUA|LABBIHI KAOUTAR|LAFHAL BADER|NAJEH RADWA|NAOUAR MBARKA|OUARHOU AMINE|OUILKI JIHAD|OUIS MOHAMED|OUJAA IMANE|OUKOUZAMT HAYATE|OUNASSER ISRAA|RAIS ANAS|SAADI IMANE|SAADOUNI DOUAA|TOUIL KELTOUM|ZAKAR CHAIMA'),modules:["Pathologie medico-chirurgicale d'urgence","Puericulture et maladies transmissibles","Organisation des urgences et semiologie telephonique","Soins infirmiers en medecine et chirurgie d'urgence","Stage 1 service d'urgences","Stage 2 Dechoquage"]},
 'ISUSI S5':{students:P('AMARIR MOHAMMED|ARIF KHADIJA|BELLAGCHAIRI HIBA|BERRAMY HIBA|CHAIBI AYA|CHAKHCH YASSMINE|CHAOUKI FATIMA EZZAHRAA|DAHI ILYAS|EL ACHKAR BOUTAINA|EL HADAR HAJAR|EL MOUDDEN OUISAL|ESSAKHI HASNAE|GAZGAZ SALOUA|HOUSSAYNI IMANE|HOUSSNI ZAKARIA|IBRQI IMANE|IDSASSI ZINEB|KDAIRE NOUHAILA|KERROUM KHADIJA|KHORCHID MARIA|LAAZIZ KHADIJA|LACH-HEB MERIEM|LAKOUIS IMANE|MABROUR ABDELLAH|MACHKOUR SALMA|MIMOUNE WISSALE|MIMOUNI ANAS|M\'KIOUASS SALMA|SBOUITA IBTISSAM|TADILI FATIMA-EZZAHRA|CHOUCRI HICHAM'),modules:["Pharmacologie de l'urgence","Materiel et appareillage des soins de sante des urgences et secourisme","Reanimation","Methodologie de recherche","Stage 3 Reanimation medicochirurgicale","Stage 4 Bloc Operatoire"]},
 'LABO S3':{students:P('AAA IBTIHAL|AIT BOURHIM IMANE|BADI ZINEB|BELFASSI FATIMA-EZZAHERAE|BOUCHRIHA MARYEM|BOUDLIH ILHAS|BOUSALHI NADA|CHARDAOUI OUISSAL|CHERKAOUI ABDERRAHMANE|DAU LAM ACHUIL LAM|DAYAB AMAL|EDDARKAOUI AMINA|EL HADI BADER|EL MALKI OUARDA|EL MANYANI CHAIMAA|ELAMOUD SARA|ELBAZ MOHAMED AMINE|ELMAKKAOUI SALAH EDDINE|ESSAADI ILYASS|ESSAADI ZOUHAYR|ESSADEK YOUSSEF|HASSANI MBECHEZI ELARIF|JEBBAD YASMINE|MQAINTAR SAMI|MULENGA MERCY CHIBESA|NOUGHOU AYA|RAGHIB ANAS|RAHEL GHIZLANE|SEKOURI MARYEM|SILOMBA TEPWANJI|TOYBA IBRAHIM|ZEROUALI MARYAM'),modules:["Biochimie clinique","Hematologie & Hemobiologie","Immunologie generale/ Immuno-Analyse","Biochimie clinique analytique TP","Stage d'Hematologie & d'Immuno-hematologie","Stage de biochimie"]},
@@ -366,218 +380,950 @@ const DEFAULT_GROUPS={
 'IG S5':{students:P('AITAYAD NADA|ABDELBAKI MERYEM|ARAHAL KHADIJA|BADDAZ TOURIA|BENKHALTI NADA|ABBOU IMANE|AAZRI OUMAIMA|AGOUJJIF HAFSA|ALAHMOUM MOHAMED|AYANI RIMA|ABARAGH MERYEM|AFOULOUS ASMAE|AMAZOUZ WASSIM|ABOUHANI MAROUA|BELAKZIZ AYA|ABRARAY KHADIJA'),modules:["Genie sanitaire avance","Gestion des dechets dangereux","Stage de specialisation avance","Memoire de fin d'etudes"]}
 };
 
-let GROUPS={},currentGroup='ISUSI S3',currentTab='enregistrement',currentSubTab='etudiants-mgmt',absences=[],importWorkbook=null,importSheetData=null,importPreviewData=[];
+/* ============================================================
+   ÉTAT GLOBAL
+   ============================================================ */
+let GROUPS = {};
+let currentGroup = 'ISUSI S3';
+let currentTab = 'enregistrement';
+let currentSubTab = 'etudiants-mgmt';
+let absences = [];
+let importWorkbook = null;
+let importSheetData = null;
+let importPreviewData = [];
+let isSaving = false;
 
+/* ============================================================
+   SAUVEGARDE FIREBASE — AVEC GESTION D'ERREURS ET INDICATEUR
+   ============================================================ */
+async function saveData() {
+    try {
+        await db.ref("gestion_absences").set({
+            groups: GROUPS,
+            absences: absences
+        });
+        console.log("Données sauvegardées avec succès");
+        return true;
+    } catch (e) {
+        console.error("Erreur de sauvegarde Firebase :", e);
+        showToast('Erreur de sauvegarde : ' + e.message, 'error');
+        return false;
+    }
+}
+        await db.ref("gestion_absences").set(dataToSave);
+
+        // Mettre à jour l'heure de dernière sauvegarde
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const lastSave = document.getElementById('lastSaveTime');
+        if (lastSave) lastSave.textContent = 'Derniere sauvegarde : ' + timeStr;
+
+        console.log('[saveData] Sauvegarde reussie a', timeStr);
+
+    } catch (error) {
+        console.error('[saveData] ERREUR de sauvegarde Firebase :', error);
+        showToast('Erreur de sauvegarde : ' + error.message, 'error');
+    } finally {
+        isSaving = false;
+        if (indicator) indicator.classList.remove('show');
+    }
+}
+
+/* ============================================================
+   CHARGEMENT DES DONNÉES — AVEC ÉCOUTEUR TEMPS RÉEL
+   ============================================================ */
 async function loadData() {
     try {
         const snapshot = await db.ref("gestion_absences").once("value");
 
-        console.log("Snapshot existe :", snapshot.exists());
-        console.log("Snapshot :", snapshot.val());
+        console.log("[loadData] Snapshot existe :", snapshot.exists());
 
         if (snapshot.exists()) {
             const data = snapshot.val();
-
             GROUPS = data.groups || JSON.parse(JSON.stringify(DEFAULT_GROUPS));
-            absences = data.absences || [];
+            absences = Array.isArray(data.absences) ? data.absences : [];
         } else {
+            // Première utilisation : initialiser avec les données par défaut
+            console.log("[loadData] Aucune donnee existante, initialisation...");
             GROUPS = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
             absences = [];
+            // Sauvegarder les données par défaut dans Firebase
             await saveData();
         }
 
-    } catch (e) {
-        console.error(e);
+    } catch (error) {
+        console.error("[loadData] ERREUR de chargement :", error);
+        showToast('Erreur de chargement des donnees : ' + error.message, 'error');
+        // Fallback sur les données locales
+        GROUPS = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
+        absences = [];
     }
 }
-async function saveData() {
-    await db.ref("gestion_absences").set({
-        groups: GROUPS,
-        absences: absences
+
+/* Écouteur en temps réel pour rester synchronisé si
+   un autre onglet ou appareil modifie les données */
+function listenForChanges() {
+    db.ref("gestion_absences").on("value", (snapshot) => {
+        if (!snapshot.exists()) return;
+        const data = snapshot.val();
+        if (data.groups) GROUPS = data.groups;
+        if (Array.isArray(data.absences)) absences = data.absences;
+        // Rafraîchir l'interface sans recharger
+        renderGroupList();
+        renderCurrentTab();
     });
 }
 
-document.addEventListener('DOMContentLoaded', async ()=>{
+/* ============================================================
+   TOAST NOTIFICATIONS
+   ============================================================ */
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+    toast.innerHTML = '<i class="fas ' + (icons[type] || icons.info) + '"></i><span>' + message + '</span>';
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.classList.add('toast-exit');
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
 
+/* ============================================================
+   MODAL
+   ============================================================ */
+function openModal(html) {
+    document.getElementById('modalBox').innerHTML = html;
+    document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('show');
+}
+
+/* ============================================================
+   INITIALISATION
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', async () => {
+    // Charger les données depuis Firebase
     await loadData();
-  document.getElementById('absDate').value=new Date().toISOString().split('T')[0];
-  const ts=document.getElementById('absTime');TIME_SLOTS.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;ts.appendChild(o);});
-  if(!Object.keys(GROUPS).length){GROUPS=JSON.parse(JSON.stringify(DEFAULT_GROUPS));saveData();}
-  if(!GROUPS[currentGroup])currentGroup=Object.keys(GROUPS)[0];
-  renderGroupList();selectGroup(currentGroup);
-  document.getElementById('hamburgerBtn').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
-  document.getElementById('mainContent').addEventListener('click',()=>document.getElementById('sidebar').classList.remove('open'));
-  document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
-  ['absDate','absTime','absModule'].forEach(id=>{document.getElementById(id).addEventListener('change',()=>{if(currentTab==='enregistrement')renderStudentGrid();});});
-  document.getElementById('importType').addEventListener('change',e=>{
-    const t=e.target.value;
-    document.getElementById('colMappingStudents').style.display=t==='etudiants'?'block':'none';
-    document.getElementById('colMappingModules').style.display=t==='modules'?'block':'none';
-    document.getElementById('colMappingAbsences').style.display=t==='absences'?'block':'none';
-  });
+
+    // Démarrer l'écoute en temps réel
+    listenForChanges();
+
+    // Initialiser la date du jour
+    document.getElementById('absDate').value = new Date().toISOString().split('T')[0];
+
+    // Remplir les créneaux horaires
+    const ts = document.getElementById('absTime');
+    TIME_SLOTS.forEach(t => {
+        const o = document.createElement('option');
+        o.value = t;
+        o.textContent = t;
+        ts.appendChild(o);
+    });
+
+    // Vérifier l'intégrité des groupes
+    if (!Object.keys(GROUPS).length) {
+        GROUPS = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
+        await saveData();
+    }
+
+    // Vérifier que le groupe courant existe
+    if (!GROUPS[currentGroup]) {
+        currentGroup = Object.keys(GROUPS)[0];
+    }
+
+    // Rendu initial
+    renderGroupList();
+    selectGroup(currentGroup);
+
+    // Événements hamburger
+    document.getElementById('hamburgerBtn').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('open');
+    });
+    document.getElementById('mainContent').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.remove('open');
+    });
+
+    // Fermer modal en cliquant hors de la box
+    document.getElementById('modalOverlay').addEventListener('click', e => {
+        if (e.target === e.currentTarget) closeModal();
+    });
+
+    // Re-rendu quand on change date/heure/module
+    ['absDate', 'absTime', 'absModule'].forEach(id => {
+        document.getElementById(id).addEventListener('change', () => {
+            if (currentTab === 'enregistrement') renderStudentGrid();
+        });
+    });
+
+    // Import : basculer les mappings de colonnes selon le type
+    document.getElementById('importType').addEventListener('change', e => {
+        const t = e.target.value;
+        document.getElementById('colMappingStudents').style.display = t === 'etudiants' ? 'block' : 'none';
+        document.getElementById('colMappingModules').style.display = t === 'modules' ? 'block' : 'none';
+        document.getElementById('colMappingAbsences').style.display = t === 'absences' ? 'block' : 'none';
+    });
 });
 
-function switchTab(tab){currentTab=tab;document.querySelectorAll('.tab-content').forEach(el=>el.style.display='none');document.getElementById('tab-'+tab).style.display='block';document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.tab===tab));document.getElementById('sidebar').classList.remove('open');if(tab==='gestion')switchSubTab(currentSubTab);renderCurrentTab();}
-function switchSubTab(sub){currentSubTab=sub;document.querySelectorAll('.sub-tab').forEach(el=>el.classList.toggle('active',el.dataset.subtab===sub));document.querySelectorAll('.subtab-content').forEach(el=>el.style.display='none');const t=document.getElementById('subtab-'+sub);if(t)t.style.display='block';if(sub==='etudiants-mgmt')renderMgmtStudents();if(sub==='modules-mgmt')renderMgmtModules();if(sub==='groupes-mgmt')renderMgmtGroups();}
-
-function renderGroupList(){
-  const c=document.getElementById('groupList'),s=(document.getElementById('groupSearch').value||'').toLowerCase(),fm={};
-  Object.keys(GROUPS).forEach(g=>{if(s&&!g.toLowerCase().includes(s))return;const m=g.match(/^(.+?)\s+S(\d+)$/);if(!m)return;const f=m[1];if(!fm[f])fm[f]=[];fm[f].push(g);});
-  let h='';Object.keys(fm).sort().forEach(f=>{h+=`<div class="group-label">${f}</div>`;fm[f].sort((a,b)=>parseInt(a.match(/S(\d+)$/)[1])-parseInt(b.match(/S(\d+)$/)[1])).forEach(g=>{const cnt=GROUPS[g]?GROUPS[g].students.length:0;h+=`<div class="group-item ${g===currentGroup?'active':''}" onclick="selectGroup('${g.replace(/'/g,"\\'")}')">${g}<span class="count">${cnt}</span></div>`;});});
-  c.innerHTML=h;
-}
-function filterGroups(){renderGroupList();}
-function selectGroup(g){currentGroup=g;renderGroupList();updateModuleSelect();renderCurrentTab();document.getElementById('sidebar').classList.remove('open');}
-function updateModuleSelect(){const sel=document.getElementById('absModule');sel.innerHTML='<option value="">-- Choisir --</option>';(GROUPS[currentGroup]?.modules||[]).forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o);});}
-function renderCurrentTab(){switch(currentTab){case'enregistrement':renderStudentGrid();break;case'historique':renderHistory();break;case'statistiques':renderStats();break;case'etudiants':renderStudentCards();break;case'gestion':switchSubTab(currentSubTab);break;}renderPageHeader();}
-function renderPageHeader(){
-  const students=GROUPS[currentGroup]?.students||[];
-  const tn={enregistrement:'Enregistrement des absences',historique:'Historique des absences',statistiques:'Statistiques',etudiants:'Fiches etudiants',gestion:'Gestion des donnees'};
-  const ti={enregistrement:'fa-pen-to-square',historique:'fa-clock-rotate-left',statistiques:'fa-chart-pie',etudiants:'fa-users',gestion:'fa-gear'};
-  document.getElementById('pageHeader').innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;"><div><div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;"><span style="background:var(--accent-glow2);color:var(--accent);padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;">${currentGroup}</span><span style="color:var(--muted);font-size:13px;">${students.length} etudiants</span></div><h2 style="font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px;"><i class="fas ${ti[currentTab]}" style="color:var(--accent);font-size:20px;"></i>${tn[currentTab]}</h2></div></div>`;
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+    document.getElementById('tab-' + tab).style.display = 'block';
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
+    document.getElementById('sidebar').classList.remove('open');
+    if (tab === 'gestion') switchSubTab(currentSubTab);
+    renderCurrentTab();
 }
 
-function renderStudentGrid(){
-  const students=GROUPS[currentGroup]?.students||[],search=(document.getElementById('studentSearch')?.value||'').toLowerCase(),filtered=students.filter(s=>s.toLowerCase().includes(search));
-  const date=document.getElementById('absDate').value,time=document.getElementById('absTime').value,mod=document.getElementById('absModule').value;
-  const existing=absences.filter(a=>a.group===currentGroup&&a.date===date&&a.time===time&&a.module===mod);
-  let h=`<table class="data-table"><thead><tr><th style="width:50px;"><input type="checkbox" class="abs-checkbox" id="checkAll" onchange="toggleAll(this.checked)"></th><th style="width:60px;">N</th><th>Nom complet</th><th style="width:120px;">Statut</th><th style="width:200px;">Justification</th></tr></thead><tbody>`;
-  filtered.forEach((name,i)=>{const abs=existing.find(a=>a.student===name),checked=abs?'checked':'',rc=abs?'absent-row':'',oi=students.indexOf(name)+1;
-    const st=abs?`<span class="absent-tag"><i class="fas fa-xmark"></i> Absent</span>`:`<span style="color:var(--accent);font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Present</span>`;
-    h+=`<tr class="${rc}"><td><input type="checkbox" class="abs-checkbox student-cb" data-name="${name}" ${checked} onchange="onStudentCbChange(this)"></td><td style="color:var(--muted);font-size:13px;">${oi}</td><td style="font-weight:500;">${name}</td><td>${st}</td><td><input type="text" class="form-input" style="padding:6px 10px;font-size:12px;" placeholder="Justification..." data-just="${name}" value="${abs?.justification||''}"></td></tr>`;});
-  if(!filtered.length)h+=`<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Aucun etudiant</td></tr>`;
-  h+='</tbody></table>';document.getElementById('studentGrid').innerHTML=h;updateAbsCount();
-}
-function filterStudents(){renderStudentGrid();}
-function onStudentCbChange(cb){const tr=cb.closest('tr');tr.classList.toggle('absent-row',cb.checked);tr.children[3].innerHTML=cb.checked?`<span class="absent-tag"><i class="fas fa-xmark"></i> Absent</span>`:`<span style="color:var(--accent);font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Present</span>`;updateAbsCount();}
-function toggleAll(checked){document.querySelectorAll('.student-cb').forEach(cb=>{cb.checked=checked;onStudentCbChange(cb);});document.getElementById('checkAll').checked=checked;}
-function selectAllVisible(){toggleAll(true);}function deselectAllVisible(){toggleAll(false);}
-function updateAbsCount(){const c=document.querySelectorAll('.student-cb:checked').length;const el=document.getElementById('absCountLabel');el.textContent=`${c} absent(s) selectionne(s)`;el.style.color=c>0?'var(--danger)':'var(--muted)';}
-function clearSelection(){deselectAllVisible();document.querySelectorAll('[data-just]').forEach(i=>i.value='');}
-function saveAbsences(){
-  const date=document.getElementById('absDate').value,time=document.getElementById('absTime').value,mod=document.getElementById('absModule').value;
-  if(!date){showToast('Selectionnez une date','error');return;}if(!time){showToast('Selectionnez un creneau','error');return;}if(!mod){showToast('Selectionnez un module','error');return;}
-  absences=absences.filter(a=>!(a.group===currentGroup&&a.date===date&&a.time===time&&a.module===mod));
-  const checked=document.querySelectorAll('.student-cb:checked');
-  if(!checked.length){showToast('Aucune absence a enregistrer','info');saveData();renderStudentGrid();return;}
-  checked.forEach(cb=>{const name=cb.dataset.name;const ji=document.querySelector(`[data-just="${name}"]`);absences.push({id:Date.now()+Math.random(),group:currentGroup,student:name,date,time,module:mod,justification:ji?ji.value.trim():'',timestamp:new Date().toISOString()});});
-  saveData();showToast(`${checked.length} absence(s) enregistree(s)`,'success');renderStudentGrid();
+function switchSubTab(sub) {
+    currentSubTab = sub;
+    document.querySelectorAll('.sub-tab').forEach(el => el.classList.toggle('active', el.dataset.subtab === sub));
+    document.querySelectorAll('.subtab-content').forEach(el => el.style.display = 'none');
+    const t = document.getElementById('subtab-' + sub);
+    if (t) t.style.display = 'block';
+    if (sub === 'etudiants-mgmt') renderMgmtStudents();
+    if (sub === 'modules-mgmt') renderMgmtModules();
+    if (sub === 'groupes-mgmt') renderMgmtGroups();
 }
 
-function renderHistory(){
-  const search=(document.getElementById('histSearch')?.value||'').toLowerCase(),df=document.getElementById('histDateFrom')?.value||'',dt=document.getElementById('histDateTo')?.value||'';
-  let f=absences.filter(a=>a.group===currentGroup);
-  if(search)f=f.filter(a=>a.student.toLowerCase().includes(search)||(a.module||'').toLowerCase().includes(search)||(a.justification||'').toLowerCase().includes(search));
-  if(df)f=f.filter(a=>a.date>=df);if(dt)f=f.filter(a=>a.date<=dt);
-  f.sort((a,b)=>b.date.localeCompare(a.date)||a.student.localeCompare(b.student));
-  let h=`<table class="data-table"><thead><tr><th>Date</th><th>Creneau</th><th>Module</th><th>Etudiant</th><th>Justification</th><th style="width:60px;"></th></tr></thead><tbody>`;
-  if(!f.length)h+=`<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);"><i class="fas fa-inbox" style="font-size:32px;display:block;margin-bottom:12px;opacity:.3;"></i>Aucun enregistrement</td></tr>`;
-  else{let ld='';f.forEach(a=>{const ds=a.date!==ld;ld=a.date;h+=`<tr><td style="font-weight:${ds?'600':'400'};font-size:${ds?'13':'12'}px;color:${ds?'var(--fg)':'var(--muted)'};">${ds?formatDate(a.date):''}</td><td style="font-size:12px;">${a.time||'-'}</td><td style="font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.module||''}">${a.module||'-'}</td><td style="font-weight:500;">${a.student}</td><td style="font-size:12px;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.justification||''}">${a.justification||'-'}</td><td><button class="btn btn-xs btn-ghost" style="color:var(--danger);padding:4px 8px;" onclick="deleteAbsence(${a.id})"><i class="fas fa-trash-can"></i></button></td></tr>`;});}
-  h+='</tbody></table>';document.getElementById('historyTable').innerHTML=h;
-}
-function deleteAbsence(id){showModal('Supprimer','Supprimer cette absence ?',()=>{absences=absences.filter(a=>a.id!==id);saveData();renderHistory();showToast('Supprime','success');});}
-
-function renderStats(){
-  const ga=absences.filter(a=>a.group===currentGroup),students=GROUPS[currentGroup]?.students||[];
-  const ts=[...new Set(ga.map(a=>`${a.date}_${a.time}_${a.module}`))].length;
-  const ss={};students.forEach(s=>ss[s]=0);ga.forEach(a=>{if(ss[a.student]!==undefined)ss[a.student]++;});
-  const ta=ga.length,avg=students.length?(ta/students.length).toFixed(1):0,mx=Math.max(...Object.values(ss),0),swa=Object.values(ss).filter(v=>v>0).length;
-  const sorted=Object.entries(ss).sort((a,b)=>b[1]-a[1]).filter(([,v])=>v>0).slice(0,10);
-  const ms={};ga.forEach(a=>{const m=a.module||'Non defini';ms[m]=(ms[m]||0)+1;});const sm=Object.entries(ms).sort((a,b)=>b[1]-a[1]);
-  const ds={};ga.forEach(a=>ds[a.date]=(ds[a.date]||0)+1);const sd=Object.entries(ds).sort((a,b)=>a[0].localeCompare(b[0]));
-  let h=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;" class="fade-up">
-    <div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--danger-glow);color:var(--danger);"><i class="fas fa-user-xmark"></i></div><div><div class="stat-value" style="color:var(--danger);">${ta}</div><div class="stat-label">Total absences</div></div></div></div>
-    <div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--warn-glow);color:var(--warn);"><i class="fas fa-chart-line"></i></div><div><div class="stat-value" style="color:var(--warn);">${avg}</div><div class="stat-label">Moyenne / etudiant</div></div></div></div>
-    <div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--accent-glow2);color:var(--accent);"><i class="fas fa-calendar-check"></i></div><div><div class="stat-value" style="color:var(--accent);">${ts}</div><div class="stat-label">Seances enregistrees</div></div></div></div>
-    <div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--purple-glow);color:var(--purple);"><i class="fas fa-users"></i></div><div><div class="stat-value" style="color:var(--purple);">${swa}/${students.length}</div><div class="stat-label">Etudiants concernes</div></div></div></div></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d1">
-    <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;"><i class="fas fa-ranking-star" style="color:var(--danger);"></i> Etudiants les plus absents</h3>`;
-  if(!sorted.length)h+=`<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune donnee</div>`;
-  else sorted.forEach(([n,c],i)=>{const p=mx>0?c/mx*100:0;const bc=c>=5?'var(--danger)':c>=3?'var(--warn)':'var(--accent)';h+=`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-size:12.5px;font-weight:500;"><span style="color:var(--muted);font-size:11px;width:18px;display:inline-block;">${i+1}.</span> ${n}</span><span class="badge ${c>=5?'badge-danger':c>=3?'badge-warn':'badge-ok'}">${c}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${p}%;background:${bc};"></div></div></div>`;});
-  h+=`</div><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d2">
-    <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;"><i class="fas fa-book" style="color:var(--accent);"></i> Par module</h3>`;
-  if(!sm.length)h+=`<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune donnee</div>`;
-  else{const mm=sm[0][1];sm.forEach(([m,c])=>{const p=mm>0?c/mm*100:0;h+=`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-size:12px;font-weight:500;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${m}">${m}</span><span style="font-size:12px;color:var(--muted);font-weight:600;">${c}</span></div><div class="progress-bar"><div class="progress-fill" style="width:${p}%;background:var(--accent);"></div></div></div>`;});}
-  h+=`</div></div><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d3">
-    <h3 style="font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;"><i class="fas fa-chart-bar" style="color:var(--warn);"></i> Evolution par date</h3>`;
-  if(!sd.length)h+=`<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Aucune donnee</div>`;
-  else{const md=Math.max(...sd.map(([,v])=>v));h+=`<div style="display:flex;align-items:flex-end;gap:6px;height:120px;padding-top:10px;">`;sd.forEach(([d,c])=>{const p=md>0?c/md*100:0;const bc=c>=md*.7?'var(--danger)':c>=md*.4?'var(--warn)':'var(--accent)';h+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="font-size:11px;font-weight:600;color:${bc};">${c}</span><div style="width:100%;height:${Math.max(p,4)}%;background:${bc};border-radius:4px 4px 0 0;min-height:4px;"></div><span style="font-size:9px;color:var(--muted);transform:rotate(-45deg);white-space:nowrap;">${d.slice(5)}</span></div>`;});h+='</div>';}h+='</div>';
-  document.getElementById('statsContent').innerHTML=h;
+/* ============================================================
+   LISTE DES GROUPES (SIDEBAR)
+   ============================================================ */
+function renderGroupList() {
+    const c = document.getElementById('groupList');
+    const s = (document.getElementById('groupSearch').value || '').toLowerCase();
+    const fm = {};
+    Object.keys(GROUPS).forEach(g => {
+        if (s && !g.toLowerCase().includes(s)) return;
+        const m = g.match(/^(.+?)\s+S(\d+)$/);
+        if (!m) return;
+        const f = m[1];
+        if (!fm[f]) fm[f] = [];
+        fm[f].push(g);
+    });
+    let h = '';
+    // Gérer les groupes qui ne matchent pas le pattern S#
+    const matched = new Set(Object.values(fm).flat());
+    const unmatched = Object.keys(GROUPS).filter(g => !matched.has(g) && (!s || g.toLowerCase().includes(s)));
+    if (unmatched.length) {
+        h += '<div class="group-label">Autres</div>';
+        unmatched.forEach(g => {
+            const cnt = GROUPS[g] ? GROUPS[g].students.length : 0;
+            h += '<div class="group-item ' + (g === currentGroup ? 'active' : '') + '" onclick="selectGroup(\'' + g.replace(/'/g, "\\'") + '\')">' + g + '<span class="count">' + cnt + '</span></div>';
+        });
+    }
+    Object.keys(fm).sort().forEach(f => {
+        h += '<div class="group-label">' + f + '</div>';
+        fm[f].sort((a, b) => parseInt(a.match(/S(\d+)$/)[1]) - parseInt(b.match(/S(\d+)$/)[1])).forEach(g => {
+            const cnt = GROUPS[g] ? GROUPS[g].students.length : 0;
+            h += '<div class="group-item ' + (g === currentGroup ? 'active' : '') + '" onclick="selectGroup(\'' + g.replace(/'/g, "\\'") + '\')">' + g + '<span class="count">' + cnt + '</span></div>';
+        });
+    });
+    c.innerHTML = h;
 }
 
-function renderStudentCards(){
-  const students=GROUPS[currentGroup]?.students||[],search=(document.getElementById('etudSearch')?.value||'').toLowerCase(),sort=document.getElementById('etudSort')?.value||'name';
-  const ga=absences.filter(a=>a.group===currentGroup);
-  const sd=students.map(name=>{const al=ga.filter(a=>a.student===name);return{name,count:al.length,modules:[...new Set(al.map(a=>a.module).filter(Boolean))],lastAbs:al.length?al[al.length-1].date:null};});
-  let f=sd;if(search)f=f.filter(s=>s.name.toLowerCase().includes(search));
-  if(sort==='abs-desc')f.sort((a,b)=>b.count-a.count);else if(sort==='abs-asc')f.sort((a,b)=>a.count-b.count);else f.sort((a,b)=>a.name.localeCompare(b.name));
-  let h='';
-  f.forEach(s=>{const sc=s.count>=5?'badge-danger':s.count>=3?'badge-warn':s.count>0?'badge-ok':'';const bc=s.count>=5?'var(--danger)':s.count>=3?'var(--warn)':'var(--border)';
-    h+=`<div style="background:var(--card);border:1px solid ${bc};border-radius:12px;padding:16px;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 20px rgba(0,0,0,0.08)'" onmouseleave="this.style.transform='';this.style.boxShadow='0 1px 3px rgba(0,0,0,0.04)'">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;"><div><div style="font-weight:600;font-size:14px;margin-bottom:2px;">${s.name}</div><div style="font-size:11px;color:var(--muted);">${currentGroup}</div></div>
-    ${sc?`<span class="badge ${sc}">${s.count} abs.</span>`:`<span style="font-size:11px;color:var(--accent);font-weight:600;"><i class="fas fa-check-circle"></i> Aucune absence</span>`}</div>
-    ${s.modules.length?`<div style="font-size:11px;color:var(--muted);margin-bottom:6px;"><i class="fas fa-book" style="margin-right:4px;"></i> ${s.modules.slice(0,3).join(', ')}${s.modules.length>3?' +'+(s.modules.length-3):''}</div>`:''}
-    ${s.lastAbs?`<div style="font-size:11px;color:var(--muted);"><i class="fas fa-calendar" style="margin-right:4px;"></i> Derniere: ${formatDate(s.lastAbs)}</div>`:''}</div>`;});
-  if(!f.length)h=`<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted);"><i class="fas fa-search" style="font-size:32px;display:block;margin-bottom:12px;opacity:.3;"></i>Aucun etudiant</div>`;
-  document.getElementById('studentCards').innerHTML=h;
+function filterGroups() { renderGroupList(); }
+
+function selectGroup(g) {
+    currentGroup = g;
+    renderGroupList();
+    updateModuleSelect();
+    renderCurrentTab();
+    document.getElementById('sidebar').classList.remove('open');
 }
 
-// GESTION ETUDIANTS
-function renderMgmtStudents(){
-  const students=GROUPS[currentGroup]?.students||[],search=(document.getElementById('mgmtStudSearch')?.value||'').toLowerCase(),filtered=students.filter(s=>s.toLowerCase().includes(search));
-  let h=`<table class="data-table"><thead><tr><th style="width:60px;">N</th><th>Nom complet</th><th style="width:140px;">Actions</th></tr></thead><tbody>`;
-  filtered.forEach((name,i)=>{const oi=students.indexOf(name)+1;h+=`<tr><td style="color:var(--muted);font-size:13px;">${oi}</td><td style="font-weight:500;" id="stud-name-${i}">${name}</td><td><div style="display:flex;gap:4px;"><button class="btn btn-xs btn-ghost" onclick="editStudentInline(${i},'${name.replace(/'/g,"\\'")}')"><i class="fas fa-pen" style="color:var(--info);"></i></button><button class="btn btn-xs btn-ghost" onclick="deleteStudent('${name.replace(/'/g,"\\'")}')"><i class="fas fa-trash-can" style="color:var(--danger);"></i></button></div></td></tr>`;});
-  if(!filtered.length)h+=`<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);">Aucun etudiant</td></tr>`;
-  h+='</tbody></table>';document.getElementById('mgmtStudentsTable').innerHTML=h;
+function updateModuleSelect() {
+    const sel = document.getElementById('absModule');
+    sel.innerHTML = '<option value="">-- Choisir --</option>';
+    (GROUPS[currentGroup]?.modules || []).forEach(m => {
+        const o = document.createElement('option');
+        o.value = m;
+        o.textContent = m;
+        sel.appendChild(o);
+    });
 }
-function editStudentInline(idx,oldName){const el=document.getElementById('stud-name-'+idx);el.innerHTML=`<input type="text" class="edit-input" id="stud-edit-${idx}" value="${oldName}" onkeydown="if(event.key==='Enter')saveStudentEdit(${idx},'${oldName.replace(/'/g,"\\'")}');if(event.key==='Escape')renderMgmtStudents();">`;document.getElementById('stud-edit-'+idx).focus();document.getElementById('stud-edit-'+idx).select();}
-function saveStudentEdit(idx,oldName){const inp=document.getElementById('stud-edit-'+idx);if(!inp)return;const newName=inp.value.trim();if(!newName){showToast('Le nom ne peut pas etre vide','error');return;}if(newName!==oldName&&GROUPS[currentGroup].students.includes(newName)){showToast('Cet etudiant existe deja','error');return;}const si=GROUPS[currentGroup].students.indexOf(oldName);if(si>-1)GROUPS[currentGroup].students[si]=newName;absences.forEach(a=>{if(a.group===currentGroup&&a.student===oldName)a.student=newName;});saveData();showToast('Etudiant modifie','success');renderMgmtStudents();}
-function deleteStudent(name){showModal('Supprimer etudiant',`Supprimer ${name} de ${currentGroup} ?`,()=>{GROUPS[currentGroup].students=GROUPS[currentGroup].students.filter(s=>s!==name);saveData();showToast('Etudiant supprime','success');renderMgmtStudents();});}
-function showAddStudentModal(){openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Ajouter un etudiant</h3><div style="margin-bottom:16px;"><label class="form-label">Nom complet</label><input type="text" class="form-input" id="newStudentName" placeholder="NOM PRENOM" onkeydown="if(event.key==='Enter')addStudent()"></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="addStudent()"><i class="fas fa-plus"></i> Ajouter</button></div>`);setTimeout(()=>{const i=document.getElementById('newStudentName');if(i)i.focus();},100);}
-function addStudent(){const name=(document.getElementById('newStudentName')?.value||'').trim().toUpperCase();if(!name){showToast('Saisissez un nom','error');return;}if(GROUPS[currentGroup].students.includes(name)){showToast('Cet etudiant existe deja','error');return;}GROUPS[currentGroup].students.push(name);saveData();closeModal();showToast('Etudiant ajoute','success');renderMgmtStudents();}
-function showBulkAddStudentModal(){openModal(`<h3 style="font-size:18px;margin-bottom:8px;">Ajout multiple</h3><p style="color:var(--muted);font-size:13px;margin-bottom:16px;">Un nom par ligne, convertis en majuscules automatiquement.</p><div style="margin-bottom:16px;"><label class="form-label">Liste des etudiants</label><textarea class="form-input" id="bulkStudentNames" rows="10" placeholder="NOM PRENOM 1&#10;NOM PRENOM 2&#10;..." style="resize:vertical;"></textarea></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="addBulkStudents()"><i class="fas fa-list"></i> Ajouter tous</button></div>`);setTimeout(()=>document.getElementById('bulkStudentNames').focus(),100);}
-function addBulkStudents(){const text=(document.getElementById('bulkStudentNames')?.value||'').trim();if(!text){showToast('Saisissez au moins un nom','error');return;}const names=text.split('\n').map(s=>s.trim().toUpperCase()).filter(s=>s);let added=0,dup=0;names.forEach(n=>{if(GROUPS[currentGroup].students.includes(n))dup++;else{GROUPS[currentGroup].students.push(n);added++;}});saveData();closeModal();showToast(`${added} ajoute(s)${dup?', '+dup+' doublon(s) ignore(s)':''}`,added>0?'success':'info');renderMgmtStudents();}
 
-// GESTION MODULES
-function renderMgmtModules(){const mods=GROUPS[currentGroup]?.modules||[];document.getElementById('modCountLabel').textContent=`${mods.length} module(s) dans ${currentGroup}`;let h=`<table class="data-table"><thead><tr><th style="width:60px;">N</th><th>Nom du module</th><th style="width:140px;">Actions</th></tr></thead><tbody>`;mods.forEach((m,i)=>{h+=`<tr><td style="color:var(--muted);font-size:13px;">${i+1}</td><td style="font-weight:500;" id="mod-name-${i}">${m}</td><td><div style="display:flex;gap:4px;"><button class="btn btn-xs btn-ghost" onclick="editModuleInline(${i})"><i class="fas fa-pen" style="color:var(--info);"></i></button><button class="btn btn-xs btn-ghost" onclick="deleteModule(${i})"><i class="fas fa-trash-can" style="color:var(--danger);"></i></button></div></td></tr>`;});if(!mods.length)h+=`<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);">Aucun module</td></tr>`;h+='</tbody></table>';document.getElementById('mgmtModulesTable').innerHTML=h;}
-function editModuleInline(idx){const el=document.getElementById('mod-name-'+idx);el.innerHTML=`<input type="text" class="edit-input" id="mod-edit-${idx}" value="${GROUPS[currentGroup].modules[idx]}" onkeydown="if(event.key==='Enter')saveModuleEdit(${idx});if(event.key==='Escape')renderMgmtModules();">`;document.getElementById('mod-edit-'+idx).focus();document.getElementById('mod-edit-'+idx).select();}
-function saveModuleEdit(idx){const inp=document.getElementById('mod-edit-'+idx);if(!inp)return;const v=inp.value.trim();if(!v){showToast('Le nom ne peut pas etre vide','error');return;}const old=GROUPS[currentGroup].modules[idx];GROUPS[currentGroup].modules[idx]=v;absences.forEach(a=>{if(a.group===currentGroup&&a.module===old)a.module=v;});saveData();showToast('Module modifie','success');renderMgmtModules();}
-function deleteModule(idx){const m=GROUPS[currentGroup].modules[idx];showModal('Supprimer module',`Supprimer "${m}" ?`,()=>{GROUPS[currentGroup].modules.splice(idx,1);saveData();showToast('Module supprime','success');renderMgmtModules();});}
-function showAddModuleModal(){openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Ajouter un module</h3><div style="margin-bottom:16px;"><label class="form-label">Nom du module</label><input type="text" class="form-input" id="newModuleName" onkeydown="if(event.key==='Enter')addModule()"></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="addModule()"><i class="fas fa-plus"></i> Ajouter</button></div>`);setTimeout(()=>document.getElementById('newModuleName').focus(),100);}
-function addModule(){const name=(document.getElementById('newModuleName')?.value||'').trim();if(!name){showToast('Saisissez un nom','error');return;}GROUPS[currentGroup].modules.push(name);saveData();closeModal();showToast('Module ajoute','success');renderMgmtModules();}
-
-// GESTION GROUPES
-function renderMgmtGroups(){const fMap={};Object.keys(GROUPS).forEach(g=>{const m=g.match(/^(.+?)\s+S(\d+)$/);if(!m)return;const f=m[1];if(!fMap[f])fMap[f]=[];fMap[f].push(g);});let h=`<table class="data-table"><thead><tr><th>Groupe</th><th style="width:100px;">Etudiants</th><th style="width:100px;">Modules</th><th style="width:140px;">Actions</th></tr></thead><tbody>`;Object.keys(fMap).sort().forEach(f=>{fMap[f].sort((a,b)=>parseInt(a.match(/S(\d+)$/)[1])-parseInt(b.match(/S(\d+)$/)[1])).forEach(g=>{const s=GROUPS[g]?.students.length||0,m=GROUPS[g]?.modules.length||0,isCur=g===currentGroup;h+=`<tr style="${isCur?'background:var(--accent-glow);':''}"><td style="font-weight:${isCur?'700':'500'};">${g} ${isCur?'<span style="font-size:10px;color:var(--accent);">(actif)</span>':''}</td><td style="color:var(--muted);">${s}</td><td style="color:var(--muted);">${m}</td><td><div style="display:flex;gap:4px;"><button class="btn btn-xs btn-ghost" onclick="renameGroup('${g.replace(/'/g,"\\'")}')"><i class="fas fa-pen" style="color:var(--info);"></i></button><button class="btn btn-xs btn-ghost" onclick="duplicateGroup('${g.replace(/'/g,"\\'")}')"><i class="fas fa-copy" style="color:var(--warn);"></i></button><button class="btn btn-xs btn-ghost" onclick="deleteGroup('${g.replace(/'/g,"\\'")}')"><i class="fas fa-trash-can" style="color:var(--danger);"></i></button></div></td></tr>`;});});h+='</tbody></table>';document.getElementById('mgmtGroupsTable').innerHTML=h;}
-function showAddGroupModal(){const fMap={};Object.keys(GROUPS).forEach(g=>{const m=g.match(/^(.+?)\s+S(\d+)$/);if(m)fMap[m[1]]=true;});let opts='';Object.keys(fMap).sort().forEach(f=>{opts+=`<option value="${f}">${f}</option>`;});openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Creer un groupe</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;"><div><label class="form-label">Filiere</label><input type="text" class="form-input" id="newGroupFiliere" list="filiereList" placeholder="Ex: ISUSI"><datalist id="filiereList">${Object.keys(fMap).sort().map(f=>`<option value="${f}">`).join('')}</datalist></div><div><label class="form-label">Semestre</label><select class="form-input" id="newGroupSem"><option value="S1">S1</option><option value="S2">S2</option><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select></div></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="addGroup()"><i class="fas fa-plus"></i> Creer</button></div>`);setTimeout(()=>document.getElementById('newGroupFiliere').focus(),100);}
-function addGroup(){const f=(document.getElementById('newGroupFiliere')?.value||'').trim().toUpperCase(),s=document.getElementById('newGroupSem')?.value||'S1';if(!f){showToast('Saisissez une filiere','error');return;}const name=`${f} ${s}`;if(GROUPS[name]){showToast('Ce groupe existe deja','error');return;}GROUPS[name]={students:[],modules:[]};saveData();closeModal();showToast(`Groupe ${name} cree`,'success');renderMgmtGroups();renderGroupList();}
-function renameGroup(oldName){openModal(`<h3 style="font-size:18px;margin-bottom:16px;">Renommer le groupe</h3><div style="margin-bottom:16px;"><label class="form-label">Nouveau nom</label><input type="text" class="form-input" id="renameGroupInput" value="${oldName}" onkeydown="if(event.key==='Enter')confirmRenameGroup('${oldName.replace(/'/g,"\\'")}')"></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" id="renameConfirmBtn">Renommer</button></div>`);setTimeout(()=>{const i=document.getElementById('renameGroupInput');if(i){i.focus();i.select();}document.getElementById('renameConfirmBtn').onclick=()=>confirmRenameGroup(oldName);},100);}
-function confirmRenameGroup(oldName){const newName=(document.getElementById('renameGroupInput')?.value||'').trim();if(!newName||newName===oldName){closeModal();return;}if(GROUPS[newName]){showToast('Ce nom est deja utilise','error');return;}GROUPS[newName]=GROUPS[oldName];delete GROUPS[oldName];absences.forEach(a=>{if(a.group===oldName)a.group=newName;});if(currentGroup===oldName)currentGroup=newName;saveData();closeModal();showToast('Groupe renomme','success');renderMgmtGroups();renderGroupList();}
-function duplicateGroup(name){const base=name.replace(/S\d+$/,'');let num=2;while(GROUPS[`${base}S${num}`])num++;const newName=`${base}S${num}`;GROUPS[newName]=JSON.parse(JSON.stringify(GROUPS[name]));GROUPS[newName].students=[];saveData();showToast(`${newName} cree (modules copies)`,'success');renderMgmtGroups();renderGroupList();}
-function deleteGroup(name){const sc=GROUPS[name]?.students.length||0,ac=absences.filter(a=>a.group===name).length;showModal('Supprimer le groupe',`Supprimer ${name} ? ${sc} etudiants et ${ac} absences seront supprimes.`,()=>{delete GROUPS[name];absences=absences.filter(a=>a.group!==name);if(currentGroup===name)currentGroup=Object.keys(GROUPS)[0]||'';saveData();showToast('Groupe supprime','success');renderMgmtGroups();renderGroupList();updateModuleSelect();renderCurrentTab();});}
-
-// IMPORT EXCEL
-function handleFileSelect(file){if(file)processFile(file);}
-function handleFileDrop(file){if(file)processFile(file);}
-function processFile(file){const ext=file.name.substring(file.name.lastIndexOf('.')).toLowerCase();if(!['.xlsx','.xls','.csv'].includes(ext)){showToast('Format non supporte','error');return;}const reader=new FileReader();reader.onload=function(e){try{importWorkbook=XLSX.read(e.target.result,{type:'array',cellDates:true});const info=document.getElementById('fileInfo');info.style.display='block';info.innerHTML=`<div style="display:flex;align-items:center;gap:12px;"><i class="fas fa-file-excel" style="font-size:28px;color:var(--accent);"></i><div><div style="font-weight:600;font-size:14px;">${file.name}</div><div style="font-size:12px;color:var(--muted);">${(file.size/1024).toFixed(1)} Ko — ${importWorkbook.SheetNames.length} feuille(s)</div></div></div>`;const sheetSel=document.getElementById('importSheet');sheetSel.innerHTML='';importWorkbook.SheetNames.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sheetSel.appendChild(o);});const grpSel=document.getElementById('importGroup');grpSel.innerHTML='';Object.keys(GROUPS).sort().forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;grpSel.appendChild(o);});grpSel.value=currentGroup;goToImportStep(2);onSheetChange();}catch(err){showToast('Erreur de lecture: '+err.message,'error');}};reader.readAsArrayBuffer(file);}
-function onSheetChange(){const sheetName=document.getElementById('importSheet').value;if(!importWorkbook||!sheetName)return;const ws=importWorkbook.Sheets[sheetName];importSheetData=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const headers=importSheetData[0]||[];['importNameCol','importModCol','importAbsNameCol','importAbsDateCol','importAbsTimeCol','importAbsModCol','importAbsJustCol'].forEach(id=>{const sel=document.getElementById(id);if(!sel)return;sel.innerHTML='';headers.forEach((h,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`Colonne ${i+1}${h?': '+String(h).substring(0,40):''}`;sel.appendChild(o);});});autoCol('importNameCol',headers,['nom','etudiant','prenom','name','student']);autoCol('importModCol',headers,['module','matiere','subject']);autoCol('importAbsNameCol',headers,['nom','etudiant','prenom','name']);autoCol('importAbsDateCol',headers,['date','jour','day']);autoCol('importAbsTimeCol',headers,['creneau','heure','horaire','time','slot']);autoCol('importAbsModCol',headers,['module','matiere','subject']);autoCol('importAbsJustCol',headers,['justif','raison','motif','justification','reason']);}
-function autoCol(selId,headers,kw){const sel=document.getElementById(selId);if(!sel)return;for(let i=0;i<headers.length;i++){if(kw.some(k=>String(headers[i]).toLowerCase().includes(k))){sel.value=i;return;}}}
-function goToImportStep(step){for(let i=1;i<=4;i++){document.getElementById('importStep'+i).style.display=i===step?'block':'none';const dot=document.getElementById('step'+i+'dot');dot.className='step-dot'+(i<step?' done':i===step?' active':'');if(i<4){const line=document.getElementById('step'+i+'line');line.className='step-line'+(i<step?' done':'');}}if(step===3)generatePreview();}
-function generatePreview(){if(!importSheetData)return;const type=document.getElementById('importType').value;importPreviewData=[];if(type==='etudiants'){const ci=parseInt(document.getElementById('importNameCol').value)||0;importSheetData.forEach((row,i)=>{if(i===0)return;const v=String(row[ci]||'').trim();if(v)importPreviewData.push({name:v.toUpperCase()});});}else if(type==='modules'){const ci=parseInt(document.getElementById('importModCol').value)||0;importSheetData.forEach((row,i)=>{if(i===0)return;const v=String(row[ci]||'').trim();if(v)importPreviewData.push({module:v});});}else{const ni=parseInt(document.getElementById('importAbsNameCol').value)||0,di=parseInt(document.getElementById('importAbsDateCol').value)||1,ti=parseInt(document.getElementById('importAbsTimeCol').value)||2,mi=parseInt(document.getElementById('importAbsModCol').value)||3,ji=parseInt(document.getElementById('importAbsJustCol').value)||4;importSheetData.forEach((row,i)=>{if(i===0)return;const name=String(row[ni]||'').trim().toUpperCase();if(!name)return;let date=String(row[di]||'');if(typeof row[di]==='number'&&row[di]>40000&&row[di]<60000){const d=new Date((row[di]-25569)*86400000);date=d.toISOString().split('T')[0];}else if(date.includes('/')){const p=date.split('/');if(p.length===3)date=`${p[2].padStart(4,'0')}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;}importPreviewData.push({name,date,time:String(row[ti]||''),module:String(row[mi]||''),justification:String(row[ji]||'')});});}
-  document.getElementById('previewCount').textContent=`${importPreviewData.length} ligne(s)`;
-  let h='<table class="preview-table"><thead><tr>';if(type==='etudiants')h+='<th>N</th><th>Nom</th>';else if(type==='modules')h+='<th>N</th><th>Module</th>';else h+='<th>N</th><th>Etudiant</th><th>Date</th><th>Creneau</th><th>Module</th><th>Justif.</th>';h+='</tr></thead><tbody>';const mr=Math.min(importPreviewData.length,50);for(let i=0;i<mr;i++){const d=importPreviewData[i];h+='<tr>';if(type==='etudiants')h+=`<td>${i+1}</td><td>${d.name}</td>`;else if(type==='modules')h+=`<td>${i+1}</td><td>${d.module}</td>`;else h+=`<td>${i+1}</td><td>${d.name}</td><td>${d.date}</td><td>${d.time}</td><td>${d.module}</td><td>${d.justification}</td>`;h+='</tr>';}if(importPreviewData.length>mr)h+=`<tr><td colspan="10" style="text-align:center;color:var(--muted);font-style:italic;">... et ${importPreviewData.length-mr} autres</td></tr>`;h+='</tbody></table>';document.getElementById('previewTableWrap').innerHTML=h;
+function renderCurrentTab() {
+    switch (currentTab) {
+        case 'enregistrement': renderStudentGrid(); break;
+        case 'historique': renderHistory(); break;
+        case 'statistiques': renderStats(); break;
+        case 'etudiants': renderStudentCards(); break;
+        case 'gestion': switchSubTab(currentSubTab); break;
+    }
+    renderPageHeader();
 }
-function executeImport(){const type=document.getElementById('importType').value,mode=document.getElementById('importMode').value,group=document.getElementById('importGroup').value;if(!GROUPS[group]){showToast('Groupe invalide','error');return;}let count=0;if(type==='etudiants'){if(mode==='replace')GROUPS[group].students=[];importPreviewData.forEach(d=>{if(!GROUPS[group].students.includes(d.name)){GROUPS[group].students.push(d.name);count++;}});}else if(type==='modules'){if(mode==='replace')GROUPS[group].modules=[];importPreviewData.forEach(d=>{if(!GROUPS[group].modules.includes(d.module)){GROUPS[group].modules.push(d.module);count++;}});}else{importPreviewData.forEach(d=>{if(!d.name||!d.date)return;absences.push({id:Date.now()+Math.random(),group,student:d.name,date:d.date,time:d.time,module:d.module,justification:d.justification||'',timestamp:new Date().toISOString()});count++;});}saveData();document.getElementById('importResultMsg').textContent=`${count} element(s) importe(s) dans ${group}`;goToImportStep(4);renderGroupList();if(group===currentGroup)updateModuleSelect();}
-function resetImport(){importWorkbook=null;importSheetData=null;importPreviewData=[];document.getElementById('fileInfo').style.display='none';document.getElementById('fileInput').value='';goToImportStep(1);}
 
-function exportCSV(){const ga=absences.filter(a=>a.group===currentGroup);if(!ga.length){showToast('Aucune donnee','info');return;}ga.sort((a,b)=>a.date.localeCompare(b.date)||a.student.localeCompare(b.student));let csv='\uFEFFDate,Creneau,Module,Etudiant,Justification\n';ga.forEach(a=>csv+=`${a.date},"${a.time}","${a.module}","${a.student}","${a.justification||''}"\n`);const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`absences_${currentGroup.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);showToast('CSV exporte','success');}
+function renderPageHeader() {
+    const students = GROUPS[currentGroup]?.students || [];
+    const tn = { enregistrement: 'Enregistrement des absences', historique: 'Historique des absences', statistiques: 'Statistiques', etudiants: 'Fiches etudiants', gestion: 'Gestion des donnees' };
+    const ti = { enregistrement: 'fa-pen-to-square', historique: 'fa-clock-rotate-left', statistiques: 'fa-chart-pie', etudiants: 'fa-users', gestion: 'fa-gear' };
+    document.getElementById('pageHeader').innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;"><div><div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;"><span style="background:var(--accent-glow2);color:var(--accent);padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;">' + currentGroup + '</span><span style="color:var(--muted);font-size:13px;">' + students.length + ' etudiants</span></div><h2 style="font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px;"><i class="fas ' + ti[currentTab] + '" style="color:var(--accent);font-size:20px;"></i>' + tn[currentTab] + '</h2></div></div>';
+}
 
-function formatDate(d){if(!d)return'-';const p=d.split('-');const m=['Jan','Fev','Mar','Avr','Mai','Jun','Jul','Aou','Sep','Oct','Nov','Dec'];return `${parseInt(p[2])} ${m[parseInt(p[1])-1]} ${p[0]}`;}
-function showToast(msg,type='info'){const c=document.getElementById('toastContainer'),t=document.createElement('div');t.className=`toast toast-${type}`;const icons={success:'fa-check-circle',error:'fa-exclamation-circle',info:'fa-info-circle'};t.innerHTML=`<i class="fas ${icons[type]||icons.info}"></i> ${msg}`;c.appendChild(t);setTimeout(()=>{t.classList.add('toast-exit');setTimeout(()=>t.remove(),300);},3500);}
-function openModal(html){document.getElementById('modalBox').innerHTML=html;document.getElementById('modalOverlay').classList.add('show');}
-function closeModal(){document.getElementById('modalOverlay').classList.remove('show');}
-function showModal(title,msg,cb){openModal(`<h3 style="font-size:18px;margin-bottom:8px;">${title}</h3><p style="color:var(--muted);font-size:14px;margin-bottom:20px;">${msg}</p><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-danger btn-sm" id="modalConfirmBtn">Confirmer</button></div>`);document.getElementById('modalConfirmBtn').onclick=()=>{closeModal();cb();};}
+/* ============================================================
+   ENREGISTREMENT DES ABSENCES
+   ============================================================ */
+function renderStudentGrid() {
+    const students = GROUPS[currentGroup]?.students || [];
+    const search = (document.getElementById('studentSearch')?.value || '').toLowerCase();
+    const filtered = students.filter(s => s.toLowerCase().includes(search));
+    const date = document.getElementById('absDate').value;
+    const time = document.getElementById('absTime').value;
+    const mod = document.getElementById('absModule').value;
+    const existing = absences.filter(a => a.group === currentGroup && a.date === date && a.time === time && a.module === mod);
+
+    let h = '<table class="data-table"><thead><tr><th style="width:50px;"><input type="checkbox" class="abs-checkbox" id="checkAll" onchange="toggleAll(this.checked)"></th><th style="width:60px;">N</th><th>Nom complet</th><th style="width:120px;">Statut</th><th style="width:200px;">Justification</th></tr></thead><tbody>';
+    filtered.forEach((name, i) => {
+        const abs = existing.find(a => a.student === name);
+        const checked = abs ? 'checked' : '';
+        const rc = abs ? 'absent-row' : '';
+        const oi = students.indexOf(name) + 1;
+        const st = abs ? '<span class="absent-tag"><i class="fas fa-xmark"></i> Absent</span>' : '<span style="color:var(--accent);font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Present</span>';
+        h += '<tr class="' + rc + '"><td><input type="checkbox" class="abs-checkbox student-cb" data-name="' + name + '" ' + checked + ' onchange="onStudentCbChange(this)"></td><td style="color:var(--muted);font-size:13px;">' + oi + '</td><td style="font-weight:500;">' + name + '</td><td>' + st + '</td><td><input type="text" class="form-input" style="padding:6px 10px;font-size:12px;" placeholder="Justification..." data-just="' + name + '" value="' + (abs?.justification || '') + '"></td></tr>';
+    });
+    if (!filtered.length) h += '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Aucun etudiant</td></tr>';
+    h += '</tbody></table>';
+    document.getElementById('studentGrid').innerHTML = h;
+    updateAbsCount();
+}
+
+function filterStudents() { renderStudentGrid(); }
+
+function onStudentCbChange(cb) {
+    const tr = cb.closest('tr');
+    tr.classList.toggle('absent-row', cb.checked);
+    updateAbsCount();
+}
+
+function toggleAll(checked) {
+    document.querySelectorAll('.student-cb').forEach(cb => {
+        cb.checked = checked;
+        cb.closest('tr').classList.toggle('absent-row', checked);
+    });
+    updateAbsCount();
+}
+
+function selectAllVisible() {
+    document.querySelectorAll('.student-cb').forEach(cb => { cb.checked = true; cb.closest('tr').classList.add('absent-row'); });
+    updateAbsCount();
+}
+
+function deselectAllVisible() {
+    document.querySelectorAll('.student-cb').forEach(cb => { cb.checked = false; cb.closest('tr').classList.remove('absent-row'); });
+    updateAbsCount();
+}
+
+function clearSelection() {
+    deselectAllVisible();
+    document.querySelectorAll('[data-just]').forEach(inp => inp.value = '');
+}
+
+function updateAbsCount() {
+    const count = document.querySelectorAll('.student-cb:checked').length;
+    document.getElementById('absCountLabel').textContent = count + ' absent(s) selectionne(s)';
+}
+
+async function saveAbsences() {
+    const date = document.getElementById('absDate').value;
+    const time = document.getElementById('absTime').value;
+    const mod = document.getElementById('absModule').value;
+
+    if (!date || !time || !mod) {
+        showToast('Veuillez remplir la date, le creneau et le module', 'error');
+        return;
+    }
+
+    // Supprimer les anciennes absences pour cette session
+    absences = absences.filter(a => !(a.group === currentGroup && a.date === date && a.time === time && a.module === mod));
+
+    // Ajouter les nouvelles
+    let added = 0;
+    document.querySelectorAll('.student-cb:checked').forEach(cb => {
+        const name = cb.dataset.name;
+        const justInput = document.querySelector('[data-just="' + name + '"]');
+        absences.push({
+            group: currentGroup,
+            student: name,
+            date: date,
+            time: time,
+            module: mod,
+            justification: justInput ? justInput.value.trim() : '',
+            timestamp: Date.now()
+        });
+        added++;
+    });
+
+    // Sauvegarder dans Firebase — ATTENDRE la fin
+    await saveData();
+
+    if (added > 0) {
+        showToast(added + ' absence(s) enregistree(s) avec succes', 'success');
+    } else {
+        showToast('Aucune absence a enregistrer (tout le monde present)', 'info');
+    }
+
+    renderStudentGrid();
+}
+
+/* ============================================================
+   HISTORIQUE
+   ============================================================ */
+function renderHistory() {
+    const search = (document.getElementById('histSearch')?.value || '').toLowerCase();
+    const from = document.getElementById('histDateFrom').value;
+    const to = document.getElementById('histDateTo').value;
+
+    let filtered = absences.filter(a => a.group === currentGroup);
+    if (search) filtered = filtered.filter(a => a.student.toLowerCase().includes(search) || (a.module || '').toLowerCase().includes(search));
+    if (from) filtered = filtered.filter(a => a.date >= from);
+    if (to) filtered = filtered.filter(a => a.date <= to);
+
+    filtered.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+    let h = '<table class="data-table"><thead><tr><th>Date</th><th>Creneau</th><th>Module</th><th>Etudiant</th><th>Justification</th><th style="width:80px;">Actions</th></tr></thead><tbody>';
+    if (!filtered.length) {
+        h += '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">Aucun enregistrement</td></tr>';
+    } else {
+        filtered.forEach(a => {
+            h += '<tr><td>' + a.date + '</td><td>' + a.time + '</td><td>' + a.module + '</td><td style="font-weight:500;">' + a.student + '</td><td>' + (a.justification || '<span style="color:var(--muted);">—</span>') + '</td><td><button class="btn btn-xs btn-danger" onclick="deleteAbsence(' + a.timestamp + ')"><i class="fas fa-trash"></i></button></td></tr>';
+        });
+    }
+    h += '</tbody></table>';
+    document.getElementById('historyTable').innerHTML = h;
+}
+
+async function deleteAbsence(ts) {
+    absences = absences.filter(a => a.timestamp !== ts);
+    await saveData();
+    showToast('Absence supprimee', 'success');
+    renderHistory();
+}
+
+function exportCSV() {
+    const filtered = absences.filter(a => a.group === currentGroup);
+    if (!filtered.length) { showToast('Aucune donnee a exporter', 'info'); return; }
+    let csv = 'Date,Creneau,Module,Etudiant,Justification\n';
+    filtered.forEach(a => { csv += a.date + ',' + a.time + ',"' + a.module + '","' + a.student + '","' + (a.justification || '') + '"\n'; });
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'absences_' + currentGroup.replace(/\s+/g, '_') + '.csv';
+    link.click();
+    showToast('Fichier CSV telecharge', 'success');
+}
+
+/* ============================================================
+   STATISTIQUES
+   ============================================================ */
+function renderStats() {
+    const students = GROUPS[currentGroup]?.students || [];
+    const groupAbs = absences.filter(a => a.group === currentGroup);
+    const totalAbs = groupAbs.length;
+    const studentsWithAbs = new Set(groupAbs.map(a => a.student)).size;
+    const modules = {};
+    groupAbs.forEach(a => { modules[a.module] = (modules[a.module] || 0) + 1; });
+    const topModule = Object.entries(modules).sort((a, b) => b[1] - a[1])[0];
+    const dates = {};
+    groupAbs.forEach(a => { dates[a.date] = (dates[a.date] || 0) + 1; });
+    const topDate = Object.entries(dates).sort((a, b) => b[1] - a[1])[0];
+    const rate = students.length ? ((studentsWithAbs / students.length) * 100).toFixed(1) : 0;
+
+    let h = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;" class="fade-up">';
+    h += '<div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--danger-glow);color:var(--danger);"><i class="fas fa-user-xmark"></i></div><div><div class="stat-value">' + totalAbs + '</div><div class="stat-label">Total absences</div></div></div></div>';
+    h += '<div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--warn-glow);color:var(--warn);"><i class="fas fa-users-slash"></i></div><div><div class="stat-value">' + studentsWithAbs + '</div><div class="stat-label">Etudiants concernes</div></div></div></div>';
+    h += '<div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--accent-glow2);color:var(--accent);"><i class="fas fa-percent"></i></div><div><div class="stat-value">' + rate + '%</div><div class="stat-label">Taux d\'absenteisme</div></div></div></div>';
+    h += '<div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--info-glow);color:var(--info);"><i class="fas fa-book"></i></div><div><div class="stat-value" style="font-size:16px;">' + (topModule ? topModule[0] : '—') + '</div><div class="stat-label">Module le plus absent (' + (topModule ? topModule[1] : 0) + ')</div></div></div></div>';
+    h += '</div>';
+
+    // Graphique par étudiant
+    const studentAbs = {};
+    students.forEach(s => { studentAbs[s] = groupAbs.filter(a => a.student === s).length; });
+    const sorted = Object.entries(studentAbs).sort((a, b) => b[1] - a[1]).slice(0, 20);
+    const maxAbs = sorted.length ? sorted[0][1] : 1;
+
+    h += '<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d1"><h3 style="font-size:15px;font-weight:600;margin-bottom:16px;">Top 20 des etudiants les plus absents</h3>';
+    sorted.forEach(([name, count]) => {
+        const pct = maxAbs ? (count / maxAbs * 100) : 0;
+        const color = count === 0 ? 'var(--accent)' : count > maxAbs * 0.7 ? 'var(--danger)' : 'var(--warn)';
+        h += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;"><div style="width:180px;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + name + '">' + name + '</div><div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:' + pct + '%;background:' + color + ';"></div></div><div style="width:30px;text-align:right;font-size:13px;font-weight:700;color:' + color + ';">' + count + '</div></div>';
+    });
+    if (!sorted.length) h += '<div style="text-align:center;padding:20px;color:var(--muted);">Aucune donnee</div>';
+    h += '</div>';
+
+    document.getElementById('statsContent').innerHTML = h;
+}
+
+/* ============================================================
+   FICHES ÉTUDIANTS
+   ============================================================ */
+function renderStudentCards() {
+    const students = GROUPS[currentGroup]?.students || [];
+    const search = (document.getElementById('etudSearch')?.value || '').toLowerCase();
+    const sort = document.getElementById('etudSort').value;
+    const groupAbs = absences.filter(a => a.group === currentGroup);
+
+    let list = students.map(name => {
+        const stAbs = groupAbs.filter(a => a.student === name);
+        return { name, count: stAbs.length, details: stAbs };
+    });
+
+    if (search) list = list.filter(s => s.name.toLowerCase().includes(search));
+    if (sort === 'abs-desc') list.sort((a, b) => b.count - a.count);
+    else if (sort === 'abs-asc') list.sort((a, b) => a.count - b.count);
+    else list.sort((a, b) => a.name.localeCompare(b.name));
+
+    let h = '';
+    list.forEach(s => {
+        const badgeClass = s.count === 0 ? 'badge-ok' : s.count > 5 ? 'badge-danger' : 'badge-warn';
+        h += '<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.04);transition:all .2s;" class="fade-up" onmouseenter="this.style.borderColor=\'var(--border2)\'" onmouseleave="this.style.borderColor=\'var(--border)\'">';
+        h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><div style="font-weight:600;font-size:14px;">' + s.name + '</div><span class="badge ' + badgeClass + '">' + s.count + ' absence(s)</span></div>';
+        if (s.details.length) {
+            h += '<div style="max-height:120px;overflow-y:auto;font-size:12px;color:var(--muted);">';
+            s.details.slice(-5).reverse().forEach(d => {
+                h += '<div style="padding:4px 0;border-bottom:1px solid var(--border);">' + d.date + ' — ' + d.time + ' — ' + d.module + (d.justification ? ' (' + d.justification + ')' : '') + '</div>';
+            });
+            if (s.details.length > 5) h += '<div style="padding:4px 0;color:var(--accent);font-weight:600;">+ ' + (s.details.length - 5) + ' autres...</div>';
+            h += '</div>';
+        } else {
+            h += '<div style="font-size:12px;color:var(--accent);"><i class="fas fa-check-circle"></i> Aucune absence</div>';
+        }
+        h += '</div>';
+    });
+    if (!list.length) h = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">Aucun etudiant trouve</div>';
+    document.getElementById('studentCards').innerHTML = h;
+}
+
+/* ============================================================
+   GESTION — ÉTUDIANTS
+   ============================================================ */
+function renderMgmtStudents() {
+    const students = GROUPS[currentGroup]?.students || [];
+    const search = (document.getElementById('mgmtStudSearch')?.value || '').toLowerCase();
+    const filtered = students.filter(s => s.toLowerCase().includes(search));
+
+    let h = '<table class="data-table"><thead><tr><th>N</th><th>Nom complet</th><th style="width:100px;">Actions</th></tr></thead><tbody>';
+    filtered.forEach((name, i) => {
+        h += '<tr><td style="color:var(--muted);">' + (i + 1) + '</td><td style="font-weight:500;" id="stud-name-' + i + '">' + name + '</td><td><button class="btn btn-xs btn-ghost" onclick="editStudent(' + i + ')" title="Modifier"><i class="fas fa-pen"></i></button> <button class="btn btn-xs btn-danger" onclick="deleteStudent(' + i + ')" title="Supprimer"><i class="fas fa-trash"></i></button></td></tr>';
+    });
+    if (!filtered.length) h += '<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);">Aucun etudiant</td></tr>';
+    h += '</tbody></table>';
+    document.getElementById('mgmtStudentsTable').innerHTML = h;
+}
+
+function showAddStudentModal() {
+    openModal('<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Ajouter un etudiant</h3>' +
+        '<div style="margin-bottom:16px;"><label class="form-label">Nom complet</label><input type="text" class="form-input" id="newStudentName" placeholder="Ex : NOM PRENOM"></div>' +
+        '<div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="addStudent()"><i class="fas fa-plus"></i> Ajouter</button></div>');
+}
+
+async function addStudent() {
+    const name = document.getElementById('newStudentName').value.trim().toUpperCase();
+    if (!name) { showToast('Veuillez entrer un nom', 'error'); return; }
+    if (!GROUPS[currentGroup]) GROUPS[currentGroup] = { students: [], modules: [] };
+    if (GROUPS[currentGroup].students.includes(name)) { showToast('Cet etudiant existe deja', 'error'); return; }
+    GROUPS[currentGroup].students.push(name);
+    await saveData(); // ← CLEF : attendre la sauvegarde
+    closeModal();
+    showToast('Etudiant ajoute avec succes', 'success');
+    renderMgmtStudents();
+    renderGroupList();
+}
+
+function showBulkAddStudentModal() {
+    openModal('<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Ajout multiple d\'etudiants</h3>' +
+        '<div style="margin-bottom:16px;"><label class="form-label">Noms (un par ligne)</label><textarea class="form-input" id="bulkStudentNames" rows="8" placeholder="NOM PRENOM 1\nNOM PRENOM 2\n..."></textarea></div>' +
+        '<div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="bulkAddStudents()"><i class="fas fa-list"></i> Ajouter (' + ')</button></div>');
+}
+
+async function bulkAddStudents() {
+    const text = document.getElementById('bulkStudentNames').value.trim();
+    if (!text) { showToast('Veuillez entrer des noms', 'error'); return; }
+    const names = text.split('\n').map(n => n.trim().toUpperCase()).filter(n => n);
+    if (!GROUPS[currentGroup]) GROUPS[currentGroup] = { students: [], modules: [] };
+    let added = 0;
+    names.forEach(name => {
+        if (!GROUPS[currentGroup].students.includes(name)) {
+            GROUPS[currentGroup].students.push(name);
+            added++;
+        }
+    });
+    await saveData(); // ← CLEF
+    closeModal();
+    showToast(added + ' etudiant(s) ajoute(s)', 'success');
+    renderMgmtStudents();
+    renderGroupList();
+}
+
+function editStudent(index) {
+    const students = GROUPS[currentGroup]?.students || [];
+    const name = students[index];
+    if (!name) return;
+    const cell = document.getElementById('stud-name-' + index);
+    cell.innerHTML = '<input type="text" class="edit-input" value="' + name + '" onblur="confirmEditStudent(' + index + ', this)" onkeydown="if(event.key===\'Enter\')this.blur()">';
+    cell.querySelector('input').focus();
+}
+
+async function confirmEditStudent(index, input) {
+    const newName = input.value.trim().toUpperCase();
+    const oldName = GROUPS[currentGroup].students[index];
+    if (!newName) { renderMgmtStudents(); return; }
+    if (newName !== oldName) {
+        GROUPS[currentGroup].students[index] = newName;
+        // Mettre à jour aussi dans les absences
+        absences.forEach(a => { if (a.group === currentGroup && a.student === oldName) a.student = newName; });
+        await saveData(); // ← CLEF
+        showToast('Nom modifie', 'success');
+    }
+    renderMgmtStudents();
+}
+
+async function deleteStudent(index) {
+    const name = GROUPS[currentGroup]?.students[index];
+    if (!name) return;
+    if (!confirm('Supprimer ' + name + ' ?')) return;
+    GROUPS[currentGroup].students.splice(index, 1);
+    absences = absences.filter(a => !(a.group === currentGroup && a.student === name));
+    await saveData(); // ← CLEF
+    showToast('Etudiant supprime', 'success');
+    renderMgmtStudents();
+    renderGroupList();
+}
+
+/* ============================================================
+   GESTION — MODULES
+   ============================================================ */
+function renderMgmtModules() {
+    const modules = GROUPS[currentGroup]?.modules || [];
+    document.getElementById('modCountLabel').textContent = modules.length + ' module(s)';
+    let h = '<table class="data-table"><thead><tr><th>N</th><th>Module</th><th style="width:100px;">Actions</th></tr></thead><tbody>';
+    modules.forEach((m, i) => {
+        h += '<tr><td style="color:var(--muted);">' + (i + 1) + '</td><td style="font-weight:500;" id="mod-name-' + i + '">' + m + '</td><td><button class="btn btn-xs btn-ghost" onclick="editModule(' + i + ')" title="Modifier"><i class="fas fa-pen"></i></button> <button class="btn btn-xs btn-danger" onclick="deleteModule(' + i + ')" title="Supprimer"><i class="fas fa-trash"></i></button></td></tr>';
+    });
+    if (!modules.length) h += '<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);">Aucun module</td></tr>';
+    h += '</tbody></table>';
+    document.getElementById('mgmtModulesTable').innerHTML = h;
+}
+
+function showAddModuleModal() {
+    openModal('<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Ajouter un module</h3>' +
+        '<div style="margin-bottom:16px;"><label class="form-label">Nom du module</label><input type="text" class="form-input" id="newModuleName" placeholder="Ex : Anatomie"></div>' +
+        '<div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="addModule()"><i class="fas fa-plus"></i> Ajouter</button></div>');
+}
+
+async function addModule() {
+    const name = document.getElementById('newModuleName').value.trim();
+    if (!name) { showToast('Veuillez entrer un nom de module', 'error'); return; }
+    if (!GROUPS[currentGroup]) GROUPS[currentGroup] = { students: [], modules: [] };
+    if (GROUPS[currentGroup].modules.includes(name)) { showToast('Ce module existe deja', 'error'); return; }
+    GROUPS[currentGroup].modules.push(name);
+    await saveData(); // ← CLEF
+    closeModal();
+    showToast('Module ajoute', 'success');
+    renderMgmtModules();
+    updateModuleSelect();
+}
+
+function editModule(index) {
+    const modules = GROUPS[currentGroup]?.modules || [];
+    const name = modules[index];
+    if (!name) return;
+    const cell = document.getElementById('mod-name-' + index);
+    cell.innerHTML = '<input type="text" class="edit-input" value="' + name + '" onblur="confirmEditModule(' + index + ', this)" onkeydown="if(event.key===\'Enter\')this.blur()">';
+    cell.querySelector('input').focus();
+}
+
+async function confirmEditModule(index, input) {
+    const newName = input.value.trim();
+    const oldName = GROUPS[currentGroup].modules[index];
+    if (!newName) { renderMgmtModules(); return; }
+    if (newName !== oldName) {
+        GROUPS[currentGroup].modules[index] = newName;
+        absences.forEach(a => { if (a.group === currentGroup && a.module === oldName) a.module = newName; });
+        await saveData(); // ← CLEF
+        showToast('Module modifie', 'success');
+    }
+    renderMgmtModules();
+    updateModuleSelect();
+}
+
+async function deleteModule(index) {
+    const name = GROUPS[currentGroup]?.modules[index];
+    if (!name) return;
+    if (!confirm('Supprimer le module "' + name + '" ?')) return;
+    GROUPS[currentGroup].modules.splice(index, 1);
+    await saveData(); // ← CLEF
+    showToast('Module supprime', 'success');
+    renderMgmtModules();
+    updateModuleSelect();
+}
+
+/* ============================================================
+   GESTION — GROUPES  (LA PARTIE QUI POSAIT PROBLÈME)
+   ============================================================ */
+function renderMgmtGroups() {
+    const groups = Object.keys(GROUPS).sort();
+    let h = '<table class="data-table"><thead><tr><th>Groupe</th><th style="width:80px;">Etudiants</th><th style="width:80px;">Modules</th><th style="width:100px;">Actions</th></tr></thead><tbody>';
+    groups.forEach(g => {
+        const data = GROUPS[g] || { students: [], modules: [] };
+        h += '<tr><td style="font-weight:600;">' + g + '</td><td><span class="badge badge-ok">' + data.students.length + '</span></td><td><span class="badge" style="background:var(--info-glow);color:var(--info);">' + data.modules.length + '</span></td><td><button class="btn btn-xs btn-danger" onclick="deleteGroup(\'' + g.replace(/'/g, "\\'") + '\')" title="Supprimer"><i class="fas fa-trash"></i></button></td></tr>';
+    });
+    if (!groups.length) h += '<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--muted);">Aucun groupe</td></tr>';
+    h += '</tbody></table>';
+    document.getElementById('mgmtGroupsTable').innerHTML = h;
+}
+
+function showAddGroupModal() {
+    // Construire les options de filière existantes
+    const existing = new Set();
+    Object.keys(GROUPS).forEach(g => {
+        const m = g.match(/^(.+?)\s+S/);
+        if (m) existing.add(m[1]);
+    });
+    let filiereOptions = '';
+    existing.forEach(f => { filiereOptions += '<option value="' + f + '">' + f + '</option>'; });
+
+    openModal(
+        '<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Creer un nouveau groupe</h3>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">' +
+            '<div><label class="form-label">Filiere</label><input type="text" class="form-input" id="newGroupFiliere" placeholder="Ex : ISUSI" list="filiereList"><datalist id="filiereList">' + filiereOptions + '</datalist></div>' +
+            '<div><label class="form-label">Semestre</label><select class="form-input" id="newGroupSemester"><option value="S1">S1</option><option value="S2">S2</option><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select></div>' +
+        '</div>' +
+        '<div style="margin-bottom:16px;"><label class="form-label">Nom du groupe (auto si vide)</label><input type="text" class="form-input" id="newGroupName" placeholder="Laisser vide pour generer automatiquement"></div>' +
+        '<div style="display:flex;gap:10px;justify-content:flex-end;">' +
+            '<button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>' +
+            '<button class="btn btn-primary btn-sm" onclick="addGroup()"><i class="fas fa-plus"></i> Creer le groupe</button>' +
+        '</div>'
+    );
+}
+
+async function addGroup() {
+    const f = (document.getElementById('newGroupFiliere')?.value || '').trim().toUpperCase();
+    const s = document.getElementById('newGroupSem')?.value || 'S1';
+    if (!f) { showToast('Saisissez une filiere', 'error'); return; }
+    const name = `${f} ${s}`;
+    if (GROUPS[name]) { showToast('Ce groupe existe deja', 'error'); return; }
+
+    GROUPS[name] = { students: [], modules: [] };
+    const ok = await saveData();          // on attend la vraie confirmation
+    if (ok) {
+        closeModal();
+        showToast(`Groupe ${name} cree`, 'success');
+        renderMgmtGroups();
+        renderGroupList();
+    } else {
+        delete GROUPS[name];               // annule si l'écriture a échoué
+    }
+}
+
+    // ← CLEF : SAUVEGARDER DANS FIREBASE ET ATTENDRE LA RÉPONSE
+    try {
+        await saveData();
+        console.log('[addGroup] Groupe "' + groupName + '" sauvegarde dans Firebase');
+        showToast('Groupe "' + groupName + '" cree avec succes !', 'success');
+        closeModal();
+
+        // Sélectionner le nouveau groupe
+        currentGroup = groupName;
+        renderGroupList();
+        renderMgmtGroups();
+        renderCurrentTab();
+    } catch (error) {
+        console.error('[addGroup] Erreur lors de la sauvegarde :', error);
+        showToast('Erreur lors de la creation du groupe : ' + error.message, 'error');
+        // Retirer le groupe localement si la sauvegarde a échoué
+        delete GROUPS[groupName];
+    }
+}
+
+async function deleteGroup(name) {
+    if (!confirm('Supprimer le groupe "' + name + '" et toutes ses donnees ?')) return;
+    delete GROUPS[name];
+    absences = absences.filter(a => a.group !== name);
+    try {
+        await saveData(); // ← CLEF
+        showToast('Groupe supprime', 'success');
+        if (currentGroup === name) {
+            currentGroup = Object.keys(GROUPS)[0] || '';
+        }
+        renderMgmtGroups();
+        renderGroupList();
+        renderCurrentTab();
+    } catch (error) {
+        showToast('Erreur de suppression : ' + error.message, 'error');
+    }
+}
+
+/* ============================================================
+   IMPORT EXCEL (simplifié — nécessite SheetJS pour fonctionner)
+   ============================================================ */
+function handleFileSelect(file) { if (file) processFile(file); }
+function handleFileDrop(file) { if (file) processFile(file); }
+
+function processFile(file) {
+    const info = document.getElementById('fileInfo');
+    info.style.display = 'block';
+    info.innerHTML = '<i class="fas fa-file" style="color:var(--info);margin-right:8px;"></i><strong>' + file.name + '</strong> (' + (file.size / 1024).toFixed(1) + ' Ko)';
+
+    // Si SheetJS est disponible
+    if (typeof XLSX !== 'undefined') {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                importWorkbook = XLSX.read(e.target.result, { type: 'array' });
+                const sheetSel = document.getElementById('importSheet');
+                sheetSel.innerHTML = '';
+                importWorkbook.SheetNames.forEach(name => {
+                    const opt = document.createElement('option');
+                    opt.value = name;
+                    opt.textContent = name;
+                    sheetSel.appendChild(opt);
+                });
+                onSheetChange();
+                // Remplir le select de groupe cible
+                const grpSel = document.getElementById('importGroup');
+                grpSel.innerHTML = '';
+                Object.keys(GROUPS).sort().forEach(g => {
+                    const opt = document.createElement('option');
+                    opt.value = g;
+                    opt.textContent = g;
+                    grpSel.appendChild(opt);
+                });
+                grpSel.value = currentGroup;
+                showToast('Fichier charge avec succes', 'success');
+            } catch (err) {
+                showToast('Erreur de lecture du fichier', 'error');
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    } else {
+        info.innerHTML += '<div style="margin-top:8px;color:var(--warn);font-size:12px;"><i class="fas fa-exclamation-triangle"></i> SheetJS non charge. Ajoutez <code>&lt;script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"&gt;&lt;/script&gt;</code> dans le head.</div>';
+    }
+}
+
+function onSheetChange() {
+    if (!importWorkbook) return;
+    const sheetName = document.getElementById('importSheet').value;
+    importSheetData = XLSX.utils.sheet_to_json(importWorkbook.Sheets[sheetName], { header: 1 });
+    // Mettre à jour les selects de colonnes
+    const headers = importSheetData[0] || [];
+    ['importNameCol', 'importModCol', 'importAbsNameCol', 'importAbsDateCol', 'importAbsTimeCol', 'importAbsModCol', 'importAbsJustCol'].forEach(id => {
+        const sel = document.getElementById(id);
+        if (!sel) return;
+        sel.innerHTML = '';
+        headers.forEach((h, i) => {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.textContent = h || ('Colonne ' + (i + 1));
+            sel.appendChild(opt);
+        });
+    });
+}
+
+function goToImportStep(step) {
+    for (let i = 1; i <= 4; i++) {
+        document.getElementById('importStep' + i).style.display = i === step ? 'block' : 'none';
+        const dot = document.getElementById('step' + i + 'dot');
+        dot.className = 'step-dot' + (i < step ? ' done' : i === step ? ' active' : '');
+        if (i < 4) {
+            document.getElementById('step' + i + 'line').className = 'step-line' + (i < step ? ' done' : '');
+        }
+    }
+    if (step === 3) buildPreview();
+}
+
+function buildPreview() {
+    if (!importSheetData || !importSheetData.length) return;
+    const type = document.getElementById('importType').value;
+    let data = [];
+    const startRow = 1; // Sauter l'en-tête
+
+    for (let i = startRow; i < importSheetData.length; i++) {
+        const row = importSheetData[i];
+        if (!row || !row.length) continue;
+        if (type === 'etudiants') {
+            const name = row[parseInt(document.getElementById('importNameCol').value)];
+            if (name && String(name).trim()) data.push({ name: String(name).trim().toUpperCase() });
+        } else if (type === 'modules') {
+            const name = row[parseInt(document.getElementById('importModCol').value)];
+            if (name && String(name).trim()) data.push({ module: String(name).trim() });
+        } else if (type === 'absences') {
+            const name = row[parseInt(document.getElementById('importAbsNameCol').value)];
+            const date = row[parseInt(document.getElementById('importAbsDateCol').value)];
+            const time = row[parseInt(document.getElementById('importAbsTimeCol').value)];
+            const mod = row[parseInt(document.getElementById('importAbsModCol').value)];
+            const just = row[parseInt(document.getElementById('importAbsJustCol').value)];
+            if (name && String(name).trim()) data.push({ student: String(name).trim().toUpperCase(), date: String(date || ''), time: String(time || ''), module: String(mod || ''), justification: String(just || '').trim() });
+        }
+    }
+
+    importPreviewData = data;
+    document.getElementById('previewCount').textContent = data.length + ' ligne(s)';
+
+    let h = '<table class="preview-table"><thead><tr>';
+    if (type === 'etudiants') { h += '<th>Nom</th>'; }
+    else if (type === 'modules') { h += '<th>Module</th>'; }
+    else { h += '<th>Etudiant</th><th>Date</th><th>Creneau</th><th>Module</th><th>Justification</th>'; }
+    h += '</tr></thead><tbody>';
+    data.slice(0, 50).forEach(d => {
+        h += '<tr>';
+        if (type === 'etudiants') h += '<td>' + d.name + '</td>';
+        else if (type === 'modules') h += '<td>' + d.module + '</td>';
+        else h += '<td>' + d.student + '</td><td>' + d.date + '</td><td>' + d.time + '</td><td>' + d.module + '</td><td>' + d.justification + '</td>';
+        h += '</tr>';
+    });
+    if (data.length > 50) h += '<tr><td colspan="10" style="text-align:center;color:var(--muted);">... et ' + (data.length - 50) + ' autres lignes</td></tr>';
+    h += '</tbody></table>';
+    document.getElementById('previewTableWrap').innerHTML = h;
+}
+
+async function executeImport() {
+    if (!importPreviewData.length) { showToast('Aucune donnee a importer', 'error'); return; }
+    const type = document.getElementById('importType').value;
+    const group = document.getElementById('importGroup').value;
+    const mode = document.getElementById('importMode').value;
+
+    if (!group) { showToast('Veuillez selectionner un groupe cible', 'error'); return; }
+    if (!GROUPS[group]) GROUPS[group] = { students: [], modules: [] };
+
+    let count = 0;
+    if (type === 'etudiants') {
+        if (mode === 'replace') GROUPS[group].students = [];
+        importPreviewData.forEach(d => {
+            if (!GROUPS[group].students.includes(d.name)) { GROUPS[group].students.push(d.name); count++; }
+        });
+    } else if (type === 'modules') {
+        if (mode === 'replace') GROUPS[group].modules = [];
+        importPreviewData.forEach(d => {
+            if (!GROUPS[group].modules.includes(d.module)) { GROUPS[group].modules.push(d.module); count++; }
+        });
+    } else if (type === 'absences') {
+        importPreviewData.forEach(d => {
+            absences.push({ group, student: d.student, date: d.date, time: d.time, module: d.module, justification: d.justification, timestamp: Date.now() + Math.random() });
+            count++;
+        });
+    }
+
+    await saveData(); // ← CLEF
+    document.getElementById('importResultMsg').textContent = count + ' element(s) importe(s) dans le groupe ' + group;
+    goToImportStep(4);
+    renderGroupList();
+    renderCurrentTab();
+}
+
+function resetImport() {
+    importWorkbook = null;
+    importSheetData = null;
+    importPreviewData = [];
+    document.getElementById('fileInfo').style.display = 'none';
+    document.getElementById('fileInput').value = '';
+    goToImportStep(1);
+}
 </script>
-
 </body>
 </html>
