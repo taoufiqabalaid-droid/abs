@@ -10,21 +10,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-:root{--bg:#F0F4F8;--bg2:#FFFFFF;--card:#FFFFFF;--card2:#F8FAFC;--border:#E2E8F0;--border2:#CBD5E1;--fg:#0F172A;--muted:#64748B;--accent:#059669;--accent2:#047857;--accent-glow:rgba(5,150,105,0.08);--accent-glow2:rgba(5,150,105,0.15);--danger:#DC2626;--danger2:#B91C1C;--danger-glow:rgba(220,38,38,0.07);--warn:#D97706;--warn-glow:rgba(217,119,6,0.08);--info:#2563EB;--info-glow:rgba(37,99,235,0.08)}
+:root{--bg:#F0F4F8;--bg2:#FFF;--card:#FFF;--card2:#F8FAFC;--border:#E2E8F0;--border2:#CBD5E1;--fg:#0F172A;--muted:#64748B;--accent:#059669;--accent2:#047857;--ag:rgba(5,150,105,0.08);--ag2:rgba(5,150,105,0.15);--danger:#DC2626;--danger2:#B91C1C;--dg:rgba(220,38,38,0.07);--warn:#D97706;--wg:rgba(217,119,6,0.08);--info:#2563EB;--ig:rgba(37,99,235,0.08)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;overflow-x:hidden}
 h1,h2,h3,h4,h5{font-family:'Space Grotesk',sans-serif}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--muted)}
-.bg-glow{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;background:radial-gradient(ellipse 800px 500px at 5% 10%,rgba(5,150,105,0.05),transparent),radial-gradient(ellipse 600px 600px at 95% 90%,rgba(5,150,105,0.04),transparent),radial-gradient(ellipse 400px 400px at 50% 50%,rgba(217,119,6,0.02),transparent)}
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:280px;background:var(--bg2);border-right:1px solid var(--border);z-index:50;display:flex;flex-direction:column;transition:transform .3s ease;box-shadow:2px 0 12px rgba(0,0,0,0.04)}
+.bg-glow{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;background:radial-gradient(ellipse 800px 500px at 5% 10%,rgba(5,150,105,0.05),transparent),radial-gradient(ellipse 600px 600px at 95% 90%,rgba(5,150,105,0.04),transparent)}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:280px;background:var(--bg2);border-right:1px solid var(--border);z-index:50;display:flex;flex-direction:column;transition:transform .3s;box-shadow:2px 0 12px rgba(0,0,0,0.04)}
 .sidebar-logo{padding:24px 20px;border-bottom:1px solid var(--border)}
 .sidebar-nav{padding:12px 10px;flex-shrink:0}
 .nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;cursor:pointer;transition:all .2s;color:var(--muted);font-weight:500;font-size:14px;margin-bottom:2px}
 .nav-item:hover{background:var(--card2);color:var(--fg)}
-.nav-item.active{background:var(--accent-glow2);color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.nav-item.active{background:var(--ag2);color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
 .nav-item i{width:20px;text-align:center;font-size:15px}
 .group-section{padding:10px;border-top:1px solid var(--border);flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
 .group-search{width:100%;padding:9px 12px 9px 34px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--fg);font-size:13px;outline:none;transition:border-color .2s}
@@ -34,117 +33,78 @@ h1,h2,h3,h4,h5{font-family:'Space Grotesk',sans-serif}
 .group-list{max-height:260px;overflow-y:auto;margin-top:8px}
 .group-item{padding:8px 12px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .15s;display:flex;justify-content:space-between;align-items:center}
 .group-item:hover{background:var(--card2);color:var(--fg)}
-.group-item.active{background:var(--accent-glow2);color:var(--accent);font-weight:600}
+.group-item.active{background:var(--ag2);color:var(--accent);font-weight:600}
 .group-item .count{background:var(--card2);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;border:1px solid var(--border)}
 .group-item.active .count{background:rgba(5,150,105,0.1);border-color:rgba(5,150,105,0.2);color:var(--accent)}
 .group-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);padding:8px 12px 4px;font-weight:700}
 .main{margin-left:280px;padding:24px 32px;position:relative;z-index:1;min-height:100vh}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;transition:all .25s;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;transition:all .25s;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
 .stat-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.08)}
-.stat-card .icon-wrap{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
-.stat-card .stat-value{font-family:'Space Grotesk';font-size:28px;font-weight:700}
-.stat-card .stat-label{font-size:13px;color:var(--muted);margin-top:2px}
+.stat-card .iw{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.stat-card .sv{font-family:'Space Grotesk';font-size:28px;font-weight:700}
+.stat-card .sl{font-size:13px;color:var(--muted);margin-top:2px}
 .data-table{width:100%;border-collapse:separate;border-spacing:0}
 .data-table thead th{background:var(--card2);padding:12px 16px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:5}
 .data-table tbody td{padding:10px 16px;border-bottom:1px solid var(--border);font-size:13.5px;transition:background .15s}
 .data-table tbody tr:hover td{background:var(--card2)}
-.data-table tbody tr.absent-row td{background:var(--danger-glow)}
+.data-table tbody tr.absent-row td{background:var(--dg)}
 .abs-checkbox{appearance:none;width:20px;height:20px;border:2px solid var(--border2);border-radius:5px;cursor:pointer;transition:all .2s;position:relative;flex-shrink:0;background:var(--card)}
 .abs-checkbox:hover{border-color:var(--danger)}
 .abs-checkbox:checked{background:var(--danger);border-color:var(--danger)}
-.abs-checkbox:checked::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:13px;font-weight:700}
+.abs-checkbox:checked::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:13px;font-weight:700}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:'DM Sans'}
 .btn-primary{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(5,150,105,0.25)}
-.btn-primary:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 14px rgba(5,150,105,0.35)}
-.btn-danger{background:var(--danger);color:#fff;box-shadow:0 2px 8px rgba(220,38,38,0.25)}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-danger{background:var(--danger);color:#fff}
 .btn-danger:hover{background:var(--danger2)}
-.btn-info{background:var(--info);color:#fff;box-shadow:0 2px 8px rgba(37,99,235,0.25)}
-.btn-info:hover{background:#1D4ED8}
+.btn-info{background:var(--info);color:#fff}
 .btn-ghost{background:var(--card);color:var(--muted);border:1px solid var(--border)}
-.btn-ghost:hover{border-color:var(--border2);color:var(--fg);background:var(--card2)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--fg)}
 .btn-sm{padding:6px 14px;font-size:12px;border-radius:7px}
 .btn-xs{padding:4px 10px;font-size:11px;border-radius:6px}
 .form-input{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:10px 14px;color:var(--fg);font-size:14px;outline:none;transition:border-color .2s;font-family:'DM Sans';width:100%}
-.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--ag)}
 .form-label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:block}
 select.form-input{cursor:pointer}
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
-.badge-danger{background:var(--danger-glow);color:var(--danger)}
-.badge-warn{background:var(--warn-glow);color:var(--warn)}
-.badge-ok{background:var(--accent-glow2);color:var(--accent)}
+.badge-danger{background:var(--dg);color:var(--danger)}
+.badge-warn{background:var(--wg);color:var(--warn)}
+.badge-ok{background:var(--ag2);color:var(--accent)}
 .toast-container{position:fixed;top:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
-.toast{padding:14px 20px;border-radius:10px;font-size:14px;font-weight:500;display:flex;align-items:center;gap:10px;min-width:300px;animation:toastIn .3s ease;box-shadow:0 8px 24px rgba(0,0,0,0.12)}
+.toast{padding:14px 20px;border-radius:10px;font-size:14px;font-weight:500;display:flex;align-items:center;gap:10px;min-width:300px;animation:ti .3s ease;box-shadow:0 8px 24px rgba(0,0,0,0.12)}
 .toast-success{background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0}
 .toast-error{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA}
 .toast-info{background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE}
-.toast-exit{animation:toastOut .3s ease forwards}
-@keyframes toastIn{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
-@keyframes toastOut{to{opacity:0;transform:translateX(60px)}}
+.toast-exit{animation:to .3s ease forwards}
+@keyframes ti{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
+@keyframes to{to{opacity:0;transform:translateX(60px)}}
 .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.3);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
 .modal-overlay.show{opacity:1;pointer-events:auto}
 .modal-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:560px;width:90%;max-height:85vh;overflow-y:auto;transform:scale(.95);transition:transform .25s;box-shadow:0 20px 60px rgba(0,0,0,0.12)}
 .modal-overlay.show .modal-box{transform:scale(1)}
-.progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
-.progress-fill{height:100%;border-radius:3px;transition:width .5s ease}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.fade-up{animation:fadeUp .4s ease both}
+@keyframes fu{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fu .4s ease both}
 .fade-up-d1{animation-delay:.05s}
 .fade-up-d2{animation-delay:.1s}
-.fade-up-d3{animation-delay:.15s}
-.fade-up-d4{animation-delay:.2s}
-.absent-tag{display:inline-flex;align-items:center;gap:4px;background:var(--danger-glow);color:var(--danger);padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600}
-.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:60;width:40px;height:40px;border-radius:10px;background:var(--card);border:1px solid var(--border);cursor:pointer;align-items:center;justify-content:center;color:var(--fg);font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.absent-tag{display:inline-flex;align-items:center;gap:4px;background:var(--dg);color:var(--danger);padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:60;width:40px;height:40px;border-radius:10px;background:var(--card);border:1px solid var(--border);cursor:pointer;align-items:center;justify-content:center;color:var(--fg);font-size:18px}
 @media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0;padding:16px;padding-top:64px}.hamburger{display:flex}}
 .sub-tab{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);transition:all .2s;border:1px solid transparent}
 .sub-tab:hover{color:var(--fg);background:var(--card2)}
-.sub-tab.active{color:var(--accent);background:var(--accent-glow2);border-color:rgba(5,150,105,0.15)}
-.drop-zone{border:2px dashed var(--border2);border-radius:14px;padding:48px 24px;text-align:center;cursor:pointer;transition:all .25s;background:var(--card2)}
-.drop-zone:hover,.drop-zone.dragover{border-color:var(--accent);background:var(--accent-glow)}
-.edit-input{background:var(--card);border:1px solid var(--accent);border-radius:6px;padding:4px 8px;color:var(--fg);font-size:13px;outline:none;width:100%;font-family:'DM Sans';box-shadow:0 0 0 3px var(--accent-glow)}
-.preview-table{width:100%;border-collapse:collapse;font-size:12px}
-.preview-table th{background:var(--card2);padding:8px 10px;text-align:left;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border)}
-.preview-table td{padding:6px 10px;border-bottom:1px solid var(--border);color:var(--fg)}
-.preview-table tr:hover td{background:var(--card2)}
-.step-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border:2px solid var(--border);color:var(--muted);transition:all .3s;background:var(--card)}
-.step-dot.active{border-color:var(--accent);color:var(--accent);background:var(--accent-glow2)}
-.step-dot.done{border-color:var(--accent);background:var(--accent);color:#fff}
-.step-line{width:40px;height:2px;background:var(--border);transition:background .3s}
-.step-line.done{background:var(--accent)}
-.saving-indicator{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--accent);opacity:0;transition:opacity .2s}
-.saving-indicator.show{opacity:1}
-.saving-indicator i{animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-/* Bannière d'erreur Firebase */
-.firebase-banner{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:linear-gradient(135deg,#7F1D1D,#991B1B);color:#FEE2E2;padding:16px 24px;display:none;align-items:center;gap:16px;font-size:14px;box-shadow:0 -4px 24px rgba(0,0,0,0.3)}
-.firebase-banner.show{display:flex}
-.firebase-banner .fb-icon{width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.firebase-banner .fb-text{flex:1}
-.firebase-banner .fb-text strong{color:#FCA5A5;font-size:15px}
-.firebase-banner .fb-close{background:rgba(255,255,255,0.15);border:none;color:#FCA5A5;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.firebase-banner .fb-close:hover{background:rgba(255,255,255,0.25)}
-/* Status bar */
-.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
-.status-dot.ok{background:var(--accent);box-shadow:0 0 6px var(--accent)}
-.status-dot.err{background:var(--danger);box-shadow:0 0 6px var(--danger)}
-.status-dot.loading{background:var(--warn);animation:pulse-dot 1s infinite}
-@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.3}}
+.sub-tab.active{color:var(--accent);background:var(--ag2);border-color:rgba(5,150,105,0.15)}
+.edit-input{background:var(--card);border:1px solid var(--accent);border-radius:6px;padding:4px 8px;color:var(--fg);font-size:13px;outline:none;width:100%;font-family:'DM Sans';box-shadow:0 0 0 3px var(--ag)}
+.progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.storage-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600}
+.storage-local{background:rgba(5,150,105,0.1);color:var(--accent)}
+.storage-cloud{background:rgba(37,99,235,0.1);color:var(--info)}
+.storage-none{background:rgba(220,38,38,0.1);color:var(--danger)}
 </style>
 </head>
 <body>
 <div class="bg-glow"></div>
 <div class="toast-container" id="toastContainer"></div>
-<button class="hamburger" id="hamburgerBtn" aria-label="Menu"><i class="fas fa-bars"></i></button>
-
-<!-- BANNIÈRE D'ERREUR FIREBASE -->
-<div class="firebase-banner" id="firebaseBanner">
-  <div class="fb-icon"><i class="fas fa-database"></i></div>
-  <div class="fb-text">
-    <strong>Base de données Firebase non accessible en écriture</strong><br>
-    Vos données ne seront pas sauvegardées. Allez dans <strong>Firebase Console → Realtime Database → Règles</strong> et mettez :<br>
-    <code style="background:rgba(0,0,0,0.3);padding:2px 8px;border-radius:4px;font-size:13px;margin-top:4px;display:inline-block">{ ".read": true, ".write": true }</code>
-  </div>
-  <button class="fb-close" onclick="document.getElementById('firebaseBanner').classList.remove('show')"><i class="fas fa-times"></i></button>
-</div>
+<button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
 
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
@@ -153,7 +113,7 @@ select.form-input{cursor:pointer}
         <i class="fas fa-clipboard-check" style="color:#fff;font-size:16px;"></i>
       </div>
       <div>
-        <div style="font-family:'Space Grotesk';font-weight:700;font-size:16px;color:var(--fg);">AbsenceTrack</div>
+        <div style="font-family:'Space Grotesk';font-weight:700;font-size:16px;">AbsenceTrack</div>
         <div style="font-size:11px;color:var(--muted);">2025 — 2026</div>
       </div>
     </div>
@@ -173,43 +133,39 @@ select.form-input{cursor:pointer}
     <div class="group-list" id="groupList"></div>
   </div>
   <div style="padding:10px 16px;border-top:1px solid var(--border);flex-shrink:0;">
-    <div class="saving-indicator" id="savingIndicator"><i class="fas fa-spinner"></i> Sauvegarde...</div>
-    <div style="font-size:10px;color:var(--muted);display:flex;align-items:center;" id="lastSaveTime">
-      <span class="status-dot loading" id="statusDot"></span>
-      <span id="statusText">Connexion a Firebase...</span>
+    <div id="storageStatus" style="font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px;">
+      <i class="fas fa-circle-notch fa-spin"></i> Chargement...
     </div>
   </div>
 </aside>
 
 <div class="main" id="mainContent">
   <div id="pageHeader" style="margin-bottom:24px;"></div>
-
   <div id="tab-enregistrement" class="tab-content">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px;" class="fade-up">
       <div><label class="form-label">Date</label><input type="date" class="form-input" id="absDate"></div>
-      <div><label class="form-label">Creneau horaire</label><select class="form-input" id="absTime"><option value="">-- Choisir --</option></select></div>
+      <div><label class="form-label">Creneau</label><select class="form-input" id="absTime"><option value="">-- Choisir --</option></select></div>
       <div><label class="form-label">Module</label><select class="form-input" id="absModule"><option value="">-- Choisir --</option></select></div>
       <div style="display:flex;align-items:flex-end;gap:8px;">
         <button class="btn btn-primary" onclick="saveAbsences()" style="white-space:nowrap;"><i class="fas fa-save"></i> Enregistrer</button>
-        <button class="btn btn-ghost" onclick="clearSelection()" style="white-space:nowrap;" title="Tout deselectionner"><i class="fas fa-rotate-left"></i></button>
+        <button class="btn btn-ghost" onclick="clearSelection()" style="white-space:nowrap;"><i class="fas fa-rotate-left"></i></button>
       </div>
     </div>
     <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;align-items:center;" class="fade-up fade-up-d1">
       <div style="position:relative;flex:1;min-width:200px;">
         <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;"></i>
-        <input type="text" class="form-input" style="padding-left:34px;" placeholder="Rechercher un etudiant..." id="studentSearch" oninput="filterStudents()">
+        <input type="text" class="form-input" style="padding-left:34px;" placeholder="Rechercher un etudiant..." id="studentSearch" oninput="renderStudentGrid()">
       </div>
       <div style="display:flex;gap:6px;">
-        <button class="btn btn-xs btn-ghost" onclick="selectAllVisible()"><i class="fas fa-check-double"></i> Tout cocher</button>
-        <button class="btn btn-xs btn-ghost" onclick="deselectAllVisible()"><i class="fas fa-xmark"></i> Tout decocher</button>
+        <button class="btn btn-xs btn-ghost" onclick="toggleAll(true)"><i class="fas fa-check-double"></i> Tout cocher</button>
+        <button class="btn btn-xs btn-ghost" onclick="toggleAll(false)"><i class="fas fa-xmark"></i> Tout decocher</button>
       </div>
-      <div style="font-size:13px;color:var(--muted);" id="absCountLabel">0 absent(s) selectionne(s)</div>
+      <div style="font-size:13px;color:var(--muted);" id="absCountLabel">0 absent(s)</div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d2">
       <div style="max-height:60vh;overflow-y:auto;" id="studentGrid"></div>
     </div>
   </div>
-
   <div id="tab-historique" class="tab-content" style="display:none;">
     <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up">
       <div style="position:relative;flex:1;min-width:200px;">
@@ -219,17 +175,13 @@ select.form-input{cursor:pointer}
       <input type="date" class="form-input" style="width:auto;" id="histDateFrom" onchange="renderHistory()">
       <span style="color:var(--muted);font-size:13px;">a</span>
       <input type="date" class="form-input" style="width:auto;" id="histDateTo" onchange="renderHistory()">
-      <button class="btn btn-ghost btn-sm" onclick="exportCSV()"><i class="fas fa-download"></i> Exporter CSV</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportCSV()"><i class="fas fa-download"></i> CSV</button>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d1">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;" class="fade-up fade-up-d1">
       <div style="max-height:65vh;overflow-y:auto;" id="historyTable"></div>
     </div>
   </div>
-
-  <div id="tab-statistiques" class="tab-content" style="display:none;">
-    <div id="statsContent"></div>
-  </div>
-
+  <div id="tab-statistiques" class="tab-content" style="display:none;"><div id="statsContent"></div></div>
   <div id="tab-etudiants" class="tab-content" style="display:none;">
     <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up">
       <div style="position:relative;flex:1;min-width:200px;">
@@ -237,126 +189,50 @@ select.form-input{cursor:pointer}
         <input type="text" class="form-input" style="padding-left:34px;" placeholder="Rechercher..." id="etudSearch" oninput="renderStudentCards()">
       </div>
       <select class="form-input" style="width:auto;" id="etudSort" onchange="renderStudentCards()">
-        <option value="name">Trier par nom</option>
-        <option value="abs-desc">Plus d'absences</option>
-        <option value="abs-asc">Moins d'absences</option>
+        <option value="name">Par nom</option><option value="abs-desc">Plus d'absences</option><option value="abs-asc">Moins d'absences</option>
       </select>
     </div>
     <div id="studentCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;"></div>
   </div>
-
   <div id="tab-gestion" class="tab-content" style="display:none;">
     <div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;" class="fade-up">
       <div class="sub-tab active" data-subtab="etudiants-mgmt" onclick="switchSubTab('etudiants-mgmt')"><i class="fas fa-user-pen"></i> Etudiants</div>
       <div class="sub-tab" data-subtab="modules-mgmt" onclick="switchSubTab('modules-mgmt')"><i class="fas fa-book-pen"></i> Modules</div>
       <div class="sub-tab" data-subtab="groupes-mgmt" onclick="switchSubTab('groupes-mgmt')"><i class="fas fa-layer-group"></i> Groupes</div>
-      <div class="sub-tab" data-subtab="import" onclick="switchSubTab('import')"><i class="fas fa-file-excel"></i> Import Excel</div>
     </div>
     <div id="subtab-etudiants-mgmt" class="subtab-content">
-      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up fade-up-d1">
+      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
         <div style="position:relative;flex:1;min-width:200px;">
           <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;"></i>
-          <input type="text" class="form-input" style="padding-left:34px;" placeholder="Rechercher un etudiant..." id="mgmtStudSearch" oninput="renderMgmtStudents()">
+          <input type="text" class="form-input" style="padding-left:34px;" placeholder="Rechercher..." id="mgmtStudSearch" oninput="renderMgmtStudents()">
         </div>
         <button class="btn btn-primary btn-sm" onclick="showAddStudentModal()"><i class="fas fa-plus"></i> Ajouter</button>
         <button class="btn btn-info btn-sm" onclick="showBulkAddStudentModal()"><i class="fas fa-list"></i> Ajout multiple</button>
       </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d2">
-        <div style="max-height:55vh;overflow-y:auto;" id="mgmtStudentsTable"></div>
-      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;"><div style="max-height:55vh;overflow-y:auto;" id="mgmtStudentsTable"></div></div>
     </div>
     <div id="subtab-modules-mgmt" class="subtab-content" style="display:none;">
-      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up fade-up-d1">
+      <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;">
         <span style="font-size:13px;color:var(--muted);" id="modCountLabel"></span>
-        <button class="btn btn-primary btn-sm" onclick="showAddModuleModal()"><i class="fas fa-plus"></i> Ajouter un module</button>
+        <button class="btn btn-primary btn-sm" onclick="showAddModuleModal()"><i class="fas fa-plus"></i> Ajouter</button>
       </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d2">
-        <div style="max-height:55vh;overflow-y:auto;" id="mgmtModulesTable"></div>
-      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;"><div style="max-height:55vh;overflow-y:auto;" id="mgmtModulesTable"></div></div>
     </div>
     <div id="subtab-groupes-mgmt" class="subtab-content" style="display:none;">
-      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;" class="fade-up fade-up-d1">
+      <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;">
         <button class="btn btn-primary btn-sm" onclick="showAddGroupModal()"><i class="fas fa-plus"></i> Creer un groupe</button>
       </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);" class="fade-up fade-up-d2">
-        <div style="max-height:55vh;overflow-y:auto;" id="mgmtGroupsTable"></div>
-      </div>
-    </div>
-    <div id="subtab-import" class="subtab-content" style="display:none;">
-      <div style="display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:28px;" class="fade-up">
-        <div class="step-dot active" id="step1dot">1</div><div class="step-line" id="step1line"></div>
-        <div class="step-dot" id="step2dot">2</div><div class="step-line" id="step2line"></div>
-        <div class="step-dot" id="step3dot">3</div><div class="step-line" id="step3line"></div>
-        <div class="step-dot" id="step4dot">4</div>
-      </div>
-      <div id="importStep1" class="fade-up fade-up-d1">
-        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="event.preventDefault();this.classList.remove('dragover');handleFileDrop(event.dataTransfer.files[0])">
-          <i class="fas fa-cloud-arrow-up" style="font-size:40px;color:var(--accent);display:block;margin-bottom:12px;"></i>
-          <div style="font-size:16px;font-weight:600;margin-bottom:4px;">Deposez votre fichier Excel ici</div>
-          <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">ou cliquez pour parcourir</div>
-          <div style="font-size:11px;color:var(--muted);">Formats : .xlsx, .xls, .csv</div>
-        </div>
-        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleFileSelect(this.files[0])">
-        <div id="fileInfo" style="display:none;margin-top:16px;padding:14px 18px;background:var(--card);border:1px solid var(--border);border-radius:10px;"></div>
-      </div>
-      <div id="importStep2" style="display:none;" class="fade-up">
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;">
-          <h3 style="font-size:16px;font-weight:600;margin-bottom:16px;">Configuration de l'import</h3>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-            <div><label class="form-label">Feuille</label><select class="form-input" id="importSheet" onchange="onSheetChange()"></select></div>
-            <div><label class="form-label">Type</label><select class="form-input" id="importType"><option value="etudiants">Etudiants</option><option value="modules">Modules</option><option value="absences">Absences</option></select></div>
-            <div><label class="form-label">Groupe cible</label><select class="form-input" id="importGroup"></select></div>
-            <div><label class="form-label">Mode</label><select class="form-input" id="importMode"><option value="append">Ajouter</option><option value="replace">Remplacer</option></select></div>
-          </div>
-          <div id="colMappingStudents" style="margin-top:20px;"><label class="form-label">Colonne noms</label><select class="form-input" id="importNameCol" style="max-width:300px;"></select></div>
-          <div id="colMappingModules" style="margin-top:20px;display:none;"><label class="form-label">Colonne modules</label><select class="form-input" id="importModCol" style="max-width:300px;"></select></div>
-          <div id="colMappingAbsences" style="margin-top:20px;display:none;">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-              <div><label class="form-label">Col. noms</label><select class="form-input" id="importAbsNameCol"></select></div>
-              <div><label class="form-label">Col. date</label><select class="form-input" id="importAbsDateCol"></select></div>
-              <div><label class="form-label">Col. creneau</label><select class="form-input" id="importAbsTimeCol"></select></div>
-              <div><label class="form-label">Col. module</label><select class="form-input" id="importAbsModCol"></select></div>
-              <div><label class="form-label">Col. justification</label><select class="form-input" id="importAbsJustCol"></select></div>
-            </div>
-          </div>
-          <div style="display:flex;gap:10px;margin-top:24px;">
-            <button class="btn btn-ghost btn-sm" onclick="goToImportStep(1)"><i class="fas fa-arrow-left"></i> Retour</button>
-            <button class="btn btn-primary btn-sm" onclick="goToImportStep(3)"><i class="fas fa-arrow-right"></i> Previsualiser</button>
-          </div>
-        </div>
-      </div>
-      <div id="importStep3" style="display:none;" class="fade-up">
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <h3 style="font-size:16px;font-weight:600;">Apercu</h3><span class="badge badge-ok" id="previewCount"></span>
-          </div>
-          <div style="max-height:350px;overflow:auto;border:1px solid var(--border);border-radius:10px;" id="previewTableWrap"></div>
-          <div style="display:flex;gap:10px;margin-top:24px;">
-            <button class="btn btn-ghost btn-sm" onclick="goToImportStep(2)"><i class="fas fa-arrow-left"></i> Retour</button>
-            <button class="btn btn-primary" onclick="executeImport()"><i class="fas fa-file-import"></i> Confirmer</button>
-          </div>
-        </div>
-      </div>
-      <div id="importStep4" style="display:none;" class="fade-up">
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:48px;text-align:center;">
-          <div style="width:64px;height:64px;border-radius:50%;background:var(--accent-glow2);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><i class="fas fa-check" style="font-size:28px;color:var(--accent);"></i></div>
-          <h3 style="font-size:20px;font-weight:700;margin-bottom:8px;">Import termine</h3>
-          <p style="color:var(--muted);font-size:14px;margin-bottom:24px;" id="importResultMsg"></p>
-          <button class="btn btn-primary" onclick="resetImport()"><i class="fas fa-rotate"></i> Nouvel import</button>
-        </div>
-      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;"><div style="max-height:55vh;overflow-y:auto;" id="mgmtGroupsTable"></div></div>
     </div>
   </div>
 </div>
 
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal-box" id="modalBox"></div>
-</div>
+<div class="modal-overlay" id="modalOverlay"><div class="modal-box" id="modalBox"></div></div>
 
 <script>
-/* ===========================================================
-   FIREBASE
-   =========================================================== */
+/* ================================================================
+   FIREBASE CONFIG
+   ================================================================ */
 var firebaseConfig = {
   apiKey: "AIzaSyD9kedxf8KukgwP2D9t5ELkWaEu6RrQngg",
   authDomain: "absences-7b6a1.firebaseapp.com",
@@ -369,11 +245,11 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.database();
 
-/* ===========================================================
+/* ================================================================
    CONSTANTES
-   =========================================================== */
+   ================================================================ */
 var TIME_SLOTS = ['08H30 - 10H30','10H30 - 12H30','08H30 - 12H30','14H00 - 16H00','16H00 - 18H00','14H00 - 18H00','15H00 - 18H00'];
-function P(s) { return s ? s.split('|').filter(function(x){return x.trim();}) : []; }
+function P(s){return s?s.split('|').filter(function(x){return x.trim()}):[];}
 
 var DEFAULT_GROUPS = {
 'ISUSI S3':{students:P('ACHLIKH AICHA|AGOUZOUL MOUNA|ARROUY IKRAM|AZIZ AMINA|BANI NAJMA|BENCHAMA MOHAMED ALI|BOUIDA KATRE-ENNADA|BOURISSA HAMZA|DENDOUN ISLAM|EBOUR KHAOULA|El ABDELLAOUI FATIMA-EZZAHRA|EL HARRARI OUSSAMA|EL HOR HAJAR|EL JAOUHARI MALAK|El MIKH SALMA|ELMOUDAFFAR WISSAL|ENNAJIH RIHAM|ET.TAGHELATY HANANE|FASSINI CHAIMAA|HANGOUR HAFSA|IMAZZANE MAROUA|LABBIHI KAOUTAR|LAFHAL BADER|NAJEH RADWA|NAOUAR MBARKA|OUARHOU AMINE|OUILKI JIHAD|OUIS MOHAMED|OUJAA IMANE|OUKOUZAMT HAYATE|OUNASSER ISRAA|RAIS ANAS|SAADI IMANE|SAADOUNI DOUAA|TOUIL KELTOUM|ZAKAR CHAIMA'),modules:["Pathologie medico-chirurgicale d'urgence","Puericulture et maladies transmissibles","Organisation des urgences et semiologie telephonique","Soins infirmiers en medecine et chirurgie d'urgence","Stage 1 service d'urgences","Stage 2 Dechoquage"]},
@@ -396,206 +272,208 @@ var DEFAULT_GROUPS = {
 'IG S5':{students:P('AITAYAD NADA|ABDELBAKI MERYEM|ARAHAL KHADIJA|BADDAZ TOURIA|BENKHALTI NADA|ABBOU IMANE|AAZRI OUMAIMA|AGOUJJIF HAFSA|ALAHMOUM MOHAMED|AYANI RIMA|ABARAGH MERYEM|AFOULOUS ASMAE|AMAZOUZ WASSIM|ABOUHANI MAROUA|BELAKZIZ AYA|ABRARAY KHADIJA'),modules:["Genie sanitaire avance","Gestion des dechets dangereux","Stage de specialisation avance","Memoire de fin d'etudes"]}
 };
 
-/* ===========================================================
+/* ================================================================
    ÉTAT GLOBAL
-   =========================================================== */
+   ================================================================ */
 var GROUPS = {};
 var currentGroup = 'ISUSI S3';
 var currentTab = 'enregistrement';
 var currentSubTab = 'etudiants-mgmt';
 var absences = [];
-var importWorkbook = null;
-var importSheetData = null;
-var importPreviewData = [];
-var firebaseCanWrite = false; // ← CLEF : on track si Firebase accepte les écritures
+var useFirebase = false; // sera mis à true si Firebase fonctionne
 
-/* ===========================================================
-   DIAGNOSTIC FIREBASE — TEST D'ÉCRITURE AU DÉMARRAGE
-   =========================================================== */
-async function testFirebaseWrite() {
-    var statusDot = document.getElementById('statusDot');
-    var statusText = document.getElementById('statusText');
+/* ================================================================
+   STOCKAGE : localStorage (principal) + Firebase (secondaire)
+   localStorage GARANTIT que les données persistent après actualisation
+   ================================================================ */
 
-    statusDot.className = 'status-dot loading';
-    statusText.textContent = 'Test de connexion Firebase...';
-
+// Sauvegarder dans localStorage (toujours fonctionne)
+function saveLocal() {
     try {
-        // Essayer d'écrire une valeur test
-        var testRef = db.ref("_write_test");
-        await testRef.set({ t: Date.now(), v: 1 });
-
-        // Essayer de la relire pour confirmer
-        var snap = await testRef.once("value");
-        if (snap.exists()) {
-            firebaseCanWrite = true;
-            statusDot.className = 'status-dot ok';
-            statusText.textContent = 'Firebase connecte (lecture/ecriture OK)';
-            console.log('[FIREBASE] Test d\'ecriture : SUCCES');
-            // Nettoyer la valeur test
-            testRef.remove();
-        } else {
-            throw new Error("Valeur ecrite mais non lue");
-        }
-    } catch (error) {
-        firebaseCanWrite = false;
-        statusDot.className = 'status-dot err';
-        statusText.textContent = 'Firebase : ECriture REFUSEE !';
-        console.error('[FIREBASE] Test d\'ecriture : ECHOUE', error);
-
-        // Afficher la bannière d'erreur
-        document.getElementById('firebaseBanner').classList.add('show');
-
-        showToast('Firebase refuse les ecritures ! Voir la banniere rouge en bas.', 'error');
-    }
-}
-
-/* ===========================================================
-   SAUVEGARDE — vérifie firebaseCanWrite AVANT d'essayer
-   =========================================================== */
-async function saveData() {
-    if (!firebaseCanWrite) {
-        console.error('[saveData] BLOQUE : firebaseCanWrite = false');
-        showToast('Sauvegarde impossible : Firebase refuse les ecritures. Corrigez les regles !', 'error');
-        document.getElementById('firebaseBanner').classList.add('show');
-        return false;
-    }
-
-    var indicator = document.getElementById('savingIndicator');
-    if (indicator) indicator.classList.add('show');
-
-    try {
-        await db.ref("gestion_absences").set({
-            groups: GROUPS,
-            absences: absences
-        });
-
-        var now = new Date();
-        var ts = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        var lastSave = document.getElementById('lastSaveTime');
-        if (lastSave) lastSave.querySelector('#statusText').textContent = 'Derniere sauvegarde : ' + ts;
-
-        console.log('[saveData] SUCCES a ' + ts + ' — ' + Object.keys(GROUPS).length + ' groupes');
+        localStorage.setItem('at_groups', JSON.stringify(GROUPS));
+        localStorage.setItem('at_absences', JSON.stringify(absences));
         return true;
-
-    } catch (error) {
-        console.error('[saveData] ERREUR :', error);
-        showToast('Erreur de sauvegarde : ' + error.message, 'error');
+    } catch (e) {
+        console.error('[localStorage] Erreur de sauvegarde :', e);
         return false;
-
-    } finally {
-        if (indicator) indicator.classList.remove('show');
     }
 }
 
-/* ===========================================================
-   CHARGEMENT
-   =========================================================== */
-async function loadData() {
+// Charger depuis localStorage
+function loadLocal() {
     try {
-        var snapshot = await db.ref("gestion_absences").once("value");
-        console.log('[loadData] Snapshot existe :', snapshot.exists());
+        var g = localStorage.getItem('at_groups');
+        var a = localStorage.getItem('at_absences');
+        if (g) {
+            GROUPS = JSON.parse(g);
+            absences = a ? JSON.parse(a) : [];
+            return true;
+        }
+    } catch (e) {
+        console.error('[localStorage] Erreur de chargement :', e);
+    }
+    return false;
+}
 
-        if (snapshot.exists()) {
-            var data = snapshot.val();
-            GROUPS = data.groups || JSON.parse(JSON.stringify(DEFAULT_GROUPS));
-            absences = Array.isArray(data.absences) ? data.absences : [];
-            console.log('[loadData] ' + Object.keys(GROUPS).length + ' groupes charges depuis Firebase');
-        } else {
-            console.log('[loadData] Aucune donnee Firebase → defaults');
+// Sauvegarder dans Firebase (seulement si ça marche)
+async function saveFirebase() {
+    if (!useFirebase) return false;
+    try {
+        await db.ref("gestion_absences").set({ groups: GROUPS, absences: absences });
+        console.log('[Firebase] Sauvegarde OK');
+        return true;
+    } catch (e) {
+        console.error('[Firebase] Erreur :', e);
+        useFirebase = false;
+        updateStorageStatus();
+        return false;
+    }
+}
+
+// SAUVEGARDE PRINCIPALE : localStorage en premier, Firebase en secondaire
+async function saveData() {
+    // 1) Toujours sauvegarder en local (garanti)
+    var localOk = saveLocal();
+
+    // 2) Essayer Firebase en parallèle (meilleur effort)
+    saveFirebase();
+
+    return localOk; // on retourne true car local a marché
+}
+
+// Charger depuis Firebase
+async function loadFirebase() {
+    try {
+        var snap = await db.ref("gestion_absences").once("value");
+        if (snap.exists()) {
+            var d = snap.val();
+            if (d.groups && Object.keys(d.groups).length > 0) {
+                GROUPS = d.groups;
+                absences = Array.isArray(d.absences) ? d.absences : [];
+                // Sauvegarder en local aussi
+                saveLocal();
+                return true;
+            }
+        }
+    } catch (e) {
+        console.error('[Firebase] Chargement echoue :', e);
+    }
+    return false;
+}
+
+// Mettre à jour l'indicateur de stockage
+function updateStorageStatus() {
+    var el = document.getElementById('storageStatus');
+    if (useFirebase) {
+        el.innerHTML = '<span class="storage-badge storage-cloud"><i class="fas fa-cloud"></i> Cloud + Local</span> <span style="color:var(--muted);">— ' + Object.keys(GROUPS).length + ' groupes</span>';
+    } else {
+        el.innerHTML = '<span class="storage-badge storage-local"><i class="fas fa-hard-drive"></i> Local uniquement</span> <span style="color:var(--muted);">— ' + Object.keys(GROUPS).length + ' groupes</span>';
+    }
+}
+
+// Tester si Firebase accepte les écritures
+async function testFirebase() {
+    try {
+        var ref = db.ref("_test_" + Date.now());
+        await ref.set(1);
+        await ref.remove();
+        useFirebase = true;
+        console.log('[Firebase] Test OK — cloud actif');
+    } catch (e) {
+        useFirebase = false;
+        console.log('[Firebase] Test echoue — mode local uniquement');
+    }
+    updateStorageStatus();
+}
+
+/* ================================================================
+   TOAST + MODAL
+   ================================================================ */
+function showToast(msg, type) {
+    type = type || 'success';
+    var c = document.getElementById('toastContainer');
+    var t = document.createElement('div');
+    t.className = 'toast toast-' + type;
+    var icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+    t.innerHTML = '<i class="fas ' + (icons[type] || icons.info) + '"></i><span>' + msg + '</span>';
+    c.appendChild(t);
+    setTimeout(function() { t.classList.add('toast-exit'); setTimeout(function() { t.remove(); }, 300); }, 3500);
+}
+function openModal(html) { document.getElementById('modalBox').innerHTML = html; document.getElementById('modalOverlay').classList.add('show'); }
+function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+
+/* ================================================================
+   INITIALISATION
+   ================================================================ */
+document.addEventListener('DOMContentLoaded', async function() {
+    // 1) Charger depuis localStorage EN PREMIER (rapide, garanti)
+    var localLoaded = loadLocal();
+
+    // 2) Tester Firebase en parallèle
+    await testFirebase();
+
+    // 3) Si Firebase marche et on n'avait rien en local, essayer Firebase
+    if (!localLoaded && useFirebase) {
+        var fbLoaded = await loadFirebase();
+        if (!fbLoaded) {
+            // Ni local ni Firebase → utiliser les defaults
             GROUPS = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
             absences = [];
-            // Si on peut écrire, sauvegarder les defaults
-            if (firebaseCanWrite) await saveData();
+            saveLocal();
         }
-    } catch (error) {
-        console.error('[loadData] ERREUR :', error);
+    } else if (!localLoaded) {
+        // Pas de local, pas de Firebase → defaults
         GROUPS = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
         absences = [];
+        saveLocal();
     }
-}
 
-/* ===========================================================
-   TOAST
-   =========================================================== */
-function showToast(message, type) {
-    type = type || 'success';
-    var container = document.getElementById('toastContainer');
-    var toast = document.createElement('div');
-    toast.className = 'toast toast-' + type;
-    var icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
-    toast.innerHTML = '<i class="fas ' + (icons[type] || icons.info) + '"></i><span>' + message + '</span>';
-    container.appendChild(toast);
-    setTimeout(function() {
-        toast.classList.add('toast-exit');
-        setTimeout(function() { toast.remove(); }, 300);
-    }, 4000);
-}
+    // 4) Si Firebase a des données plus récentes, les prendre
+    if (useFirebase) {
+        try {
+            var snap = await db.ref("gestion_absences").once("value");
+            if (snap.exists()) {
+                var d = snap.val();
+                if (d.groups && Object.keys(d.groups).length > Object.keys(GROUPS).length) {
+                    GROUPS = d.groups;
+                    absences = Array.isArray(d.absences) ? d.absences : [];
+                    saveLocal();
+                    console.log('[Init] Donnees Firebase plus recentes, importees');
+                }
+            }
+        } catch(e) {}
+    }
 
-/* ===========================================================
-   MODAL
-   =========================================================== */
-function openModal(html) {
-    document.getElementById('modalBox').innerHTML = html;
-    document.getElementById('modalOverlay').classList.add('show');
-}
-function closeModal() {
-    document.getElementById('modalOverlay').classList.remove('show');
-}
-
-/* ===========================================================
-   INITIALISATION
-   =========================================================== */
-document.addEventListener('DOMContentLoaded', async function() {
-
-    // 1) Test Firebase EN PREMIER
-    await testFirebaseWrite();
-
-    // 2) Charger les données
-    await loadData();
-
-    // 3) Initialiser l'interface
-    document.getElementById('absDate').value = new Date().toISOString().split('T')[0];
-    var ts = document.getElementById('absTime');
-    TIME_SLOTS.forEach(function(t) {
-        var o = document.createElement('option');
-        o.value = t; o.textContent = t; ts.appendChild(o);
-    });
-
+    // 5) Vérifications
     if (!Object.keys(GROUPS).length) {
         GROUPS = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
-        if (firebaseCanWrite) await saveData();
+        saveLocal();
     }
     if (!GROUPS[currentGroup]) currentGroup = Object.keys(GROUPS)[0];
 
+    // 6) Interface
+    document.getElementById('absDate').value = new Date().toISOString().split('T')[0];
+    var ts = document.getElementById('absTime');
+    TIME_SLOTS.forEach(function(t) { var o = document.createElement('option'); o.value = t; o.textContent = t; ts.appendChild(o); });
+
     renderGroupList();
     selectGroup(currentGroup);
+    updateStorageStatus();
 
-    // 4) Événements
-    document.getElementById('hamburgerBtn').addEventListener('click', function() {
-        document.getElementById('sidebar').classList.toggle('open');
-    });
-    document.getElementById('mainContent').addEventListener('click', function() {
-        document.getElementById('sidebar').classList.remove('open');
-    });
-    document.getElementById('modalOverlay').addEventListener('click', function(e) {
-        if (e.target === e.currentTarget) closeModal();
-    });
+    // 7) Événements
+    document.getElementById('hamburgerBtn').addEventListener('click', function() { document.getElementById('sidebar').classList.toggle('open'); });
+    document.getElementById('mainContent').addEventListener('click', function() { document.getElementById('sidebar').classList.remove('open'); });
+    document.getElementById('modalOverlay').addEventListener('click', function(e) { if (e.target === e.currentTarget) closeModal(); });
     ['absDate','absTime','absModule'].forEach(function(id) {
-        document.getElementById(id).addEventListener('change', function() {
-            if (currentTab === 'enregistrement') renderStudentGrid();
-        });
+        document.getElementById(id).addEventListener('change', function() { if (currentTab === 'enregistrement') renderStudentGrid(); });
     });
-    document.getElementById('importType').addEventListener('change', function(e) {
-        var t = e.target.value;
-        document.getElementById('colMappingStudents').style.display = t === 'etudiants' ? 'block' : 'none';
-        document.getElementById('colMappingModules').style.display = t === 'modules' ? 'block' : 'none';
-        document.getElementById('colMappingAbsences').style.display = t === 'absences' ? 'block' : 'none';
-    });
+
+    console.log('[Init] ' + Object.keys(GROUPS).length + ' groupes charges. Firebase=' + useFirebase);
 });
 
-/* ===========================================================
+/* ================================================================
    NAVIGATION
-   =========================================================== */
+   ================================================================ */
 function switchTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.tab-content').forEach(function(el) { el.style.display = 'none'; });
@@ -609,20 +487,17 @@ function switchSubTab(sub) {
     currentSubTab = sub;
     document.querySelectorAll('.sub-tab').forEach(function(el) { el.classList.toggle('active', el.dataset.subtab === sub); });
     document.querySelectorAll('.subtab-content').forEach(function(el) { el.style.display = 'none'; });
-    var t = document.getElementById('subtab-' + sub);
-    if (t) t.style.display = 'block';
+    var t = document.getElementById('subtab-' + sub); if (t) t.style.display = 'block';
     if (sub === 'etudiants-mgmt') renderMgmtStudents();
     if (sub === 'modules-mgmt') renderMgmtModules();
     if (sub === 'groupes-mgmt') renderMgmtGroups();
 }
 
-/* ===========================================================
-   SIDEBAR — GROUPES
-   =========================================================== */
+/* ================================================================
+   SIDEBAR GROUPES
+   ================================================================ */
 function renderGroupList() {
-    var c = document.getElementById('groupList');
-    var s = (document.getElementById('groupSearch').value || '').toLowerCase();
-    var fm = {}, matched = [];
+    var c = document.getElementById('groupList'), s = (document.getElementById('groupSearch').value || '').toLowerCase(), fm = {}, matched = [];
     Object.keys(GROUPS).forEach(function(g) {
         if (s && !g.toLowerCase().includes(s)) return;
         var m = g.match(/^(.+?)\s+S(\d+)$/);
@@ -630,294 +505,120 @@ function renderGroupList() {
     });
     var unmatched = Object.keys(GROUPS).filter(function(g) { return matched.indexOf(g) === -1 && (!s || g.toLowerCase().includes(s)); });
     var h = '';
-    if (unmatched.length) {
-        h += '<div class="group-label">Autres</div>';
-        unmatched.forEach(function(g) {
-            var cnt = GROUPS[g] ? GROUPS[g].students.length : 0;
-            h += '<div class="group-item ' + (g === currentGroup ? 'active' : '') + '" onclick="selectGroup(\'' + g.replace(/'/g, "\\'") + '\')">' + g + '<span class="count">' + cnt + '</span></div>';
-        });
-    }
-    Object.keys(fm).sort().forEach(function(f) {
-        h += '<div class="group-label">' + f + '</div>';
-        fm[f].sort(function(a, b) { return parseInt(a.match(/S(\d+)$/)[1]) - parseInt(b.match(/S(\d+)$/)[1]); }).forEach(function(g) {
-            var cnt = GROUPS[g] ? GROUPS[g].students.length : 0;
-            h += '<div class="group-item ' + (g === currentGroup ? 'active' : '') + '" onclick="selectGroup(\'' + g.replace(/'/g, "\\'") + '\')">' + g + '<span class="count">' + cnt + '</span></div>';
-        });
-    });
+    if (unmatched.length) { h += '<div class="group-label">Autres</div>'; unmatched.forEach(function(g) { var cnt = GROUPS[g] ? GROUPS[g].students.length : 0; h += '<div class="group-item '+(g===currentGroup?'active':'')+'" onclick="selectGroup(\''+g.replace(/'/g,"\\'")+'\')">'+g+'<span class="count">'+cnt+'</span></div>'; }); }
+    Object.keys(fm).sort().forEach(function(f) { h += '<div class="group-label">'+f+'</div>'; fm[f].sort(function(a,b){return parseInt(a.match(/S(\d+)$/)[1])-parseInt(b.match(/S(\d+)$/)[1]);}).forEach(function(g) { var cnt = GROUPS[g] ? GROUPS[g].students.length : 0; h += '<div class="group-item '+(g===currentGroup?'active':'')+'" onclick="selectGroup(\''+g.replace(/'/g,"\\'")+'\')">'+g+'<span class="count">'+cnt+'</span></div>'; }); });
     c.innerHTML = h;
 }
 function filterGroups() { renderGroupList(); }
-function selectGroup(g) {
-    currentGroup = g; renderGroupList(); updateModuleSelect(); renderCurrentTab();
-    document.getElementById('sidebar').classList.remove('open');
-}
-function updateModuleSelect() {
-    var sel = document.getElementById('absModule');
-    sel.innerHTML = '<option value="">-- Choisir --</option>';
-    (GROUPS[currentGroup] ? GROUPS[currentGroup].modules : []).forEach(function(m) {
-        var o = document.createElement('option'); o.value = m; o.textContent = m; sel.appendChild(o);
-    });
-}
-function renderCurrentTab() {
-    switch (currentTab) {
-        case 'enregistrement': renderStudentGrid(); break;
-        case 'historique': renderHistory(); break;
-        case 'statistiques': renderStats(); break;
-        case 'etudiants': renderStudentCards(); break;
-        case 'gestion': switchSubTab(currentSubTab); break;
-    }
-    renderPageHeader();
-}
-function renderPageHeader() {
-    var students = GROUPS[currentGroup] ? GROUPS[currentGroup].students : [];
-    var tn = {enregistrement:'Enregistrement des absences',historique:'Historique des absences',statistiques:'Statistiques',etudiants:'Fiches etudiants',gestion:'Gestion des donnees'};
-    var ti = {enregistrement:'fa-pen-to-square',historique:'fa-clock-rotate-left',statistiques:'fa-chart-pie',etudiants:'fa-users',gestion:'fa-gear'};
-    document.getElementById('pageHeader').innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;"><div><div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;"><span style="background:var(--accent-glow2);color:var(--accent);padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;">' + currentGroup + '</span><span style="color:var(--muted);font-size:13px;">' + students.length + ' etudiants</span></div><h2 style="font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px;"><i class="fas ' + ti[currentTab] + '" style="color:var(--accent);font-size:20px;"></i>' + tn[currentTab] + '</h2></div></div>';
-}
+function selectGroup(g) { currentGroup = g; renderGroupList(); updateModuleSelect(); renderCurrentTab(); document.getElementById('sidebar').classList.remove('open'); }
+function updateModuleSelect() { var sel = document.getElementById('absModule'); sel.innerHTML = '<option value="">-- Choisir --</option>'; (GROUPS[currentGroup]?GROUPS[currentGroup].modules:[]).forEach(function(m){var o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o);}); }
+function renderCurrentTab() { switch(currentTab){case'enregistrement':renderStudentGrid();break;case'historique':renderHistory();break;case'statistiques':renderStats();break;case'etudiants':renderStudentCards();break;case'gestion':switchSubTab(currentSubTab);break;} renderPageHeader(); updateStorageStatus(); }
+function renderPageHeader() { var st=GROUPS[currentGroup]?GROUPS[currentGroup].students:[];var tn={enregistrement:'Enregistrement des absences',historique:'Historique',statistiques:'Statistiques',etudiants:'Fiches etudiants',gestion:'Gestion des donnees'};var ti={enregistrement:'fa-pen-to-square',historique:'fa-clock-rotate-left',statistiques:'fa-chart-pie',etudiants:'fa-users',gestion:'fa-gear'};document.getElementById('pageHeader').innerHTML='<div><div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;"><span style="background:var(--ag2);color:var(--accent);padding:4px 12px;border-radius:6px;font-size:12px;font-weight:700;">'+currentGroup+'</span><span style="color:var(--muted);font-size:13px;">'+st.length+' etudiants</span></div><h2 style="font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px;"><i class="fas '+ti[currentTab]+'" style="color:var(--accent);font-size:20px;"></i>'+tn[currentTab]+'</h2></div>'; }
 
-/* ===========================================================
+/* ================================================================
    ENREGISTREMENT ABSENCES
-   =========================================================== */
-function renderStudentGrid() {
-    var students = GROUPS[currentGroup] ? GROUPS[currentGroup].students : [];
-    var search = (document.getElementById('studentSearch') ? document.getElementById('studentSearch').value : '').toLowerCase();
-    var filtered = students.filter(function(s) { return s.toLowerCase().includes(search); });
-    var date = document.getElementById('absDate').value, time = document.getElementById('absTime').value, mod = document.getElementById('absModule').value;
-    var existing = absences.filter(function(a) { return a.group === currentGroup && a.date === date && a.time === time && a.module === mod; });
-    var h = '<table class="data-table"><thead><tr><th style="width:50px;"><input type="checkbox" class="abs-checkbox" onchange="toggleAll(this.checked)"></th><th style="width:60px;">N</th><th>Nom complet</th><th style="width:120px;">Statut</th><th style="width:200px;">Justification</th></tr></thead><tbody>';
-    filtered.forEach(function(name) {
-        var abs = existing.find(function(a) { return a.student === name; });
-        var checked = abs ? 'checked' : '', rc = abs ? 'absent-row' : '', oi = students.indexOf(name) + 1;
-        var st = abs ? '<span class="absent-tag"><i class="fas fa-xmark"></i> Absent</span>' : '<span style="color:var(--accent);font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Present</span>';
-        h += '<tr class="' + rc + '"><td><input type="checkbox" class="abs-checkbox student-cb" data-name="' + name + '" ' + checked + ' onchange="onStudentCbChange(this)"></td><td style="color:var(--muted);font-size:13px;">' + oi + '</td><td style="font-weight:500;">' + name + '</td><td>' + st + '</td><td><input type="text" class="form-input" style="padding:6px 10px;font-size:12px;" placeholder="Justification..." data-just="' + name + '" value="' + (abs ? abs.justification : '') + '"></td></tr>';
-    });
-    if (!filtered.length) h += '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Aucun etudiant</td></tr>';
-    h += '</tbody></table>';
-    document.getElementById('studentGrid').innerHTML = h;
-    updateAbsCount();
-}
-function filterStudents() { renderStudentGrid(); }
-function onStudentCbChange(cb) { cb.closest('tr').classList.toggle('absent-row', cb.checked); updateAbsCount(); }
-function toggleAll(checked) { document.querySelectorAll('.student-cb').forEach(function(cb) { cb.checked = checked; cb.closest('tr').classList.toggle('absent-row', checked); }); updateAbsCount(); }
-function selectAllVisible() { toggleAll(true); }
-function deselectAllVisible() { toggleAll(false); }
-function clearSelection() { deselectAllVisible(); document.querySelectorAll('[data-just]').forEach(function(inp) { inp.value = ''; }); }
-function updateAbsCount() { document.getElementById('absCountLabel').textContent = document.querySelectorAll('.student-cb:checked').length + ' absent(s) selectionne(s)'; }
+   ================================================================ */
+function renderStudentGrid() { var students=GROUPS[currentGroup]?GROUPS[currentGroup].students:[];var search=(document.getElementById('studentSearch')?document.getElementById('studentSearch').value:'').toLowerCase();var filtered=students.filter(function(s){return s.toLowerCase().includes(search);});var date=document.getElementById('absDate').value,time=document.getElementById('absTime').value,mod=document.getElementById('absModule').value;var existing=absences.filter(function(a){return a.group===currentGroup&&a.date===date&&a.time===time&&a.module===mod;});var h='<table class="data-table"><thead><tr><th style="width:50px;"><input type="checkbox" class="abs-checkbox" onchange="toggleAll(this.checked)"></th><th style="width:60px;">N</th><th>Nom complet</th><th style="width:120px;">Statut</th><th style="width:200px;">Justification</th></tr></thead><tbody>';filtered.forEach(function(name){var abs=existing.find(function(a){return a.student===name;});var checked=abs?'checked':'',rc=abs?'absent-row':'',oi=students.indexOf(name)+1;var st=abs?'<span class="absent-tag"><i class="fas fa-xmark"></i> Absent</span>':'<span style="color:var(--accent);font-size:12px;font-weight:600;"><i class="fas fa-check"></i> Present</span>';h+='<tr class="'+rc+'"><td><input type="checkbox" class="abs-checkbox student-cb" data-name="'+name+'" '+checked+' onchange="onCbChange(this)"></td><td style="color:var(--muted);font-size:13px;">'+oi+'</td><td style="font-weight:500;">'+name+'</td><td>'+st+'</td><td><input type="text" class="form-input" style="padding:6px 10px;font-size:12px;" placeholder="Justification..." data-just="'+name+'" value="'+(abs?abs.justification:'')+'"></td></tr>';});if(!filtered.length)h+='<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">Aucun etudiant</td></tr>';h+='</tbody></table>';document.getElementById('studentGrid').innerHTML=h;updateAbsCount(); }
+function onCbChange(cb){cb.closest('tr').classList.toggle('absent-row',cb.checked);updateAbsCount();}
+function toggleAll(c){document.querySelectorAll('.student-cb').forEach(function(cb){cb.checked=c;cb.closest('tr').classList.toggle('absent-row',c);});updateAbsCount();}
+function clearSelection(){toggleAll(false);document.querySelectorAll('[data-just]').forEach(function(i){i.value='';});}
+function updateAbsCount(){document.getElementById('absCountLabel').textContent=document.querySelectorAll('.student-cb:checked').length+' absent(s)';}
 
-async function saveAbsences() {
-    var date = document.getElementById('absDate').value, time = document.getElementById('absTime').value, mod = document.getElementById('absModule').value;
-    if (!date || !time || !mod) { showToast('Remplissez date, creneau et module', 'error'); return; }
-    absences = absences.filter(function(a) { return !(a.group === currentGroup && a.date === date && a.time === time && a.module === mod); });
-    var added = 0;
-    document.querySelectorAll('.student-cb:checked').forEach(function(cb) {
-        var name = cb.dataset.name;
-        var j = document.querySelector('[data-just="' + name + '"]');
-        absences.push({ group: currentGroup, student: name, date: date, time: time, module: mod, justification: j ? j.value.trim() : '', timestamp: Date.now() });
-        added++;
-    });
-    var ok = await saveData();
-    if (ok) showToast(added > 0 ? added + ' absence(s) enregistree(s)' : 'Tout le monde present', added > 0 ? 'success' : 'info');
-    renderStudentGrid();
-}
+async function saveAbsences(){var date=document.getElementById('absDate').value,time=document.getElementById('absTime').value,mod=document.getElementById('absModule').value;if(!date||!time||!mod){showToast('Remplissez tous les champs','error');return;}absences=absences.filter(function(a){return!(a.group===currentGroup&&a.date===date&&a.time===time&&a.module===mod);});var added=0;document.querySelectorAll('.student-cb:checked').forEach(function(cb){var name=cb.dataset.name;var j=document.querySelector('[data-just="'+name+'"]');absences.push({group:currentGroup,student:name,date:date,time:time,module:mod,justification:j?j.value.trim():'',timestamp:Date.now()});added++;});await saveData();showToast(added>0?added+' absence(s) enregistree(s)':'Tout le monde present',added>0?'success':'info');renderStudentGrid();}
 
-/* ===========================================================
+/* ================================================================
    HISTORIQUE
-   =========================================================== */
-function renderHistory() {
-    var search = (document.getElementById('histSearch') ? document.getElementById('histSearch').value : '').toLowerCase();
-    var from = document.getElementById('histDateFrom').value, to = document.getElementById('histDateTo').value;
-    var filtered = absences.filter(function(a) { return a.group === currentGroup; });
-    if (search) filtered = filtered.filter(function(a) { return a.student.toLowerCase().includes(search) || (a.module||'').toLowerCase().includes(search); });
-    if (from) filtered = filtered.filter(function(a) { return a.date >= from; });
-    if (to) filtered = filtered.filter(function(a) { return a.date <= to; });
-    filtered.sort(function(a, b) { return (b.timestamp||0) - (a.timestamp||0); });
-    var h = '<table class="data-table"><thead><tr><th>Date</th><th>Creneau</th><th>Module</th><th>Etudiant</th><th>Justification</th><th style="width:80px;">Actions</th></tr></thead><tbody>';
-    if (!filtered.length) { h += '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">Aucun enregistrement</td></tr>'; }
-    else { filtered.forEach(function(a) { h += '<tr><td>'+a.date+'</td><td>'+a.time+'</td><td>'+a.module+'</td><td style="font-weight:500;">'+a.student+'</td><td>'+(a.justification||'<span style="color:var(--muted);">—</span>')+'</td><td><button class="btn btn-xs btn-danger" onclick="deleteAbsence('+a.timestamp+')"><i class="fas fa-trash"></i></button></td></tr>'; }); }
-    h += '</tbody></table>';
-    document.getElementById('historyTable').innerHTML = h;
-}
-async function deleteAbsence(ts) { absences = absences.filter(function(a){return a.timestamp!==ts;}); await saveData(); showToast('Supprime','success'); renderHistory(); }
-function exportCSV() {
-    var f = absences.filter(function(a){return a.group===currentGroup;});
-    if(!f.length){showToast('Aucune donnee','info');return;}
-    var csv='Date,Creneau,Module,Etudiant,Justification\n';
-    f.forEach(function(a){csv+=a.date+','+a.time+',"'+a.module+'","'+a.student+'","'+(a.justification||'')+'"\n';});
-    var blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
-    var link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='absences_'+currentGroup.replace(/\s+/g,'_')+'.csv';link.click();
-}
+   ================================================================ */
+function renderHistory(){var search=(document.getElementById('histSearch')?document.getElementById('histSearch').value:'').toLowerCase();var from=document.getElementById('histDateFrom').value,to=document.getElementById('histDateTo').value;var f=absences.filter(function(a){return a.group===currentGroup;});if(search)f=f.filter(function(a){return a.student.toLowerCase().includes(search)||(a.module||'').toLowerCase().includes(search);});if(from)f=f.filter(function(a){return a.date>=from;});if(to)f=f.filter(function(a){return a.date<=to;});f.sort(function(a,b){return(b.timestamp||0)-(a.timestamp||0);});var h='<table class="data-table"><thead><tr><th>Date</th><th>Creneau</th><th>Module</th><th>Etudiant</th><th>Justification</th><th style="width:80px;"></th></tr></thead><tbody>';if(!f.length)h+='<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">Aucun enregistrement</td></tr>';else f.forEach(function(a){h+='<tr><td>'+a.date+'</td><td>'+a.time+'</td><td>'+a.module+'</td><td style="font-weight:500;">'+a.student+'</td><td>'+(a.justification||'<span style="color:var(--muted);">—</span>')+'</td><td><button class="btn btn-xs btn-danger" onclick="deleteAbsence('+a.timestamp+')"><i class="fas fa-trash"></i></button></td></tr>';});h+='</tbody></table>';document.getElementById('historyTable').innerHTML=h;}
+async function deleteAbsence(ts){absences=absences.filter(function(a){return a.timestamp!==ts;});await saveData();showToast('Supprime','success');renderHistory();}
+function exportCSV(){var f=absences.filter(function(a){return a.group===currentGroup;});if(!f.length){showToast('Aucune donnee','info');return;}var csv='Date,Creneau,Module,Etudiant,Justification\n';f.forEach(function(a){csv+=a.date+','+a.time+',"'+a.module+'","'+a.student+'","'+(a.justification||'')+'"\n';});var b=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});var l=document.createElement('a');l.href=URL.createObjectURL(b);l.download='absences_'+currentGroup.replace(/\s+/g,'_')+'.csv';l.click();}
 
-/* ===========================================================
+/* ================================================================
    STATISTIQUES
-   =========================================================== */
-function renderStats() {
-    var students=GROUPS[currentGroup]?GROUPS[currentGroup].students:[];
-    var ga=absences.filter(function(a){return a.group===currentGroup;});
-    var sw=[];ga.forEach(function(a){if(sw.indexOf(a.student)===-1)sw.push(a.student);});
-    var mods={};ga.forEach(function(a){mods[a.module]=(mods[a.module]||0)+1;});
-    var tm=Object.entries(mods).sort(function(a,b){return b[1]-a[1];})[0];
-    var rate=students.length?((sw.length/students.length)*100).toFixed(1):0;
-    var h='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;" class="fade-up">';
-    h+='<div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--danger-glow);color:var(--danger);"><i class="fas fa-user-xmark"></i></div><div><div class="stat-value">'+ga.length+'</div><div class="stat-label">Total absences</div></div></div></div>';
-    h+='<div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--warn-glow);color:var(--warn);"><i class="fas fa-users-slash"></i></div><div><div class="stat-value">'+sw.length+'</div><div class="stat-label">Etudiants concernes</div></div></div></div>';
-    h+='<div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--accent-glow2);color:var(--accent);"><i class="fas fa-percent"></i></div><div><div class="stat-value">'+rate+'%</div><div class="stat-label">Taux absenteisme</div></div></div></div>';
-    h+='<div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="icon-wrap" style="background:var(--info-glow);color:var(--info);"><i class="fas fa-book"></i></div><div><div class="stat-value" style="font-size:16px;">'+(tm?tm[0]:'—')+'</div><div class="stat-label">Module le plus absent ('+(tm?tm[1]:0)+')</div></div></div></div></div>';
-    var sa={};students.forEach(function(s){sa[s]=ga.filter(function(a){return a.student===s;}).length;});
-    var sorted=Object.entries(sa).sort(function(a,b){return b[1]-a[1];}).slice(0,20);
-    var mx=sorted.length?sorted[0][1]:1;
-    h+='<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;" class="fade-up fade-up-d1"><h3 style="font-size:15px;font-weight:600;margin-bottom:16px;">Top 20 absences</h3>';
-    sorted.forEach(function(item){var n=item[0],c=item[1],p=mx?(c/mx*100):0,cl=c===0?'var(--accent)':c>mx*0.7?'var(--danger)':'var(--warn)';h+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;"><div style="width:180px;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="'+n+'">'+n+'</div><div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:'+p+'%;background:'+cl+';"></div></div><div style="width:30px;text-align:right;font-size:13px;font-weight:700;color:'+cl+';">'+c+'</div></div>';});
-    if(!sorted.length)h+='<div style="text-align:center;padding:20px;color:var(--muted);">Aucune donnee</div>';
-    h+='</div>';
-    document.getElementById('statsContent').innerHTML=h;
-}
+   ================================================================ */
+function renderStats(){var students=GROUPS[currentGroup]?GROUPS[currentGroup].students:[];var ga=absences.filter(function(a){return a.group===currentGroup;});var sw=[];ga.forEach(function(a){if(sw.indexOf(a.student)===-1)sw.push(a.student);});var mods={};ga.forEach(function(a){mods[a.module]=(mods[a.module]||0)+1;});var tm=Object.entries(mods).sort(function(a,b){return b[1]-a[1];})[0];var rate=students.length?((sw.length/students.length)*100).toFixed(1):0;var h='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;" class="fade-up">';h+='<div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="iw" style="background:var(--dg);color:var(--danger);"><i class="fas fa-user-xmark"></i></div><div><div class="sv">'+ga.length+'</div><div class="sl">Total absences</div></div></div></div>';h+='<div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="iw" style="background:var(--wg);color:var(--warn);"><i class="fas fa-users-slash"></i></div><div><div class="sv">'+sw.length+'</div><div class="sl">Etudiants concernes</div></div></div></div>';h+='<div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="iw" style="background:var(--ag2);color:var(--accent);"><i class="fas fa-percent"></i></div><div><div class="sv">'+rate+'%</div><div class="sl">Taux absenteisme</div></div></div></div>';h+='<div class="stat-card"><div style="display:flex;align-items:center;gap:14px;"><div class="iw" style="background:var(--ig);color:var(--info);"><i class="fas fa-book"></i></div><div><div class="sv" style="font-size:16px;">'+(tm?tm[0]:'—')+'</div><div class="sl">Module le plus absent ('+(tm?tm[1]:0)+')</div></div></div></div></div>';var sa={};students.forEach(function(s){sa[s]=ga.filter(function(a){return a.student===s;}).length;});var sorted=Object.entries(sa).sort(function(a,b){return b[1]-a[1];}).slice(0,20);var mx=sorted.length?sorted[0][1]:1;h+='<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;" class="fade-up fade-up-d1"><h3 style="font-size:15px;font-weight:600;margin-bottom:16px;">Top 20 absences</h3>';sorted.forEach(function(item){var n=item[0],c=item[1],p=mx?(c/mx*100):0,cl=c===0?'var(--accent)':c>mx*0.7?'var(--danger)':'var(--warn)';h+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;"><div style="width:180px;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="'+n+'">'+n+'</div><div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:'+p+'%;background:'+cl+';"></div></div><div style="width:30px;text-align:right;font-size:13px;font-weight:700;color:'+cl+';">'+c+'</div></div>';});if(!sorted.length)h+='<div style="text-align:center;padding:20px;color:var(--muted);">Aucune donnee</div>';h+='</div>';document.getElementById('statsContent').innerHTML=h;}
 
-/* ===========================================================
+/* ================================================================
    FICHES ÉTUDIANTS
-   =========================================================== */
-function renderStudentCards() {
-    var students=GROUPS[currentGroup]?GROUPS[currentGroup].students:[];
-    var search=(document.getElementById('etudSearch')?document.getElementById('etudSearch').value:'').toLowerCase();
-    var sort=document.getElementById('etudSort').value;
-    var ga=absences.filter(function(a){return a.group===currentGroup;});
-    var list=students.map(function(name){var sa=ga.filter(function(a){return a.student===name;});return{name:name,count:sa.length,details:sa};});
-    if(search)list=list.filter(function(s){return s.name.toLowerCase().includes(search);});
-    if(sort==='abs-desc')list.sort(function(a,b){return b.count-a.count;});
-    else if(sort==='abs-asc')list.sort(function(a,b){return a.count-b.count;});
-    else list.sort(function(a,b){return a.name.localeCompare(b.name);});
-    var h='';
-    list.forEach(function(s){var bc=s.count===0?'badge-ok':s.count>5?'badge-danger':'badge-warn';
-    h+='<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><div style="font-weight:600;font-size:14px;">'+s.name+'</div><span class="badge '+bc+'">'+s.count+' absence(s)</span></div>';
-    if(s.details.length){h+='<div style="max-height:120px;overflow-y:auto;font-size:12px;color:var(--muted);">';s.details.slice(-5).reverse().forEach(function(d){h+='<div style="padding:4px 0;border-bottom:1px solid var(--border);">'+d.date+' — '+d.time+' — '+d.module+(d.justification?' ('+d.justification+')':'')+'</div>';});if(s.details.length>5)h+='<div style="padding:4px 0;color:var(--accent);font-weight:600;">+ '+(s.details.length-5)+' autres...</div>';h+='</div>';}else{h+='<div style="font-size:12px;color:var(--accent);"><i class="fas fa-check-circle"></i> Aucune absence</div>';}h+='</div>';});
-    if(!list.length)h='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">Aucun etudiant</div>';
-    document.getElementById('studentCards').innerHTML=h;
-}
+   ================================================================ */
+function renderStudentCards(){var students=GROUPS[currentGroup]?GROUPS[currentGroup].students:[];var search=(document.getElementById('etudSearch')?document.getElementById('etudSearch').value:'').toLowerCase();var sort=document.getElementById('etudSort').value;var ga=absences.filter(function(a){return a.group===currentGroup;});var list=students.map(function(name){var sa=ga.filter(function(a){return a.student===name;});return{name:name,count:sa.length,details:sa};});if(search)list=list.filter(function(s){return s.name.toLowerCase().includes(search);});if(sort==='abs-desc')list.sort(function(a,b){return b.count-a.count;});else if(sort==='abs-asc')list.sort(function(a,b){return a.count-b.count;});else list.sort(function(a,b){return a.name.localeCompare(b.name);});var h='';list.forEach(function(s){var bc=s.count===0?'badge-ok':s.count>5?'badge-danger':'badge-warn';h+='<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><div style="font-weight:600;font-size:14px;">'+s.name+'</div><span class="badge '+bc+'">'+s.count+'</span></div>';if(s.details.length){h+='<div style="max-height:120px;overflow-y:auto;font-size:12px;color:var(--muted);">';s.details.slice(-5).reverse().forEach(function(d){h+='<div style="padding:4px 0;border-bottom:1px solid var(--border);">'+d.date+' — '+d.time+' — '+d.module+(d.justification?' ('+d.justification+')':'')+'</div>';});if(s.details.length>5)h+='<div style="padding:4px 0;color:var(--accent);font-weight:600;">+ '+(s.details.length-5)+'</div>';h+='</div>';}else{h+='<div style="font-size:12px;color:var(--accent);"><i class="fas fa-check-circle"></i> Aucune absence</div>';}h+='</div>';});if(!list.length)h='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">Aucun etudiant</div>';document.getElementById('studentCards').innerHTML=h;}
 
-/* ===========================================================
+/* ================================================================
    GESTION — ÉTUDIANTS
-   =========================================================== */
-function renderMgmtStudents() {
-    var students=GROUPS[currentGroup]?GROUPS[currentGroup].students:[];
-    var search=(document.getElementById('mgmtStudSearch')?document.getElementById('mgmtStudSearch').value:'').toLowerCase();
-    var filtered=students.filter(function(s){return s.toLowerCase().includes(search);});
-    var h='<table class="data-table"><thead><tr><th>N</th><th>Nom complet</th><th style="width:100px;">Actions</th></tr></thead><tbody>';
-    filtered.forEach(function(name,i){h+='<tr><td style="color:var(--muted);">'+(i+1)+'</td><td style="font-weight:500;" id="stud-name-'+i+'">'+name+'</td><td><button class="btn btn-xs btn-ghost" onclick="editStudent('+i+')"><i class="fas fa-pen"></i></button> <button class="btn btn-xs btn-danger" onclick="deleteStudent('+i+')"><i class="fas fa-trash"></i></button></td></tr>';});
-    if(!filtered.length)h+='<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);">Aucun etudiant</td></tr>';
-    h+='</tbody></table>';document.getElementById('mgmtStudentsTable').innerHTML=h;
-}
+   ================================================================ */
+function renderMgmtStudents(){var students=GROUPS[currentGroup]?GROUPS[currentGroup].students:[];var search=(document.getElementById('mgmtStudSearch')?document.getElementById('mgmtStudSearch').value:'').toLowerCase();var filtered=students.filter(function(s){return s.toLowerCase().includes(search);});var h='<table class="data-table"><thead><tr><th>N</th><th>Nom</th><th style="width:100px;"></th></tr></thead><tbody>';filtered.forEach(function(name,i){h+='<tr><td style="color:var(--muted);">'+(i+1)+'</td><td style="font-weight:500;" id="sn-'+i+'">'+name+'</td><td><button class="btn btn-xs btn-ghost" onclick="editStudent('+i+')"><i class="fas fa-pen"></i></button> <button class="btn btn-xs btn-danger" onclick="deleteStudent('+i+')"><i class="fas fa-trash"></i></button></td></tr>';});if(!filtered.length)h+='<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);">Aucun etudiant</td></tr>';h+='</tbody></table>';document.getElementById('mgmtStudentsTable').innerHTML=h;}
 function showAddStudentModal(){openModal('<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Ajouter un etudiant</h3><div style="margin-bottom:16px;"><label class="form-label">Nom complet</label><input type="text" class="form-input" id="newStudentName" placeholder="NOM PRENOM"></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="addStudent()"><i class="fas fa-plus"></i> Ajouter</button></div>');}
-async function addStudent(){var n=document.getElementById('newStudentName').value.trim().toUpperCase();if(!n){showToast('Entrez un nom','error');return;}if(!GROUPS[currentGroup])GROUPS[currentGroup]={students:[],modules:[]};if(GROUPS[currentGroup].students.indexOf(n)!==-1){showToast('Deja existe','error');return;}GROUPS[currentGroup].students.push(n);var ok=await saveData();if(ok){closeModal();showToast('Etudiant ajoute','success');}renderMgmtStudents();renderGroupList();}
-function showBulkAddStudentModal(){openModal('<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Ajout multiple</h3><div style="margin-bottom:16px;"><label class="form-label">Noms (un par ligne)</label><textarea class="form-input" id="bulkStudentNames" rows="8"></textarea></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="bulkAddStudents()"><i class="fas fa-list"></i> Ajouter</button></div>');}
-async function bulkAddStudents(){var t=document.getElementById('bulkStudentNames').value.trim();if(!t){showToast('Entrez des noms','error');return;}var names=t.split('\n').map(function(n){return n.trim().toUpperCase();}).filter(function(n){return n;});if(!GROUPS[currentGroup])GROUPS[currentGroup]={students:[],modules:[]};var c=0;names.forEach(function(n){if(GROUPS[currentGroup].students.indexOf(n)===-1){GROUPS[currentGroup].students.push(n);c++;}});var ok=await saveData();if(ok){closeModal();showToast(c+' etudiant(s) ajoute(s)','success');}renderMgmtStudents();renderGroupList();}
-function editStudent(i){var n=GROUPS[currentGroup].students[i];if(!n)return;var c=document.getElementById('stud-name-'+i);c.innerHTML='<input type="text" class="edit-input" value="'+n+'" onblur="confirmEditStudent('+i+',this)" onkeydown="if(event.key===\'Enter\')this.blur()">';c.querySelector('input').focus();}
+async function addStudent(){var n=document.getElementById('newStudentName').value.trim().toUpperCase();if(!n){showToast('Entrez un nom','error');return;}if(!GROUPS[currentGroup])GROUPS[currentGroup]={students:[],modules:[]};if(GROUPS[currentGroup].students.indexOf(n)!==-1){showToast('Deja existe','error');return;}GROUPS[currentGroup].students.push(n);await saveData();closeModal();showToast('Etudiant ajoute','success');renderMgmtStudents();renderGroupList();}
+function showBulkAddStudentModal(){openModal('<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Ajout multiple</h3><div style="margin-bottom:16px;"><label class="form-label">Noms (un par ligne)</label><textarea class="form-input" id="bulkNames" rows="8"></textarea></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="bulkAddStudents()"><i class="fas fa-list"></i> Ajouter</button></div>');}
+async function bulkAddStudents(){var t=document.getElementById('bulkNames').value.trim();if(!t){showToast('Entrez des noms','error');return;}var names=t.split('\n').map(function(n){return n.trim().toUpperCase();}).filter(function(n){return n;});if(!GROUPS[currentGroup])GROUPS[currentGroup]={students:[],modules:[]};var c=0;names.forEach(function(n){if(GROUPS[currentGroup].students.indexOf(n)===-1){GROUPS[currentGroup].students.push(n);c++;}});await saveData();closeModal();showToast(c+' etudiant(s) ajoute(s)','success');renderMgmtStudents();renderGroupList();}
+function editStudent(i){var n=GROUPS[currentGroup].students[i];if(!n)return;var c=document.getElementById('sn-'+i);c.innerHTML='<input type="text" class="edit-input" value="'+n+'" onblur="confirmEditStudent('+i+',this)" onkeydown="if(event.key===\'Enter\')this.blur()">';c.querySelector('input').focus();}
 async function confirmEditStudent(i,inp){var nn=inp.value.trim().toUpperCase(),on=GROUPS[currentGroup].students[i];if(!nn){renderMgmtStudents();return;}if(nn!==on){GROUPS[currentGroup].students[i]=nn;absences.forEach(function(a){if(a.group===currentGroup&&a.student===on)a.student=nn;});await saveData();showToast('Modifie','success');}renderMgmtStudents();}
 async function deleteStudent(i){var n=GROUPS[currentGroup]?GROUPS[currentGroup].students[i]:null;if(!n)return;if(!confirm('Supprimer '+n+' ?'))return;GROUPS[currentGroup].students.splice(i,1);absences=absences.filter(function(a){return!(a.group===currentGroup&&a.student===n);});await saveData();showToast('Supprime','success');renderMgmtStudents();renderGroupList();}
 
-/* ===========================================================
+/* ================================================================
    GESTION — MODULES
-   =========================================================== */
-function renderMgmtModules(){var m=GROUPS[currentGroup]?GROUPS[currentGroup].modules:[];document.getElementById('modCountLabel').textContent=m.length+' module(s)';var h='<table class="data-table"><thead><tr><th>N</th><th>Module</th><th style="width:100px;">Actions</th></tr></thead><tbody>';m.forEach(function(mod,i){h+='<tr><td style="color:var(--muted);">'+(i+1)+'</td><td style="font-weight:500;" id="mod-name-'+i+'">'+mod+'</td><td><button class="btn btn-xs btn-ghost" onclick="editModule('+i+')"><i class="fas fa-pen"></i></button> <button class="btn btn-xs btn-danger" onclick="deleteModule('+i+')"><i class="fas fa-trash"></i></button></td></tr>';});if(!m.length)h+='<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);">Aucun module</td></tr>';h+='</tbody></table>';document.getElementById('mgmtModulesTable').innerHTML=h;}
-function showAddModuleModal(){openModal('<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Ajouter un module</h3><div style="margin-bottom:16px;"><label class="form-label">Nom du module</label><input type="text" class="form-input" id="newModuleName"></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="addModule()"><i class="fas fa-plus"></i> Ajouter</button></div>');}
-async function addModule(){var n=document.getElementById('newModuleName').value.trim();if(!n){showToast('Entrez un nom','error');return;}if(!GROUPS[currentGroup])GROUPS[currentGroup]={students:[],modules:[]};if(GROUPS[currentGroup].modules.indexOf(n)!==-1){showToast('Deja existe','error');return;}GROUPS[currentGroup].modules.push(n);var ok=await saveData();if(ok){closeModal();showToast('Module ajoute','success');}renderMgmtModules();updateModuleSelect();}
-function editModule(i){var n=GROUPS[currentGroup].modules[i];if(!n)return;var c=document.getElementById('mod-name-'+i);c.innerHTML='<input type="text" class="edit-input" value="'+n+'" onblur="confirmEditModule('+i+',this)" onkeydown="if(event.key===\'Enter\')this.blur()">';c.querySelector('input').focus();}
+   ================================================================ */
+function renderMgmtModules(){var m=GROUPS[currentGroup]?GROUPS[currentGroup].modules:[];document.getElementById('modCountLabel').textContent=m.length+' module(s)';var h='<table class="data-table"><thead><tr><th>N</th><th>Module</th><th style="width:100px;"></th></tr></thead><tbody>';m.forEach(function(mod,i){h+='<tr><td style="color:var(--muted);">'+(i+1)+'</td><td style="font-weight:500;" id="mn-'+i+'">'+mod+'</td><td><button class="btn btn-xs btn-ghost" onclick="editModule('+i+')"><i class="fas fa-pen"></i></button> <button class="btn btn-xs btn-danger" onclick="deleteModule('+i+')"><i class="fas fa-trash"></i></button></td></tr>';});if(!m.length)h+='<tr><td colspan="3" style="text-align:center;padding:40px;color:var(--muted);">Aucun module</td></tr>';h+='</tbody></table>';document.getElementById('mgmtModulesTable').innerHTML=h;}
+function showAddModuleModal(){openModal('<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Ajouter un module</h3><div style="margin-bottom:16px;"><label class="form-label">Nom</label><input type="text" class="form-input" id="newModuleName"></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="addModule()"><i class="fas fa-plus"></i> Ajouter</button></div>');}
+async function addModule(){var n=document.getElementById('newModuleName').value.trim();if(!n){showToast('Entrez un nom','error');return;}if(!GROUPS[currentGroup])GROUPS[currentGroup]={students:[],modules:[]};if(GROUPS[currentGroup].modules.indexOf(n)!==-1){showToast('Deja existe','error');return;}GROUPS[currentGroup].modules.push(n);await saveData();closeModal();showToast('Module ajoute','success');renderMgmtModules();updateModuleSelect();}
+function editModule(i){var n=GROUPS[currentGroup].modules[i];if(!n)return;var c=document.getElementById('mn-'+i);c.innerHTML='<input type="text" class="edit-input" value="'+n+'" onblur="confirmEditModule('+i+',this)" onkeydown="if(event.key===\'Enter\')this.blur()">';c.querySelector('input').focus();}
 async function confirmEditModule(i,inp){var nn=inp.value.trim(),on=GROUPS[currentGroup].modules[i];if(!nn){renderMgmtModules();return;}if(nn!==on){GROUPS[currentGroup].modules[i]=nn;absences.forEach(function(a){if(a.group===currentGroup&&a.module===on)a.module=nn;});await saveData();showToast('Modifie','success');}renderMgmtModules();updateModuleSelect();}
 async function deleteModule(i){var n=GROUPS[currentGroup]?GROUPS[currentGroup].modules[i]:null;if(!n)return;if(!confirm('Supprimer "'+n+'" ?'))return;GROUPS[currentGroup].modules.splice(i,1);await saveData();showToast('Supprime','success');renderMgmtModules();updateModuleSelect();}
 
-/* ===========================================================
-   GESTION — GROUPES
-   =========================================================== */
-function renderMgmtGroups() {
-    var groups = Object.keys(GROUPS).sort();
-    var h = '<table class="data-table"><thead><tr><th>Groupe</th><th style="width:80px;">Etudiants</th><th style="width:80px;">Modules</th><th style="width:100px;">Actions</th></tr></thead><tbody>';
-    groups.forEach(function(g) {
-        var d = GROUPS[g] || {students:[],modules:[]};
-        h += '<tr><td style="font-weight:600;">'+g+'</td><td><span class="badge badge-ok">'+d.students.length+'</span></td><td><span class="badge" style="background:var(--info-glow);color:var(--info);">'+d.modules.length+'</span></td><td><button class="btn btn-xs btn-danger" onclick="deleteGroup(\''+g.replace(/'/g,"\\'")+'\')"><i class="fas fa-trash"></i></button></td></tr>';
-    });
-    if (!groups.length) h += '<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--muted);">Aucun groupe</td></tr>';
-    h += '</tbody></table>';
-    document.getElementById('mgmtGroupsTable').innerHTML = h;
+/* ================================================================
+   GESTION — GROUPES  ← LA FONCTION CLÉ
+   ================================================================ */
+function renderMgmtGroups(){var groups=Object.keys(GROUPS).sort();var h='<table class="data-table"><thead><tr><th>Groupe</th><th style="width:80px;">Etudiants</th><th style="width:80px;">Modules</th><th style="width:100px;"></th></tr></thead><tbody>';groups.forEach(function(g){var d=GROUPS[g]||{students:[],modules:[]};h+='<tr><td style="font-weight:600;">'+g+'</td><td><span class="badge badge-ok">'+d.students.length+'</span></td><td><span class="badge" style="background:var(--ig);color:var(--info);">'+d.modules.length+'</span></td><td><button class="btn btn-xs btn-danger" onclick="deleteGroup(\''+g.replace(/'/g,"\\'")+'\')"><i class="fas fa-trash"></i></button></td></tr>';});if(!groups.length)h+='<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--muted);">Aucun groupe</td></tr>';h+='</tbody></table>';document.getElementById('mgmtGroupsTable').innerHTML=h;}
+
+function showAddGroupModal(){
+    var existing=new Set();Object.keys(GROUPS).forEach(function(g){var m=g.match(/^(.+?)\s+S/);if(m)existing.add(m[1]);});
+    var opts='';existing.forEach(function(f){opts+='<option value="'+f+'">'+f+'</option>';});
+    openModal('<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Creer un groupe</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;"><div><label class="form-label">Filiere</label><input type="text" class="form-input" id="newGroupFiliere" placeholder="Ex : ISUSI" list="fl"><datalist id="fl">'+opts+'</datalist></div><div><label class="form-label">Semestre</label><select class="form-input" id="newGroupSem"><option value="S1">S1</option><option value="S2">S2</option><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select></div></div><div style="margin-bottom:16px;"><label class="form-label">Nom personnalise (auto si vide)</label><input type="text" class="form-input" id="newGroupName" placeholder="Laisser vide = filiere + semestre"></div><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-primary btn-sm" onclick="addGroup()"><i class="fas fa-plus"></i> Creer</button></div>');
 }
 
-function showAddGroupModal() {
-    var existing = new Set();
-    Object.keys(GROUPS).forEach(function(g) { var m = g.match(/^(.+?)\s+S/); if (m) existing.add(m[1]); });
-    var opts = '';
-    existing.forEach(function(f) { opts += '<option value="'+f+'">'+f+'</option>'; });
-    openModal(
-        '<h3 style="font-size:18px;font-weight:700;margin-bottom:16px;">Creer un nouveau groupe</h3>'+
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">'+
-            '<div><label class="form-label">Filiere</label><input type="text" class="form-input" id="newGroupFiliere" placeholder="Ex : ISUSI" list="filiereList"><datalist id="filiereList">'+opts+'</datalist></div>'+
-            '<div><label class="form-label">Semestre</label><select class="form-input" id="newGroupSemester"><option value="S1">S1</option><option value="S2">S2</option><option value="S3">S3</option><option value="S4">S4</option><option value="S5">S5</option><option value="S6">S6</option></select></div>'+
-        '</div>'+
-        '<div style="margin-bottom:16px;"><label class="form-label">Nom du groupe (auto si vide)</label><input type="text" class="form-input" id="newGroupName" placeholder="Laisser vide pour auto"></div>'+
-        '<div style="display:flex;gap:10px;justify-content:flex-end;">'+
-            '<button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button>'+
-            '<button class="btn btn-primary btn-sm" onclick="addGroup()"><i class="fas fa-plus"></i> Creer</button>'+
-        '</div>'
-    );
-}
+async function addGroup(){
+    var filiere=document.getElementById('newGroupFiliere').value.trim().toUpperCase();
+    var semestre=document.getElementById('newGroupSem').value;
+    var custom=document.getElementById('newGroupName').value.trim().toUpperCase();
+    if(!filiere&&!custom){showToast('Indiquez une filiere ou un nom','error');return;}
+    var groupName=custom||(filiere+' '+semestre);
+    if(GROUPS[groupName]){showToast('"'+groupName+'" existe deja','error');return;}
 
-async function addGroup() {
-    var filiere = document.getElementById('newGroupFiliere').value.trim().toUpperCase();
-    var semestre = document.getElementById('newGroupSemester').value;
-    var customName = document.getElementById('newGroupName').value.trim().toUpperCase();
+    // AJOUTER EN MÉMOIRE
+    GROUPS[groupName]={students:[],modules:[]};
 
-    if (!filiere && !customName) { showToast('Indiquez une filiere ou un nom', 'error'); return; }
+    // SAUVEGARDER : localStorage EN PREMIER (garanti), puis Firebase
+    await saveData();
 
-    var groupName = customName || (filiere + ' ' + semestre);
-
-    if (GROUPS[groupName]) { showToast('Le groupe "'+groupName+'" existe deja !', 'error'); return; }
-
-    // Vérifier Firebase AVANT d'ajouter en mémoire
-    if (!firebaseCanWrite) {
-        showToast('IMPOSSIBLE : Firebase refuse les ecritures. Corrigez les regles de securite !', 'error');
-        document.getElementById('firebaseBanner').classList.add('show');
+    // VÉRIFIER que localStorage a bien sauvegardé
+    var verify = localStorage.getItem('at_groups');
+    var parsed = verify ? JSON.parse(verify) : {};
+    if (!parsed[groupName]) {
+        // localStorage a échoué (rare mais possible si plein)
+        console.error('[addGroup] localStorage na pas sauvegarde !');
+        showToast('Erreur de sauvegarde locale !', 'error');
+        delete GROUPS[groupName];
         return;
     }
 
-    GROUPS[groupName] = { students: [], modules: [] };
-
-    console.log('[addGroup] Tentative de sauvegarde de "'+groupName+'" dans Firebase...');
-    var ok = await saveData();
-
-    if (ok) {
-        console.log('[addGroup] SUCCES — "'+groupName+'" est dans Firebase');
-        showToast('Groupe "'+groupName+'" cree avec succes !', 'success');
-        closeModal();
-        currentGroup = groupName;
-        renderGroupList();
-        renderMgmtGroups();
-        renderCurrentTab();
-    } else {
-        console.error('[addGroup] ECHEC — suppression locale de "'+groupName+'"');
-        delete GROUPS[groupName];
-        showToast('ECHEC de sauvegarde. Verifiez vos regles Firebase !', 'error');
-    }
+    console.log('[addGroup] "'+groupName+'" sauvegarde avec succes (localStorage OK, Firebase='+(useFirebase?'OK':'desactive')+')');
+    showToast('Groupe "'+groupName+'" cree !','success');
+    closeModal();
+    currentGroup=groupName;
+    renderGroupList();
+    renderMgmtGroups();
+    renderCurrentTab();
 }
 
-async function deleteGroup(name) {
-    if (!confirm('Supprimer "'+name+'" et toutes ses donnees ?')) return;
+async function deleteGroup(name){
+    if(!confirm('Supprimer "'+name+'" et ses donnees ?'))return;
     delete GROUPS[name];
-    absences = absences.filter(function(a) { return a.group !== name; });
-    var ok = await saveData();
-    if (ok) {
-        showToast('Groupe supprime', 'success');
-        if (currentGroup === name) currentGroup = Object.keys(GROUPS)[0] || '';
-        renderMgmtGroups(); renderGroupList(); renderCurrentTab();
-    }
+    absences=absences.filter(function(a){return a.group!==name;});
+    await saveData();
+    showToast('Groupe supprime','success');
+    if(currentGroup===name)currentGroup=Object.keys(GROUPS)[0]||'';
+    renderMgmtGroups();renderGroupList();renderCurrentTab();
 }
-
-/* ===========================================================
-   IMPORT EXCEL
-   =========================================================== */
-function handleFileSelect(file){if(file)processFile(file);}
-function handleFileDrop(file){if(file)processFile(file);}
-function processFile(file){var info=document.getElementById('fileInfo');info.style.display='block';info.innerHTML='<i class="fas fa-file" style="color:var(--info);margin-right:8px;"></i><strong>'+file.name+'</strong> ('+(file.size/1024).toFixed(1)+' Ko)';if(typeof XLSX!=='undefined'){var r=new FileReader();r.onload=function(e){try{importWorkbook=XLSX.read(e.target.result,{type:'array'});var ss=document.getElementById('importSheet');ss.innerHTML='';importWorkbook.SheetNames.forEach(function(n){var o=document.createElement('option');o.value=n;o.textContent=n;ss.appendChild(o);});onSheetChange();var gs=document.getElementById('importGroup');gs.innerHTML='';Object.keys(GROUPS).sort().forEach(function(g){var o=document.createElement('option');o.value=g;o.textContent=g;gs.appendChild(o);});gs.value=currentGroup;showToast('Fichier charge','success');}catch(err){showToast('Erreur de lecture','error');}};r.readAsArrayBuffer(file);}else{info.innerHTML+='<div style="margin-top:8px;color:var(--warn);font-size:12px;"><i class="fas fa-exclamation-triangle"></i> SheetJS non charge.</div>';}}
-function onSheetChange(){if(!importWorkbook)return;importSheetData=XLSX.utils.sheet_to_json(importWorkbook.Sheets[document.getElementById('importSheet').value],{header:1});var h=importSheetData[0]||[];['importNameCol','importModCol','importAbsNameCol','importAbsDateCol','importAbsTimeCol','importAbsModCol','importAbsJustCol'].forEach(function(id){var s=document.getElementById(id);if(!s)return;s.innerHTML='';h.forEach(function(c,i){var o=document.createElement('option');o.value=i;o.textContent=c||('Col. '+(i+1));s.appendChild(o);});});}
-function goToImportStep(step){for(var i=1;i<=4;i++){document.getElementById('importStep'+i).style.display=i===step?'block':'none';var d=document.getElementById('step'+i+'dot');d.className='step-dot'+(i<step?' done':i===step?' active':'');if(i<4)document.getElementById('step'+i+'line').className='step-line'+(i<step?' done':'');}if(step===3)buildPreview();}
-function buildPreview(){if(!importSheetData||!importSheetData.length)return;var type=document.getElementById('importType').value,data=[];for(var i=1;i<importSheetData.length;i++){var row=importSheetData[i];if(!row||!row.length)continue;if(type==='etudiants'){var n=row[parseInt(document.getElementById('importNameCol').value)];if(n&&String(n).trim())data.push({name:String(n).trim().toUpperCase()});}else if(type==='modules'){var m=row[parseInt(document.getElementById('importModCol').value)];if(m&&String(m).trim())data.push({module:String(m).trim()});}else{var s=row[parseInt(document.getElementById('importAbsNameCol').value)];if(s&&String(s).trim())data.push({student:String(s).trim().toUpperCase(),date:String(row[parseInt(document.getElementById('importAbsDateCol').value)]||''),time:String(row[parseInt(document.getElementById('importAbsTimeCol').value)]||''),module:String(row[parseInt(document.getElementById('importAbsModCol').value)]||''),justification:String(row[parseInt(document.getElementById('importAbsJustCol').value)]||'').trim()});}}importPreviewData=data;document.getElementById('previewCount').textContent=data.length+' ligne(s)';var h='<table class="preview-table"><thead><tr>';if(type==='etudiants')h+='<th>Nom</th>';else if(type==='modules')h+='<th>Module</th>';else h+='<th>Etudiant</th><th>Date</th><th>Creneau</th><th>Module</th><th>Justif.</th>';h+='</tr></thead><tbody>';data.slice(0,50).forEach(function(d){h+='<tr>';if(type==='etudiants')h+='<td>'+d.name+'</td>';else if(type==='modules')h+='<td>'+d.module+'</td>';else h+='<td>'+d.student+'</td><td>'+d.date+'</td><td>'+d.time+'</td><td>'+d.module+'</td><td>'+d.justification+'</td>';h+='</tr>';});if(data.length>50)h+='<tr><td colspan="10" style="text-align:center;color:var(--muted);">... et '+(data.length-50)+' autres</td></tr>';h+='</tbody></table>';document.getElementById('previewTableWrap').innerHTML=h;}
-async function executeImport(){if(!importPreviewData.length){showToast('Aucune donnee','error');return;}var type=document.getElementById('importType').value,group=document.getElementById('importGroup').value,mode=document.getElementById('importMode').value;if(!group){showToast('Choisissez un groupe','error');return;}if(!GROUPS[group])GROUPS[group]={students:[],modules:[]};var c=0;if(type==='etudiants'){if(mode==='replace')GROUPS[group].students=[];importPreviewData.forEach(function(d){if(GROUPS[group].students.indexOf(d.name)===-1){GROUPS[group].students.push(d.name);c++;}});}else if(type==='modules'){if(mode==='replace')GROUPS[group].modules=[];importPreviewData.forEach(function(d){if(GROUPS[group].modules.indexOf(d.module)===-1){GROUPS[group].modules.push(d.module);c++;}});}else{importPreviewData.forEach(function(d){absences.push({group:group,student:d.student,date:d.date,time:d.time,module:d.module,justification:d.justification,timestamp:Date.now()+Math.random()});c++;});}await saveData();document.getElementById('importResultMsg').textContent=c+' element(s) importe(s) dans '+group;goToImportStep(4);renderGroupList();renderCurrentTab();}
-function resetImport(){importWorkbook=null;importSheetData=null;importPreviewData=[];document.getElementById('fileInfo').style.display='none';document.getElementById('fileInput').value='';goToImportStep(1);}
 </script>
 </body>
 </html>
