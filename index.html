@@ -6,7 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gestion des Absences — 2025/2026</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
@@ -325,7 +326,21 @@ select.form-input{cursor:pointer}
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box" id="modalBox"></div>
 </div>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD9kedxf8KukgwP2D9t5ELkWaEu6RrQngg",
+  authDomain: "absences-7b6a1.firebaseapp.com",
+  databaseURL: "https://absences-7b6a1-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "absences-7b6a1",
+  storageBucket: "absences-7b6a1.firebasestorage.app",
+  messagingSenderId: "239385758355",
+  appId: "1:239385758355:web:4707cf2dd432ca66b29b66"
+};
 
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database();
+</script>
 <script>
 const TIME_SLOTS=['08H30 - 10H30','10H30 - 12H30','08H30 - 12H30','14H00 - 16H00','16H00 - 18H00','14H00 - 18H00','15H00 - 18H00'];
 function P(s){return s?s.split('|').filter(x=>x.trim()):[];}
@@ -353,11 +368,38 @@ const DEFAULT_GROUPS={
 
 let GROUPS={},currentGroup='ISUSI S3',currentTab='enregistrement',currentSubTab='etudiants-mgmt',absences=[],importWorkbook=null,importSheetData=null,importPreviewData=[];
 
-function loadData(){try{const g=localStorage.getItem('at_groups');GROUPS=g?JSON.parse(g):JSON.parse(JSON.stringify(DEFAULT_GROUPS));const a=localStorage.getItem('at_absences');if(a)absences=JSON.parse(a);}catch(e){GROUPS=JSON.parse(JSON.stringify(DEFAULT_GROUPS));absences=[];}}
-function saveData(){localStorage.setItem('at_groups',JSON.stringify(GROUPS));localStorage.setItem('at_absences',JSON.stringify(absences));}
+async function loadData() {
+    try {
+        const snapshot = await db.ref("gestion_absences").once("value");
 
-document.addEventListener('DOMContentLoaded',()=>{
-  loadData();
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+
+            GROUPS = data.groups || JSON.parse(JSON.stringify(DEFAULT_GROUPS));
+            absences = data.absences || [];
+        } else {
+            GROUPS = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
+            absences = [];
+            await saveData();
+        }
+
+    } catch (e) {
+        console.error(e);
+        GROUPS = JSON.parse(JSON.stringify(DEFAULT_GROUPS));
+        absences = [];
+    }
+}
+
+async function saveData() {
+    await db.ref("gestion_absences").set({
+        groups: GROUPS,
+        absences: absences
+    });
+}
+
+document.addEventListener('DOMContentLoaded', async ()=>{
+
+    await loadData();
   document.getElementById('absDate').value=new Date().toISOString().split('T')[0];
   const ts=document.getElementById('absTime');TIME_SLOTS.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;ts.appendChild(o);});
   if(!Object.keys(GROUPS).length){GROUPS=JSON.parse(JSON.stringify(DEFAULT_GROUPS));saveData();}
@@ -536,5 +578,8 @@ function openModal(html){document.getElementById('modalBox').innerHTML=html;docu
 function closeModal(){document.getElementById('modalOverlay').classList.remove('show');}
 function showModal(title,msg,cb){openModal(`<h3 style="font-size:18px;margin-bottom:8px;">${title}</h3><p style="color:var(--muted);font-size:14px;margin-bottom:20px;">${msg}</p><div style="display:flex;gap:10px;justify-content:flex-end;"><button class="btn btn-ghost btn-sm" onclick="closeModal()">Annuler</button><button class="btn btn-danger btn-sm" id="modalConfirmBtn">Confirmer</button></div>`);document.getElementById('modalConfirmBtn').onclick=()=>{closeModal();cb();};}
 </script>
+
+<script type="module" src="firebase.js"></script>
+
 </body>
 </html>
